@@ -1,7 +1,17 @@
 {{{{vue-js}}}}
 
-<div id="vm">
-	<player-management v-bind:players="players">
+<div class="app">
+	<div class="sidebar">
+		<div class="sidebar_entry" v-for="tab in tabs" v-bind:key="tab.id" v-bind:class="currentTab === tab.id ? activeTabClass : ''" v-on:click="currentTab = tab.id">
+			<span class="im" v-bind:class="tab.iconClass"></span>
+		</div>
+	</div>
+
+	<div class="tabs">
+		<tab-players v-if="currentTab === 'players'" v-bind:players="players"></tab-players>
+		<tab-logs v-if="currentTab === 'logs'" v-bind:logs="logs"></tab-logs>
+	</div>
+
 </div>
 
 {{{{/vue-js}}}}
@@ -10,8 +20,20 @@
 
 <script type="text/javascript">
 	let vm = new Vue({
-		el: '#vm',
+		el: '.app',
 		data: {
+			tabs: [{
+				id: "players",
+				name: "Players",
+				iconClass: "im-user-male"
+			},{
+				id: "logs",
+				name: "Logs",
+				iconClass: "im-note-o"
+			}],
+			currentTab: "players",
+			activeTabClass: 'active',
+
 			players: [{
 				id: 1,
 				name: "Pony",
@@ -38,6 +60,17 @@
 					name: 'admin',
 					isEnabled: true
 				}]
+			}],
+
+			logs: [{
+				time: new Date().getTime(),
+				message: 'server started'
+			},{
+				time: new Date().getTime(),
+				message: 'fondling ponies'
+			},{
+				time: new Date().getTime(),
+				message: 'loading lasers'
 			}]
 		}
 	});

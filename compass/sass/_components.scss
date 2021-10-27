@@ -1,78 +1,169 @@
-.player_list {
+.app {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	background: #222;
+	width: 100%;
+	height: 100%;
 
-	.player:not(:last-child) {
-		margin-bottom: 0.5em;
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		background: $primary;
+		width: 3em;
+		height: 100%;
+		overflow-x: hidden;
+		overflow-y: auto;
+
+		.sidebar_entry {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			padding: 0.5em;
+			transition: all 0.2s ease 0s;
+
+			&:not(:last-child) {
+				margin-bottom: 1em;
+			}
+
+			&:hover {
+				color: shade($text-color, 50%);
+			}
+		}
+	}
+
+	.tabs {
+		width: 100%;
+		height: 100%;
+		overflow-x: hidden;
+		overflow-y: auto;
+
+		.tab_head {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			font-size: 2em;
+			font-weight: 600;
+			padding: 0.8em 2em;
+			background: $secondary;
+		}
+
+		.tab_body {
+			max-height: 100%;
+			overflow-y: auto;
+		}
 	}
 }
 
-.player {
-	background: $secondary;
+.tab_players {
 
-	.head {
+	.player_list {
 		display: flex;
-		flex-direction: row;
-		align-items: center;
-		padding: 0.5em 1em;
+		flex-direction: column;
+		padding: 1em;
 
-		.id {
-			min-width: 2.5em;
-			text-align: center;
-			font-size: 1.5em;
-			font-weight: 500;
-		}
+		.player {
+			background: $tertiary;
 
-		.name_container {
-			display: flex;
-			flex-direction: column;
-
-			.name {
-				font-size: 1.3em;
-				font-weight: 500;
+			&:not(:last-child) {
+				margin-bottom: 1em;
 			}
 
-			.steamid {
-				font-size: 0.9em;
-				font-style: italic;
-				color: #aaa;
+			.head {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				padding: 0.5em 1em;
+
+				.id {
+					min-width: 2.5em;
+					text-align: center;
+					font-size: 1.5em;
+					font-weight: 500;
+				}
+
+				.name_container {
+					display: flex;
+					flex-direction: column;
+
+					.name {
+						font-size: 1.3em;
+						font-weight: 500;
+						display: flex;
+						flex-direction: row;
+						cursor: pointer;
+
+						.extend_arrow {
+							font-size: 0.8em;
+							margin-left: 0.5em;
+							line-height: 1.2em;
+						}
+					}
+
+					.steamid {
+						font-size: 0.9em;
+						font-style: italic;
+						color: #aaa;
+					}
+				}
+
+				.gap {
+					width: 100%;
+				}
+
+				.buttons {
+					display: flex;
+					flex-direction: row;
+					margin-left: 1em;
+
+					button:not(:last-child) {
+						margin-right: 1em;
+					}
+				}
+			}
+
+			.body {
+				display: flex;
+				flex-direction: column;
+				background: $tertiary;
+			}
+
+			.player_role {
+				padding: 0.3em;
+
+				&.enabled {
+					background: $enabled;
+				}
+
+				&.disabled {
+					background: $disabled;
+				}
 			}
 		}
+	}
+}
 
-		.extend_arrow, .buttons {
-			margin-left: 1em;
-		}
+.tab_logs {
 
-		.extend_arrow {
-			cursor: pointer;
-			width: 100%;
-		}
+	.logs_list {
+		display: flex;
+		flex-direction: column;
+		padding: 1em;
 
-		.buttons {
+		.log_entry {
 			display: flex;
 			flex-direction: row;
+			padding: 0.2em 0.4em;
 
-			button:not(:last-child) {
+			&:not(:last-child) {
+				margin-bottom: 0.1em;
+			}
+
+			.time {
 				margin-right: 1em;
 			}
 		}
-	}
-
-	.body {
-		display: flex;
-		flex-direction: column;
-		background: $tertiary;
-	}
-}
-
-.player_role {
-	padding: 0.3em;
-
-	&.enabled {
-		background: $enabled;
-	}
-
-	&.disabled {
-		background: $disabled;
 	}
 }

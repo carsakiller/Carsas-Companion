@@ -51,27 +51,34 @@ if (app.get('env') === 'production') {
   app.set('trust proxy', 1) // trust first proxy (if we have a nginx between)
   //sessionOptions.secure = true // serve secure cookies (only works with https, else cookies wont work!)
   //sessionOptions.proxy = true // serve secure cookies (only works with https, else cookies wont work!)
+
+  app.use(csp({
+    useDefaults: true,
+    directives: {
+      'default-src': ["'self'"],
+      'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],//unsafe-eval required for vue.js only
+      'style-src': ["'self'", "'unsafe-inline'"],//unsafe-inline required only for anticlickjack right now
+      'font-src': ["'self'"],
+      'img-src': ["'self'", 'data:'],
+      'sandbox': ['allow-forms', 'allow-scripts'],
+      'object-src': ["'none'"],
+      'frame-ancestors': ["'self'"],
+      upgradeInsecureRequests: []
+    },
+
+    // Set to true if you only want browsers to rePORT errors, not block them.
+    // You may also set this to a function(req, res) in order to decide dynamically
+    // whether to use rePORTOnly mode, e.g., to allow for a dynamic kill switch.
+    rePORTOnly: false
+  }))
+} else {//we need to completely disable csp in order for the vue.js devtools to work
+  app.use((req, res, next)=>{
+    res.removeHeader('Content-Security-Policy')
+    next()
+  })
 }
 
-app.use(csp({
-  useDefaults: true,
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],//unsafe-eval required for vue.js only
-    styleSrc: ["'self'", "'unsafe-inline'"],//unsafe-inline required only for anticlickjack right now
-    fontSrc: ["'self'"],
-    imgSrc: ["'self'", 'data:'],
-    sandbox: ['allow-forms', 'allow-scripts'],
-    objectSrc: ["'none'"],
-    upgradeInsecureRequests: [],
-    frameAncestors: ["'self'"]
-  },
 
-  // Set to true if you only want browsers to rePORT errors, not block them.
-  // You may also set this to a function(req, res) in order to decide dynamically
-  // whether to use rePORTOnly mode, e.g., to allow for a dynamic kill switch.
-  rePORTOnly: false
-}))   
 
 //app.use(session(sessionOptions))
 

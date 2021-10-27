@@ -1670,94 +1670,182 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* Used for highlighting something like a selection. Used for highlighted the selected tab within player cards */
 /* For less important text, easier on the eyes. Used for steamIDs and stat text in player cards */
 /* line 1, ../../compass/sass/_components.scss */
-.player_list {
+.app {
+  display: flex;
+  flex-direction: row;
+  background: #222;
+  width: 100%;
+  height: 100%;
+}
+/* line 8, ../../compass/sass/_components.scss */
+.app .sidebar {
   display: flex;
   flex-direction: column;
+  background: #00254a;
+  width: 3em;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-/* line 5, ../../compass/sass/_components.scss */
-.player_list .player:not(:last-child) {
-  margin-bottom: 0.5em;
+/* line 17, ../../compass/sass/_components.scss */
+.app .sidebar .sidebar_entry {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5em;
+  transition: all 0.2s ease 0s;
 }
-
-/* line 10, ../../compass/sass/_components.scss */
-.player {
+/* line 26, ../../compass/sass/_components.scss */
+.app .sidebar .sidebar_entry:not(:last-child) {
+  margin-bottom: 1em;
+}
+/* line 30, ../../compass/sass/_components.scss */
+.app .sidebar .sidebar_entry:hover {
+  color: #7a7a7a;
+}
+/* line 36, ../../compass/sass/_components.scss */
+.app .tabs {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+/* line 42, ../../compass/sass/_components.scss */
+.app .tabs .tab_head {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  font-weight: 600;
+  padding: 0.8em 2em;
   background: #00446c;
 }
-/* line 13, ../../compass/sass/_components.scss */
-.player .head {
+/* line 53, ../../compass/sass/_components.scss */
+.app .tabs .tab_body {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+/* line 62, ../../compass/sass/_components.scss */
+.tab_players .player_list {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+/* line 67, ../../compass/sass/_components.scss */
+.tab_players .player_list .player {
+  background: #07192B;
+}
+/* line 70, ../../compass/sass/_components.scss */
+.tab_players .player_list .player:not(:last-child) {
+  margin-bottom: 1em;
+}
+/* line 74, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0.5em 1em;
 }
-/* line 19, ../../compass/sass/_components.scss */
-.player .head .id {
+/* line 80, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .id {
   min-width: 2.5em;
   text-align: center;
   font-size: 1.5em;
   font-weight: 500;
 }
-/* line 26, ../../compass/sass/_components.scss */
-.player .head .name_container {
+/* line 87, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .name_container {
   display: flex;
   flex-direction: column;
 }
-/* line 30, ../../compass/sass/_components.scss */
-.player .head .name_container .name {
+/* line 91, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .name_container .name {
   font-size: 1.3em;
   font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
 }
-/* line 35, ../../compass/sass/_components.scss */
-.player .head .name_container .steamid {
+/* line 98, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .name_container .name .extend_arrow {
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  line-height: 1.2em;
+}
+/* line 105, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .name_container .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
 }
-/* line 42, ../../compass/sass/_components.scss */
-.player .head .extend_arrow, .player .head .buttons {
-  margin-left: 1em;
-}
-/* line 46, ../../compass/sass/_components.scss */
-.player .head .extend_arrow {
-  cursor: pointer;
+/* line 112, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .gap {
   width: 100%;
 }
-/* line 51, ../../compass/sass/_components.scss */
-.player .head .buttons {
+/* line 116, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .buttons {
   display: flex;
   flex-direction: row;
+  margin-left: 1em;
 }
-/* line 55, ../../compass/sass/_components.scss */
-.player .head .buttons button:not(:last-child) {
+/* line 121, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .buttons button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 61, ../../compass/sass/_components.scss */
-.player .body {
+/* line 127, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .body {
   display: flex;
   flex-direction: column;
-  background: #00060c;
+  background: #07192B;
 }
-
-/* line 68, ../../compass/sass/_components.scss */
-.player_role {
+/* line 133, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .player_role {
   padding: 0.3em;
 }
-/* line 71, ../../compass/sass/_components.scss */
-.player_role.enabled {
+/* line 136, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .player_role.enabled {
   background: #379249;
 }
-/* line 75, ../../compass/sass/_components.scss */
-.player_role.disabled {
+/* line 140, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .player_role.disabled {
   background: #c92f2f;
+}
+
+/* line 150, ../../compass/sass/_components.scss */
+.tab_logs .logs_list {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+/* line 155, ../../compass/sass/_components.scss */
+.tab_logs .logs_list .log_entry {
+  display: flex;
+  flex-direction: row;
+  padding: 0.2em 0.4em;
+}
+/* line 160, ../../compass/sass/_components.scss */
+.tab_logs .logs_list .log_entry:not(:last-child) {
+  margin-bottom: 0.1em;
+}
+/* line 164, ../../compass/sass/_components.scss */
+.tab_logs .logs_list .log_entry .time {
+  margin-right: 1em;
 }
 
 /* line 6, ../../compass/sass/style.scss */
 body {
   color: #f3f3f3;
   font-family: 'IBM Plex Mono';
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* line 11, ../../compass/sass/style.scss */
+/* line 14, ../../compass/sass/style.scss */
 .button, .small_button {
   display: inline-flex;
   flex-direction: row;
@@ -1771,19 +1859,19 @@ body {
   transition: all 0.2s ease 0s;
   cursor: pointer;
 }
-/* line 24, ../../compass/sass/style.scss */
+/* line 27, ../../compass/sass/style.scss */
 .button .im, .small_button .im {
   font-size: 1em;
 }
-/* line 28, ../../compass/sass/style.scss */
+/* line 31, ../../compass/sass/style.scss */
 .button:hover, .small_button:hover {
   background: #0006;
 }
-/* line 32, ../../compass/sass/style.scss */
+/* line 35, ../../compass/sass/style.scss */
 .button.button, .small_button.button {
   font-weight: 600;
 }
-/* line 36, ../../compass/sass/style.scss */
+/* line 39, ../../compass/sass/style.scss */
 .button.small_button, .small_button.small_button {
   font-size: 80%;
   padding: 0.2em 0.3em;
