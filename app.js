@@ -107,6 +107,10 @@ app.get('/', (req, res, next)=>{
   });
 });
 
+app.get('/c2', (req, res, next)=>{
+  res.render('c2');
+});
+
 
 app.use('/api', require('./routes/api.js'));
 app.use('/game-api', require('./routes/game-api.js'));

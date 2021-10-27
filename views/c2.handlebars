@@ -1,0 +1,52 @@
+{{{{vue-js}}}}
+
+<div id="vm">
+	<player-management v-bind:players="players">
+</div>
+
+{{{{/vue-js}}}}
+
+<p>test</p>
+
+<script type="text/javascript">
+	let vm = new Vue({
+		el: '#vm',
+		data: {
+			players: [{
+				id: 1,
+				name: "Pony",
+				steamid: "x64",
+				roles: [{
+					id: 0,
+					name: 'owner',
+					isEnabled: false
+				},{
+					id: 1,
+					name: 'admin',
+					isEnabled: true
+				}]
+			},{
+				id: 2,
+				name: "Carsa",
+				steamid: "x32",
+				roles: [{
+					id: 0,
+					name: 'owner',
+					isEnabled: true
+				},{
+					id: 1,
+					name: 'admin',
+					isEnabled: true
+				}]
+			}]
+		}
+	});
+</script>
+
+<script type="text/javascript">
+	$.get('/api/players', (data)=>{
+		console.log(data)
+	})
+</script>
+
+

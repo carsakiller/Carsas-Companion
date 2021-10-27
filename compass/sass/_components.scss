@@ -1,0 +1,78 @@
+.player_list {
+	display: flex;
+	flex-direction: column;
+
+	.player:not(:last-child) {
+		margin-bottom: 0.5em;
+	}
+}
+
+.player {
+	background: $secondary;
+
+	.head {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		padding: 0.5em 1em;
+
+		.id {
+			min-width: 2.5em;
+			text-align: center;
+			font-size: 1.5em;
+			font-weight: 500;
+		}
+
+		.name_container {
+			display: flex;
+			flex-direction: column;
+
+			.name {
+				font-size: 1.3em;
+				font-weight: 500;
+			}
+
+			.steamid {
+				font-size: 0.9em;
+				font-style: italic;
+				color: #aaa;
+			}
+		}
+
+		.extend_arrow, .buttons {
+			margin-left: 1em;
+		}
+
+		.extend_arrow {
+			cursor: pointer;
+			width: 100%;
+		}
+
+		.buttons {
+			display: flex;
+			flex-direction: row;
+
+			button:not(:last-child) {
+				margin-right: 1em;
+			}
+		}
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		background: $tertiary;
+	}
+}
+
+.player_role {
+	padding: 0.3em;
+
+	&.enabled {
+		background: $enabled;
+	}
+
+	&.disabled {
+		background: $disabled;
+	}
+}

@@ -1,3 +1,9 @@
+# Setup build system
+- install node (e.g. v12)
+- install compass `$ gem install compass`
+
+
+
 # TODO
 * check what the char limit for responses for server.httpGet() requests is!
 
