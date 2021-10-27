@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const PORT = 3000
 
+var expressWs = require('express-ws')(app)
+
 app.listen(PORT, () => {
   console.log(`C2 - Companion listening at http://localhost:${PORT}`)
 })
@@ -119,7 +121,13 @@ app.get('/c2', (req, res, next)=>{
 });
 
 
-app.use('/api', require('./routes/api.js'));
+const webSocks = require('./websocks.js')
+const c2companion = require('./c2companion.js')
+c2companion.setWebSocks(webSocks)
+
+app.ws('/ws', (ws, req) => {
+  webSocks.addClient(ws, req)
+});
 app.use('/game-api', require('./routes/game-api.js'));
 
 /*
@@ -141,7 +149,12 @@ c2 = require('./c2.js');
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
-  next(err);
+
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  res.status(404);
+  res.render('error');
 });
 
 // error handler

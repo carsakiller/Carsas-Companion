@@ -74,11 +74,39 @@
 			}]
 		}
 	});
+
 </script>
 
+
+<script type="text/javascript" src="/static/scripts/websock.js"></script>
+
 <script type="text/javascript">
-	$.get('/api/players', (data)=>{
-		console.log(data)
+	$(window).on('load', ()=>{
+		let ws = new WebSock('ws://' + window.location.host + '/ws', 'XYZ')
+
+		ws.on('open', ()=>{
+			console.log('WebSock is now open')
+
+			setTimeout(()=>{
+				ws.send('test').then((res)=>{
+					console.log('test response success', res)
+				}).catch((err)=>{
+					console.warn('test response unsuccessful', err)
+				})
+			}, 1000)
+		})
+
+		ws.on('close', ()=>{
+			console.log('WebSock is now closed')
+		})
+
+		ws.on('message', (data)=>{
+			return new Promise((fulfill, reject)=>{
+				console.log('WebSock received message', data)
+
+				fulfill('resultsky')
+			})
+		})
 	})
 </script>
 
