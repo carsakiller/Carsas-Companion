@@ -1,0 +1,24 @@
+{{{{vue-js}}}}
+
+<div id="app">
+	{{hey}}
+</div>
+
+{{{{/vue-js}}}}
+
+<script type="text/javascript">
+	let app = new Vue({
+		el: '#app',
+		data: {
+			hey: "ho!"
+		}
+	});
+</script>
+
+<script type="text/javascript">
+	$.get('/api/players', (data)=>{
+		console.log(data)
+	})
+</script>
+
+
