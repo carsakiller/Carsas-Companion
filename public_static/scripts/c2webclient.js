@@ -4,8 +4,6 @@ let C2WebClient = (()=>{
 
 	let vueData
 
-	let syncedData = {}
-
 	ws.on('open', ()=>{
 		log('is now open')
 
@@ -47,15 +45,9 @@ let C2WebClient = (()=>{
 					fulfill(rtt + 'ms')
 				}; break;
 
-				case 'sync-players': {					
-					syncedData['players'] = message.data
+				case 'sync-players': {
 					//TODO: now update vueData
-					vueData['players'] = (()=>{
-						let ret = []
-
-
-						return ret
-					})()
+					vueData['players'] = message.data
 				}; break;
 
 				case 'alive': {

@@ -46,7 +46,9 @@ module.exports = ((app)=>{
 	let eventListeners = {}
 
 	/* events:
-		message (only the first registered callback can respond to an message, either by returing a promise in the callback (which will be fulfilled/rejected later) or by returning the data directly from the callback)
+		message callback({type: [string], data: [string,number,object,...]})
+
+		(only the first registered callback can respond to a message, either by returing a promise in the callback (which will be fulfilled/rejected later) or by returning the data directly from the callback)
 	*/
 	function on(eventname, callback){
 		if(! eventListeners[eventname]){

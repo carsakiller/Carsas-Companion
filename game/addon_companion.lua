@@ -29,7 +29,13 @@ function onPlayerJoin()
 	syncSyncableData("players")
 end
 
-
+function onCustomCommand(full_message, user_peer_id, is_admin, is_auth, command, ...)
+	if command == "?sync" then
+		g_players = server.getPlayers()
+	
+		syncSyncableData("players")
+	end
+end
 
 
 --[[ Data Sync with web server ]]--
@@ -41,7 +47,7 @@ end
 --   syncSyncableData("players")
 -- end
 
-local syncableData = {}
+syncableData = {}
 function registerSyncableData(name, dataFunction--[[must be a function that returns the data to be synced]])
 	if not (type(dataFunction) == "function") then
 		return error("@registerSyncableData: dataFunction must be a function")

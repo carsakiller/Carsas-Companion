@@ -5,12 +5,14 @@ module.exports = ((app)=>{
 	let C2GameInterface = require('./c2gameinterface.js')(app)
 
 
+	let syncedData = {}
+
 	C2WebInterface.on('message', handleWebClientMessage)
 
 	C2GameInterface.on('message', handleGameMessage)
 
 	function handleWebClientMessage(client, message){
-		log('handleWebClientMessage', client.token, message)
+		log('handleWebClientMessage', client.token, message.type)
 
 		switch(message.type){
 			case 'rtt': {
@@ -43,7 +45,7 @@ module.exports = ((app)=>{
 	}
 
 	function handleGameMessage(message){
-		log('game message', message)
+		log('handleGameMessage', message.type)
 
 		switch(message.type){
 			case 'heartbeat': {
@@ -57,12 +59,18 @@ module.exports = ((app)=>{
 			}; break;
 
 			default: {
-				error('unsupported type by game', message.type)
-				return 'unsupported type:' + message.type
+
+				if(message.type.startsWith('sync-')){
+					let dataname = message.type.substring('sync-'.length)
+					log('(§)', 'syncing data with web clients:', dataname)
+					C2WebInterface.sendDataTo('all', message.type, message.data)
+				} else {
+					error('unsupported type by game', message.type)
+					return 'unsupported type:' + message.type
+				}
 			}
 		}
 	}
-
 
 	function error(...args){
 		console.error.apply(null, ['\x1b[34m[C2] \x1b[31mError:\x1b[37m'].concat(args))
