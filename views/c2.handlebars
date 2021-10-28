@@ -19,61 +19,67 @@
 <p>test</p>
 
 <script type="text/javascript">
+	let vueData = {
+		tabs: [{
+			id: "players",
+			name: "Players",
+			iconClass: "im-user-male"
+		},{
+			id: "logs",
+			name: "Logs",
+			iconClass: "im-note-o"
+		}],
+		currentTab: "players",
+		activeTabClass: 'active',
+
+		players: [{
+			id: 1,
+			name: "Pony",
+			steamid: "x64",
+			roles: [{
+				id: 0,
+				name: 'owner',
+				isEnabled: false
+			},{
+				id: 1,
+				name: 'admin',
+				isEnabled: true
+			}]
+		},{
+			id: 2,
+			name: "Carsa",
+			steamid: "x32",
+			roles: [{
+				id: 0,
+				name: 'owner',
+				isEnabled: true
+			},{
+				id: 1,
+				name: 'admin',
+				isEnabled: true
+			}]
+		}],
+
+		logs: [{
+			time: new Date().getTime(),
+			message: 'server started'
+		},{
+			time: new Date().getTime(),
+			message: 'fondling ponies'
+		},{
+			time: new Date().getTime(),
+			message: 'loading lasers'
+		}]
+	}
+
 	let vm = new Vue({
 		el: '.app',
-		data: {
-			tabs: [{
-				id: "players",
-				name: "Players",
-				iconClass: "im-user-male"
-			},{
-				id: "logs",
-				name: "Logs",
-				iconClass: "im-note-o"
-			}],
-			currentTab: "players",
-			activeTabClass: 'active',
-
-			players: [{
-				id: 1,
-				name: "Pony",
-				steamid: "x64",
-				roles: [{
-					id: 0,
-					name: 'owner',
-					isEnabled: false
-				},{
-					id: 1,
-					name: 'admin',
-					isEnabled: true
-				}]
-			},{
-				id: 2,
-				name: "Carsa",
-				steamid: "x32",
-				roles: [{
-					id: 0,
-					name: 'owner',
-					isEnabled: true
-				},{
-					id: 1,
-					name: 'admin',
-					isEnabled: true
-				}]
-			}],
-
-			logs: [{
-				time: new Date().getTime(),
-				message: 'server started'
-			},{
-				time: new Date().getTime(),
-				message: 'fondling ponies'
-			},{
-				time: new Date().getTime(),
-				message: 'loading lasers'
-			}]
-		}
+		data: vueData
 	});
+
+	$(window).on('load', ()=>{
+		C2WebClient.setVueData(vueData)
+	})
 
 </script>
 

@@ -25,7 +25,7 @@ module.exports = (()=>{
 
 		ws.on('close', ()=>{_handleClose(client)})
 
-		console.log('WebSocks new client #' + client.id, '@', req.ip)
+		log('new client #' + client.id, '@', req.ip)
 	}
 
 	function sendToClient(client, data){
@@ -74,7 +74,7 @@ module.exports = (()=>{
 				// message from the client
 
 				if(typeof messageCallback !== 'function'){
-					console.error('\x1b[31mWebSocks received a message but no messageCallback was set\x1b[37m')
+					warn('received a message but no messageCallback was set')
 					return
 				}
 
@@ -93,7 +93,14 @@ module.exports = (()=>{
 					return
 				}
 
-				if(promise instanceof Promise){
+				if(promise instanceof Promise === false){
+					error('messageCallback must return a promise!')
+					client.ws.send(JSON.stringify({
+						clientId: parsed.clientId,
+						success: false,
+						data: JSON.stringify('Error: check server logs')
+					}))
+				} else {
 					promise.then((result)=>{
 						client.ws.send(JSON.stringify({
 							clientId: parsed.clientId,
@@ -108,12 +115,6 @@ module.exports = (()=>{
 							data: JSON.stringify(err)
 						}))
 					})
-				} else {
-					client.ws.send(JSON.stringify({
-						clientId: parsed.clientId,
-						success: true,
-						data: JSON.stringify(undefined)
-					}))
 				}
 
 			} else {
@@ -126,12 +127,12 @@ module.exports = (()=>{
 	}
 
 	function _handleError(client, err){
-		console.error('WebSocks \x1b[31mError\x1b[37m: client #', client.id, client.req.ip, err)
+		error('client #', client.id, client.req.ip, err)
 	}
 
 	function _handleClose(client){
-		console.log('WebSocks client closed connection: client #', client.id, client.req.ip)
-	}
+		log('client closed connection: client #', client.id, client.req.ip)
+	}	
 
 	/* 
 		Responding to a client message:
@@ -147,7 +148,7 @@ module.exports = (()=>{
 	*/
 	function setMessageCallback(callback){
 		if(typeof callback !== 'function'){
-			throw new Error('callback must be a function')
+			error('callback must be a function')
 		}
 		messageCallback = callback
 	}
@@ -178,6 +179,18 @@ module.exports = (()=>{
 				data: JSON.stringify(data)
 			}))
 		})
+	}
+
+	function error(...args){
+		console.error.apply(null, ['\x1b[34m[WebSocks] \x1b[31mError:\x1b[37m'].concat(args))
+	}
+
+	function warn(...args){
+		console.warn.apply(null, ['\x1b[34m[WebSocks] \x1b[33mWarning:\x1b[37m'].concat(args))
+	}
+
+	function log(...args){
+		console.log.apply(null, ['\x1b[34m[WebSocks]\x1b[37m'].concat(args))
 	}
 
 	return {

@@ -55,6 +55,16 @@ class WebSock {
 
 		this.token = token
 
+		this.PENDIMG_MESSAGES_TIMEOUT = 1000 * 20
+		setInterval(()=>{
+			// check if pendingMessages run into a timeout
+			for(let pm of this.pendingMessages){
+				if(pm && new Date().getTime() - pm.timeSent > this.PENDIMG_MESSAGES_TIMEOUT){
+					pm.reject('timed out')
+				}
+			}
+		}, 500)
+
 		this.websocket = new WebSocket(url)
 
 		this.websocket.onopen = (evt)=>{this._dispatch('open', evt)}
@@ -65,14 +75,23 @@ class WebSock {
 
 				if(typeof parsed.clientId === 'number'){
 					// response to client message
-					if(this.pendingMessages[parsed.clientId]){
-						if(parsed.success === true){
-							this.pendingMessages[parsed.clientId].fulfill(parsed.data)
-						} else {
-							this.pendingMessages[parsed.clientId].reject(parsed.data)
+					for(let i in this.pendingMessages){
+						let pm = this.pendingMessages[i]
+
+						if(pm && pm.id === parsed.clientId){
+							if(parsed.success === true){
+								pm.fulfill(parsed.data)
+							} else {
+								pm.reject(parsed.data)
+							}
+							delete this.pendingMessages[i]
+							return
 						}
-						delete this.pendingMessages[parsed.clientId]
 					}
+
+					//not found
+					this._error('did not find message with id', parsed.clientId, 'in pendingMessages!')
+
 				} else if (typeof parsed.serverId === 'number'){
 					// message from the server
 
@@ -105,7 +124,7 @@ class WebSock {
 								serverId: parsed.serverId,
 								token: this.token,
 								success: false,
-								data: JSON.stringify(err.toString())
+								data: JSON.stringify('Error: check browser logs')
 							}))
 						})
 					} else {
@@ -146,7 +165,7 @@ class WebSock {
 		open
 		close
 		error
-		message
+		message (only the first registered callback can respond to the message!)
 
 		Responding to a server message:
 
@@ -194,6 +213,7 @@ class WebSock {
 
 			this.pendingMessages.push({
 				id: myMessageId,
+				timeSent: new Date().getTime,
 				fulfill: fulfill,
 				reject: reject
 			})

@@ -6,6 +6,8 @@
 
 # TODO
 * check what the char limit for responses for server.httpGet() requests is!
+* version check with the script running in the game
+* detect game restart / script reload
 
 # Before going into production:
 * check app.js for necessary adjustments

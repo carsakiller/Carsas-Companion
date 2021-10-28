@@ -1,0 +1,82 @@
+module.exports = ((app)=>{
+
+	let C2WebInterface = require('./c2webinterface.js')(app)
+
+	let C2GameInterface = require('./c2gameinterface.js')(app)
+
+
+	C2WebInterface.on('message', handleWebClientMessage)
+
+	C2GameInterface.on('message', handleGameMessage)
+
+	function handleWebClientMessage(client, message){
+		log('handleWebClientMessage', client.token, message)
+
+		switch(message.type){
+			case 'rtt': {
+				C2WebInterface.sendDataTo(client.token, 'rtt-response', message.data).then((res)=>{
+					log('rtt-response success:', res)
+				}).catch((err)=>{
+					log('rtt-response unsuccessful:', err)
+				})
+
+				return message.data
+			}; break;
+
+			case 'test': {
+				return new Promise((fulfill, reject)=>{
+					C2GameInterface.sendCommand('test', message.data).then((res)=>{
+						log('test success:', res)
+						fulfill(res)
+					}).catch((err)=>{
+						log('test unsuccessful:', err)
+						reject(err)
+					})			
+				})
+			}; break;
+
+			default: {
+				error('unsupported type by client', message.type)
+				reject('unsupported type', message.type)
+			}
+		}
+	}
+
+	function handleGameMessage(message){
+		log('game message', message)
+
+		switch(message.type){
+			case 'heartbeat': {
+				C2WebInterface.sendDataTo('all', 'alive').then((res)=>{
+					log('alive success:', res)
+				}).catch((err)=>{
+					log('alive unsuccessful:', err)
+				})
+
+				return 'good to know!'
+			}; break;
+
+			default: {
+				error('unsupported type by game', message.type)
+				return 'unsupported type:' + message.type
+			}
+		}
+	}
+
+
+	function error(...args){
+		console.error.apply(null, ['\x1b[34m[C2] \x1b[31mError:\x1b[37m'].concat(args))
+	}
+
+	function warn(...args){
+		console.warn.apply(null, ['\x1b[34m[C2] \x1b[33mWarning:\x1b[37m'].concat(args))
+	}
+
+	function log(...args){
+		console.log.apply(null, ['\x1b[34m[C2]\x1b[37m'].concat(args))
+	}
+
+	return {
+
+	}
+})

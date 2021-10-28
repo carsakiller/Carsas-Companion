@@ -110,25 +110,14 @@ function dontCacheThisRoute(req, res, next){
 }
 
 
-app.get('/', (req, res, next)=>{
-  res.render('index', {
-    players: c2.getPlayers()
-  });
-});
+
+c2 = require('./c2/c2.js')(app);
 
 app.get('/c2', (req, res, next)=>{
   res.render('c2');
 });
 
 
-const webSocks = require('./websocks.js')
-const c2companion = require('./c2companion.js')
-c2companion.setWebSocks(webSocks)
-
-app.ws('/ws', (ws, req) => {
-  webSocks.addClient(ws, req)
-});
-app.use('/game-api', require('./routes/game-api.js'));
 
 /*
 app.use('/', index);
@@ -142,8 +131,6 @@ app.use('/about', about);
 app.use('/user', user);
 app.use('/drinks', drinks);
 */
-
-c2 = require('./c2.js');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
