@@ -99,11 +99,12 @@ class WebSock {
 								data: result
 							}))
 						}).catch((err)=>{
+							this._error('Error in message callback promise:', err)
 							this.websocket.send(JSON.stringify({
 								serverId: parsed.serverId,
 								token: this.token,
 								success: false,
-								data: err
+								data: err.toString()
 							}))
 						})
 					} else {

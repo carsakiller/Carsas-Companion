@@ -11,18 +11,37 @@ module.exports = (()=>{
 		return new Promise((fulfill, reject)=>{
 			console.log('c2 client message (', client.token, ')', message)
 
-			if(message === 'test'){
-				fulfill('yes')
+			let parsed
+			try {
+				parsed = JSON.parse(message)
+			} catch (ex){
+				error('error parsing client message', ex)
+				reject('error parsing message: ' + ex)
+				return
+			}
 
-				setTimeout(()=>{
-					webSocks.send(client, 'test-back').then((res)=>{
-						console.log('test-back response success', res)
+			switch(parsed.requestType){
+				case 'rtt': {
+					webSocks.send(client, JSON.stringify({
+						requestType: 'rtt-response',
+						data: parsed.data
+					})).then((res)=>{
+						console.log('rtt-response success:', res)
 					}).catch((err)=>{
-						console.warn('test-back response unsuccessful', err)
+						console.warn('rtt-response unsuccessful:', err)
 					})
-				}, 5000)
+				}; break;
+
+				default: {
+					console.error('unsupported requestType by client', parsed.requestType)
+					reject('unsupported requestType', parsed.requestType)
+				}
 			}
 		})
+	}
+
+	function error(...args){
+		console.error.apply(null, ['C2Companion Error:'].concat(args))
 	}
 
 	return {
