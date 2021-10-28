@@ -5,14 +5,14 @@ let C2Web = (()=>{
 		log('is now open')
 
 		setTimeout(()=>{
-			ws.send(JSON.stringify({
+			ws.send({
 				requestType: 'rtt',
 				data: new Date().getTime()
-			})).then((res)=>{
+			}).then((res)=>{
 				let parsed = JSON.parse(res)
 				log('rtt response success', parsed)
 			}).catch((err)=>{
-				warn('rtt response unsuccessful', err)
+				log('rtt response unsuccessful', err)
 			})
 		}, 1000)
 	})
@@ -36,8 +36,9 @@ let C2Web = (()=>{
 
 			switch(parsed.requestType){
 				case 'rtt-response': {
-					log('RoundTripTime:', new Date().getTime() - parsed.data, 'ms')
-					fulfill()
+					let rtt = new Date().getTime() - parsed.data
+					log('RoundTripTime:', rtt, 'ms')
+					fulfill(rtt + 'ms')
 				}; break;
 
 				default: {
@@ -48,11 +49,11 @@ let C2Web = (()=>{
 	})
 
 	function log(...args){
-		console.log.apply(null, ['C2Client:'].concat(args))
+		console.log.apply(null, ['C2WebClient:'].concat(args))
 	}
 
 	function error(...args){
-		console.error.apply(null, ['C2Client Error:'].concat(args))
+		console.error.apply(null, ['C2WebClient Error:'].concat(args))
 	}
 
 	return {}

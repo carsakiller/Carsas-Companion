@@ -85,7 +85,7 @@ class WebSock {
 							serverId: parsed.serverId,
 							token: this.token,
 							success: false,
-							data: ex.toString()
+							data: JSON.stringify(ex.toString())
 						}))
 						return
 					}
@@ -96,7 +96,7 @@ class WebSock {
 								serverId: parsed.serverId,
 								token: this.token,
 								success: true,
-								data: result
+								data: JSON.stringify(result)
 							}))
 						}).catch((err)=>{
 							this._error('Error in message callback promise:', err)
@@ -104,7 +104,7 @@ class WebSock {
 								serverId: parsed.serverId,
 								token: this.token,
 								success: false,
-								data: err.toString()
+								data: JSON.stringify(err.toString())
 							}))
 						})
 					} else {
@@ -112,7 +112,7 @@ class WebSock {
 							serverId: parsed.serverId,
 							token: this.token,
 							success: true,
-							data: undefined
+							data: JSON.stringify(undefined)
 						}))
 					}
 
@@ -200,7 +200,7 @@ class WebSock {
 			this.websocket.send(JSON.stringify({
 				clientId: myMessageId,
 				token: this.token,
-				data: data
+				data: JSON.stringify(data)
 			}))
 		})
 	}

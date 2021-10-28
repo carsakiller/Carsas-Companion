@@ -2,6 +2,8 @@ module.exports = (()=>{
 
 	let webSocks
 
+	let syncedData = {}
+
 	function setWebSocks(_webSocks){
 		webSocks = _webSocks
 		webSocks.setMessageCallback(handleClientMessage)
@@ -22,14 +24,18 @@ module.exports = (()=>{
 
 			switch(parsed.requestType){
 				case 'rtt': {
-					webSocks.send(client, JSON.stringify({
+					webSocks.sendToClient(client, {
 						requestType: 'rtt-response',
 						data: parsed.data
-					})).then((res)=>{
+					}).then((res)=>{
 						log('rtt-response success:', res)
 					}).catch((err)=>{
 						warn('rtt-response unsuccessful:', err)
 					})
+				}; break;
+
+				case 'sync-players': {
+					updateSyncedData('players', parsed.data)
 				}; break;
 
 				default: {
@@ -37,6 +43,18 @@ module.exports = (()=>{
 					reject('unsupported requestType', parsed.requestType)
 				}
 			}
+		})
+	}
+
+	function updateSyncedData(dataname, data){
+		syncedData[dataname] = parsed.data
+		syncClients(dataname)		
+	}
+
+	function syncClients(dataname){
+		webSocks.sendToAllClients({
+			requestType: 'sync-' + dataname,
+			data: syncedData[dataname]
 		})
 	}
 

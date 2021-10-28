@@ -28,6 +28,30 @@ module.exports = (()=>{
 		console.log('WebSocks new client #' + client.id, '@', req.ip)
 	}
 
+	function sendToClient(client, data){
+		return _send(client, data)
+	}
+
+	function sendToClientToken(clientToken, data){
+		for(let c of clients){
+			if(c.token === clientToken){
+				return _send(c, data)
+			}
+		}
+
+		return new Promise((fulfill, reject)=>{
+			reject('client with token ' + clientToken + ' not found')
+		})
+	}
+
+	function sendToAllClients(data){
+		let promises = []
+		for(let c of clients){
+			promises.push(sendToClient(c, data))
+		}
+		return Promise.all(promises)
+	}
+
 	function _handleMessage(client, msg){
 		try {
 			let parsed = JSON.parse(msg)
@@ -63,7 +87,7 @@ module.exports = (()=>{
 					client.ws.send(JSON.stringify({
 						clientId: parsed.clientId,
 						success: false,
-						data: ex.toString()
+						data: JSON.stringify(ex.toString())
 					}))
 					return
 				}
@@ -73,20 +97,21 @@ module.exports = (()=>{
 						client.ws.send(JSON.stringify({
 							clientId: parsed.clientId,
 							success: true,
-							data: result
+							data: JSON.stringify(result)
 						}))
 					}).catch((err)=>{
+						_handleError(client, err)
 						client.ws.send(JSON.stringify({
 							clientId: parsed.clientId,
 							success: false,
-							data: err
+							data: JSON.stringify(err)
 						}))
 					})
 				} else {
 					client.ws.send(JSON.stringify({
 						clientId: parsed.clientId,
 						success: true,
-						data: undefined
+						data: JSON.stringify(undefined)
 					}))
 				}
 
@@ -126,7 +151,7 @@ module.exports = (()=>{
 		messageCallback = callback
 	}
 
-	function send(client, data){
+	function _send(client, data){
 		return new Promise((fulfill, reject)=>{
 			let validClient = false
 			for(let c of clients){
@@ -149,7 +174,7 @@ module.exports = (()=>{
 
 			client.ws.send(JSON.stringify({
 				serverId: myMessageId,
-				data: data
+				data: JSON.stringify(data)
 			}))
 		})
 	}
@@ -157,6 +182,8 @@ module.exports = (()=>{
 	return {
 		addClient: addClient,
 		setMessageCallback: setMessageCallback,
-		send: send
+		sendToClient: sendToClient,
+		sendToClientToken: sendToClientToken,
+		sendToAllClients: sendToAllClients
 	}
 })()
