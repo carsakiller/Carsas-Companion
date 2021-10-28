@@ -5,12 +5,12 @@ const PORT = 3000
 var expressWs = require('express-ws')(app)
 
 app.listen(PORT, () => {
-  console.log(`C2 - Companion listening at http://localhost:${PORT}`)
+  console.log(`C2WebService listening at http://localhost:${PORT}`)
 })
 
 const path = require('path')
 const handlebars = require('express-handlebars')
-const logger = require('morgan')
+const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const express_json = require('express-json')
@@ -91,7 +91,7 @@ app.engine('handlebars', handlebars({defaultLayout: 'default', helpers: require(
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
-app.use(logger('dev'))
+app.use(morgan('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())

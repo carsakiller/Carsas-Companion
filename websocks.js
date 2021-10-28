@@ -50,7 +50,7 @@ module.exports = (()=>{
 				// message from the client
 
 				if(typeof messageCallback !== 'function'){
-					console.error('WebSocks received a message but no messageCallback was set')
+					console.error('\x1b[31mWebSocks received a message but no messageCallback was set\x1b[37m')
 					return
 				}
 
@@ -100,11 +100,11 @@ module.exports = (()=>{
 	}
 
 	function _handleError(client, err){
-		console.error('WebSocks Error: client #', client.id, client.req.ip, err)
+		console.error('WebSocks \x1b[31mError\x1b[37m: client #', client.id, client.req.ip, err)
 	}
 
 	function _handleClose(client){
-		console.error('WebSocks client closed connection: client #', client.id, client.req.ip)
+		console.log('WebSocks client closed connection: client #', client.id, client.req.ip)
 	}
 
 	/* 

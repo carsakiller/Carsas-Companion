@@ -9,7 +9,7 @@ module.exports = (()=>{
 
 	function handleClientMessage(client, message){
 		return new Promise((fulfill, reject)=>{
-			console.log('c2 client message (', client.token, ')', message)
+			log('client message (', client.token, ')', message)
 
 			let parsed
 			try {
@@ -26,14 +26,14 @@ module.exports = (()=>{
 						requestType: 'rtt-response',
 						data: parsed.data
 					})).then((res)=>{
-						console.log('rtt-response success:', res)
+						log('rtt-response success:', res)
 					}).catch((err)=>{
-						console.warn('rtt-response unsuccessful:', err)
+						warn('rtt-response unsuccessful:', err)
 					})
 				}; break;
 
 				default: {
-					console.error('unsupported requestType by client', parsed.requestType)
+					error('unsupported requestType by client', parsed.requestType)
 					reject('unsupported requestType', parsed.requestType)
 				}
 			}
@@ -41,7 +41,11 @@ module.exports = (()=>{
 	}
 
 	function error(...args){
-		console.error.apply(null, ['C2Companion Error:'].concat(args))
+		console.error.apply(null, ['\x1b[34m[C2Companion] \x1b[31mError:\x1b[37m'].concat(args))
+	}
+
+	function log(...args){
+		console.log.apply(null, ['\x1b[34m[C2Companion]\x1b[37m'].concat(args))
 	}
 
 	return {
