@@ -13,34 +13,25 @@ module.exports = (()=>{
 		return new Promise((fulfill, reject)=>{
 			log('client message (', client.token, ')', message)
 
-			let parsed
-			try {
-				parsed = JSON.parse(message)
-			} catch (ex){
-				error('error parsing client message', ex)
-				reject('error parsing message: ' + ex)
-				return
-			}
-
-			switch(parsed.requestType){
+			switch(message.requestType){
 				case 'rtt': {
 					webSocks.sendToClient(client, {
 						requestType: 'rtt-response',
-						data: parsed.data
+						data: message.data
 					}).then((res)=>{
 						log('rtt-response success:', res)
 					}).catch((err)=>{
-						warn('rtt-response unsuccessful:', err)
+						log('rtt-response unsuccessful:', err)
 					})
 				}; break;
 
 				case 'sync-players': {
-					updateSyncedData('players', parsed.data)
+					updateSyncedData('players', message.data)
 				}; break;
 
 				default: {
-					error('unsupported requestType by client', parsed.requestType)
-					reject('unsupported requestType', parsed.requestType)
+					error('unsupported requestType by client', message.requestType)
+					reject('unsupported requestType', message.requestType)
 				}
 			}
 		})

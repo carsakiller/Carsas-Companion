@@ -21,28 +21,19 @@ let C2Web = (()=>{
 		log('is now closed')
 	})
 
-	ws.on('message', (data)=>{
+	ws.on('message', (message)=>{
 		return new Promise((fulfill, reject)=>{
-			log('received message', data)
+			log('received message', message)
 
-			let parsed
-			try {
-				parsed = JSON.parse(data)
-			} catch (ex){
-				error('error parsing message', ex)
-				reject('error parsing message: ' + ex)
-				return
-			}
-
-			switch(parsed.requestType){
+			switch(message.requestType){
 				case 'rtt-response': {
-					let rtt = new Date().getTime() - parsed.data
+					let rtt = new Date().getTime() - message.data
 					log('RoundTripTime:', rtt, 'ms')
 					fulfill(rtt + 'ms')
 				}; break;
 
 				default: {
-					reject('unsupported request type', parsed.requestType)
+					reject('unsupported request type', message.requestType)
 				}
 			}
 		})

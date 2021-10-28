@@ -82,7 +82,8 @@ module.exports = (()=>{
 				let promise
 
 				try {
-					promise = messageCallback(client, parsed.data)
+					let parsedInternalData = JSON.parse(parsed.data)
+					promise = messageCallback(client, parsedInternalData)
 				} catch (ex){
 					client.ws.send(JSON.stringify({
 						clientId: parsed.clientId,

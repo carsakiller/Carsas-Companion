@@ -79,7 +79,8 @@ class WebSock {
 					let promise
 
 					try {
-						promise = this._dispatch('message', parsed.data)
+						let parsedInternalData = JSON.parse(parsed.data)
+						promise = this._dispatch('message', parsedInternalData)
 					} catch (ex){
 						this.websocket.send(JSON.stringify({
 							serverId: parsed.serverId,
