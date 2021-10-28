@@ -9,6 +9,12 @@
 * version check with the script running in the game
 * detect game restart / script reload
 
+# Documentation (haha)
+
+## Workflow for data sync from browser to game:
+Component defines methods (e.g. a button that triggers revoking a rule from a player) which will be called on button press.
+The method then sends that command to the game, if game responds with success, wait until game syncs new player data (game triggers that by itself ^^ or do we do that from the website?)), if fails, do nothing and show error message.
+
 # Before going into production:
 * check app.js for necessary adjustments
 

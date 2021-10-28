@@ -38,8 +38,25 @@ module.exports = ((app)=>{
 			}; break;
 
 			default: {
-				error('unsupported type by client', message.type)
-				reject('unsupported type', message.type)
+
+				if(message.type.startsWith('command-')){
+					return new Promise((fulfill, reject)=>{
+						let commandname = message.type.substring('command-'.length)
+						log('(?)', 'executing command:', commandname)
+						C2GameInterface.sendCommand(commandname, message.data).then((res)=>{
+							log('command', commandname, 'success:', res)
+							fulfill(res)
+						}).catch((err)=>{
+							log('command', commandname, 'unsuccessful:', err)
+							reject(err)
+						})
+					})
+				} else {
+					error('unsupported type by client', message.type)
+					return new Promise((fulfill, reject)=>{
+						reject('unsupported type', message.type)
+					})
+				}
 			}
 		}
 	}

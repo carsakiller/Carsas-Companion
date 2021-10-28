@@ -70,6 +70,22 @@ let C2WebClient = (()=>{
 		})
 	})
 
+	function sendCommand(command, data){
+		return new Promise((fulfill, reject)=>{
+			log('sendCommand', command, data)
+			ws.send({
+				type: 'command-' + command,
+				data: data
+			}).then((res)=>{
+				log('received response for command', command, res)
+				fulfill(res)
+			}).catch((err)=>{
+				log('received error for command', command, err)
+				reject(err)
+			})
+		})
+	}
+
 	function setVueData(_vueData){
 		vueData = _vueData
 	}
@@ -78,11 +94,16 @@ let C2WebClient = (()=>{
 		console.log.apply(null, ['C2WebClient:'].concat(args))
 	}
 
+	function warn(...args){
+		console.warn.apply(null, ['C2WebClient Warn:'].concat(args))
+	}
+
 	function error(...args){
 		console.error.apply(null, ['C2WebClient Error:'].concat(args))
 	}
 
 	return {
+		sendCommand: sendCommand,
 		setVueData: setVueData
 	}
 })()

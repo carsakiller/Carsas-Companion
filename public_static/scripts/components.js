@@ -1,3 +1,56 @@
+/*
+
+	if you want to have a lockable component then do this:
+
+	Vue.component('my-lockable-component', {
+		template: `<div>
+			<lockable></lockable>
+			<span>Hello World</span>
+
+			<button v-on:click="lockComponent">lock</button>
+		</div>`,
+		mixins: [lockableComponent]
+	}
+})
+
+Now you can click the button and lock the component
+
+*/
+let lockableComponent = {
+	data: function(){
+		return {
+			isLocked: false
+		}
+	},
+	methods: {
+		lockComponent: function(){
+			this.isLocked = true
+		},
+		unlockComponent: function(){
+			this.isLocked = false
+		}
+	}
+}
+
+Vue.component('lockable', {
+	template: `<div class="lockable">
+		<div v-if="parentIsLocked" class="lock_overlay"></div>
+	</div>`,
+	methods: {
+		lockParent (){
+			this.$parent.isLocked = true
+		}
+	},
+	computed: {
+		parentIsLocked: function(){
+			return this.$parent.isLocked
+		}
+	},
+	mounted: function(){
+		this.$parent.$el.style = 'position: relative; background: red;'
+	}
+})
+
 
 Vue.component('tab-players', {
 	props: ['players'],
@@ -44,7 +97,7 @@ Vue.component('player', {
 		</div>
 
 		<div class="body" v-if="isExtended">
-			<player-role v-for="role in player.roles" v-bind:role="role" v-bind:key="role.id"></player-role>
+			<player-role v-for="role in player.roles" v-bind:role="role" v-bind:player="player" v-bind:key="role.id"></player-role>
 		</div>
 	</div>`,
 	methods: {
@@ -64,13 +117,37 @@ Vue.component('player-role', {
 			disabledClass: 'disabled'
 		}
 	},
-	props: ['role'],
+	props: ['role', 'player'],
 	template: `<div class="player_role" key="{{role.id}}" v-bind:class="role.isEnabled ? enabledClass : disabledClass">
+		<lockable/>
 		<span class="name">{{role.name}}</span>
 
-		<button class="small_button" v-if="role.isEnabled" v-on:click.stop="role.isEnabled = false"><span class="im im-minus"></span></button>
-		<button class="small_button" v-else v-on:click.stop="role.isEnabled = true"><span class="im im-plus"></span></button>
-	</div>`
+		<button class="small_button" v-if="role.isEnabled" v-on:click.stop="enableRole"><span class="im im-minus"></span></button>
+		<button class="small_button" v-else v-on:click.stop="disableRole"><span class="im im-plus"></span></button>
+	</div>`,
+	methods: {
+		enableRole () {
+			this.lockComponent()
+			C2WebClient.sendCommand('giveRole', [this.$store.userPeerId, this.player.id, this.role]).then((res)=>{
+				console.log('giveRole was successful', res)
+			}).catch((err)=>{
+				console.log('giveRole was error', err)
+			}).finally(()=>{
+				this.unlockComponent()
+			})
+		},
+		disableRole () {
+			this.lockComponent()
+			C2WebClient.sendCommand('revokeRole', [this.$store.userPeerId, this.player.id, this.role]).then((res)=>{
+				console.log('revokeRole was successful', res)
+			}).catch((err)=>{
+				console.log('revokeRole was error', err)
+			}).finally(()=>{
+				this.unlockComponent()
+			})
+		}
+	},
+	mixins: [lockableComponent]
 })
 
 

@@ -145,9 +145,9 @@ class WebSock {
 		}
 
 		this.websocket.onclose = (evt)=>{
-			for(let p of this.pendingMessages){
-				if(p){
-					p.reject('WebSocket Connection closed')
+			for(let pm of this.pendingMessages){
+				if(pm){
+					pm.reject('WebSocket Connection closed')
 				}
 			}
 			this.pendingMessages = []

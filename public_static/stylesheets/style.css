@@ -1836,6 +1836,16 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   margin-right: 1em;
 }
 
+/* line 172, ../../compass/sass/_components.scss */
+.lockable .lock_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #000a;
+}
+
 /* line 6, ../../compass/sass/style.scss */
 body {
   color: #f3f3f3;
