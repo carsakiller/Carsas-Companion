@@ -130,13 +130,13 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		switch(message.type){
 			case 'heartbeat': {
-				this.c2WebInterface.sendDataTo('all', 'alive').then((res)=>{
-					this.log('alive success:', res)
+				this.c2WebInterface.sendDataTo('all', 'heartbeat').then((res)=>{
+					this.log('heartbeat success:', res)
 				}).catch((err)=>{
-					this.log('alive unsuccessful:', err)
+					this.log('heartbeat unsuccessful:', err)
 				})
 
-				return 'good to know!'
+				return 'beat'
 			}; break;
 
 			case 'test-performance': {

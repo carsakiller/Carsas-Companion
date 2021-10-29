@@ -4,6 +4,11 @@ let C2WebClient = (()=>{
 
 	let vueData
 
+	/*
+		loglevels: 1 = error, 2 = warn, 3 = info, 4 = log
+	*/
+	const LOGLEVEL = 3
+
 	ws.on('open', ()=>{
 		log('is now open')
 
@@ -36,9 +41,18 @@ let C2WebClient = (()=>{
 
 	ws.on('message', (message)=>{
 		return new Promise((fulfill, reject)=>{
-			log('received message', message)
+			if(message.type === 'heartbeat'){
+				log('received message', message)
+			} else {
+				info('received message', message)
+			}
 
 			switch(message.type){
+				case 'heartbeat': {
+					//TODO
+					fulfill()
+				}; break;
+
 				case 'rtt-response': {
 					let rtt = new Date().getTime() - message.data
 					log('RoundTripTime:', rtt, 'ms')
@@ -51,11 +65,6 @@ let C2WebClient = (()=>{
 
 				case 'sync-players': {
 					store.dispatch('setPlayers', message.data)
-					fulfill()
-				}; break;
-
-				case 'alive': {
-					//TODO
 					fulfill()
 				}; break;
 
@@ -95,17 +104,35 @@ let C2WebClient = (()=>{
 		vueData = _vueData
 	}
 
-	function log(...args){
-		console.log.apply(null, ['C2WebClient:'].concat(args))
+	function error(...args){
+		if( LOGLEVEL < 1){
+			return
+		}
+		console.error.apply(null, ['C2WebClient Error:'].concat(args))
 	}
 
 	function warn(...args){
+		if( LOGLEVEL < 2){
+			return
+		}
 		console.warn.apply(null, ['C2WebClient Warn:'].concat(args))
 	}
 
-	function error(...args){
-		console.error.apply(null, ['C2WebClient Error:'].concat(args))
+	function info(...args){
+		if( LOGLEVEL < 3){
+			return
+		}
+		console.info.apply(null, ['C2WebClient:'].concat(args))
 	}
+
+	function log(...args){
+		if( LOGLEVEL < 4){
+			return
+		}
+		console.log.apply(null, ['C2WebClient:'].concat(args))
+	}
+
+	
 
 	return {
 		sendCommand: sendCommand,
