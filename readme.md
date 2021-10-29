@@ -42,7 +42,6 @@ The method then sends that command to the game, if game responds with success, w
 
 ## All
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
-* Implement log filter (so we can filter out heartbeats (both Lua and js). Maybe we can even filter out the raw packages (e.g. in gamehttphandler)
 * Module based approach: core features and then modules can register data, tabs, messages, commands, ... (e.g. the live module)
 
 ## Browser

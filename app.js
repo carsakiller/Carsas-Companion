@@ -92,7 +92,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
 app.use(morgan('dev', {
-  skip: function(req, res){ return req.originalUrl.startsWith('/static/')}// hide http request to static assets because the are just spamming!
+  skip: function(req, res){
+    if(req.originalUrl.startsWith('/static/')){// hide http request to static assets because the are just spamming!
+      return true
+    } else if (req.originalUrl.startsWith('/game-api')){// hide http requests from game, they are logged elsewhere
+      return true
+    }
+  }
 }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -115,7 +121,7 @@ function dontCacheThisRoute(req, res, next){
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2('log', app)
+c2 = new C2( 3 /* loglevel "info" */, app)
 
 app.get('/c2', (req, res, next)=>{
   res.render('c2');

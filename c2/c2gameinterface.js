@@ -12,14 +12,14 @@ module.exports = class C2GameInterface extends C2Interface {
 	constructor(loglevel,app){
 		super(loglevel)
 
-		this.c2GameHttpHandler = new C2GameHttpHandler()
+		this.c2GameHttpHandler = new C2GameHttpHandler(loglevel)
 
 		app.use('/game-api', (req, res)=>{
 			this.c2GameHttpHandler.onGameHTTP(req,res)
 		});
 
 		this.c2GameHttpHandler.setMessageCallback((message)=>{
-			this.info('<- ', 'got game message', message)
+			this.info('<- ', 'got game message', message.type)
 			let promise = this.dispatch('message', message)
 
 			if(promise instanceof Promise){
@@ -33,7 +33,8 @@ module.exports = class C2GameInterface extends C2Interface {
 	}
 	
 	sendCommand(command, data){
-		this.info(' ->', 'sending command', command, data)
+		this.info(' ->', 'sending command', command)
+		this.log(data)
 		return new Promise((fulfill, reject)=>{
 			this.c2GameHttpHandler.sendCommandToGame(command, data).then((res)=>{
 				this.info('received result from command ', command, res)

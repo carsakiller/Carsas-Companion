@@ -1,18 +1,11 @@
 let mixin_LoggingUtility = Base => class extends Base {
 
 	/*
-		loglevels: error, warn, info, log
+		loglevels: 1 = error, 2 = warn, 3 = info, 4 = log
 	*/
 
 	constructor(loglevel){
 		super()
-
-		this.LOGLEVEL = {		
-			log: 4,
-			info: 3,
-			warn: 2,
-			error: 1
-		}
 
 		this.CONSOLE_COLORS = {
 			'Reset': '[0m',
@@ -46,7 +39,10 @@ let mixin_LoggingUtility = Base => class extends Base {
 			this.CONSOLE_COLORS[key] = '\x1b' + this.CONSOLE_COLORS[key]
 		}
 
-		this.loglevel = typeof loglevel === 'string' ? this.LOGLEVEL[loglevel.toLowerCase()] | this.LOGLEVEL.log : this.LOGLEVEL.log
+		this.loglevel = 4
+		let loglevelValue = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
+		this.log("loglevel", loglevelValue)
+		this.loglevel =loglevelValue
 	}
 
 	colorizeConsole(text, color){
@@ -54,7 +50,7 @@ let mixin_LoggingUtility = Base => class extends Base {
 	}
 
 	error(...args){
-		if(this.loglevel < this.LOGLEVEL.error){
+		if(this.loglevel < 1){
 			return
 		}
 		console.error.apply(null, [
@@ -62,12 +58,12 @@ let mixin_LoggingUtility = Base => class extends Base {
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
-			+ this.colorizeConsole('Error:', 'FgRed')
+			+ this.colorizeConsole('Error', 'FgRed')
 		].concat(args))
 	}
 
 	warn(...args){
-		if(this.loglevel < this.LOGLEVEL.warn){
+		if(this.loglevel < 2){
 			return
 		}
 		console.error.apply(null, [
@@ -75,12 +71,12 @@ let mixin_LoggingUtility = Base => class extends Base {
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
-			+ this.colorizeConsole('Warning:', 'FgYellow')
+			+ this.colorizeConsole('Warning', 'FgYellow')
 		].concat(args))
 	}
 
 	info(...args){
-		if(this.loglevel < this.LOGLEVEL.info){
+		if(this.loglevel < 3){
 			return
 		}
 		console.error.apply(null, [
@@ -88,12 +84,12 @@ let mixin_LoggingUtility = Base => class extends Base {
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
-			+ this.colorizeConsole('Info:', 'FgMagenta')
+			+ this.colorizeConsole('Info', 'FgMagenta')
 		].concat(args))
 	}
 
 	log(...args){
-		if(this.loglevel < this.LOGLEVEL.log){
+		if(this.loglevel < 4){
 			return
 		}
 		console.error.apply(null, [
@@ -148,8 +144,8 @@ class C2BaseClass {
 
 
 class C2LoggingUtility extends mixin_LoggingUtility(C2BaseClass) {
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 	}
 }
 
@@ -162,8 +158,8 @@ class C2EventManager extends mixin_EventManager(C2BaseClass) {
 
 class C2Handler extends mixin_LoggingUtility(C2BaseClass) {
 
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 
 		this.messageCallback = undefined
 	}
@@ -183,8 +179,8 @@ let mixin_C2LoggingUtility = Base => class extends Base{
 
 class C2Interface extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
 
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 	}
 }
 

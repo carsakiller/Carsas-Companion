@@ -284,7 +284,8 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		}
 
 		if(toSend){
-			this.info(' ->', 'transmitting command to game', toSend)
+			this.info(' ->', 'transmitting command to game')
+			this.log(toSend)
 		}
 
 		return toSend;

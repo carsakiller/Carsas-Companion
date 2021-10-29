@@ -11,14 +11,15 @@ module.exports = class C2WebInterface extends C2Interface {
 	constructor(loglevel, app){
 		super(loglevel)
 
-		this.c2WebSocketHandler = new C2WebSocketHandler()
+		this.c2WebSocketHandler = new C2WebSocketHandler(loglevel)
 
 		app.ws('/ws', (ws, req) => {
 		 	this.c2WebSocketHandler.addClient(ws, req)
 		});
 
 		this.c2WebSocketHandler.setMessageCallback((client, message)=>{
-			this.info('<- ', 'got web client message #' + client.id, message)
+			this.info('<- ', 'got web client message #' + client.id)
+			this.log(message)
 			let promise = this.dispatch('message', client, message)
 
 			if(promise instanceof Promise){
@@ -35,7 +36,8 @@ module.exports = class C2WebInterface extends C2Interface {
 		@clientOrClients: 'all' or a clientToken 'XYZ' or an array of clientTokens ['XYZ', 'abc']
 	*/
 	sendDataTo(clientOrClients, datatype, data){
-		this.info(' ->', 'sending data to', clientOrClients, datatype, data)
+		this.info(' ->', 'sending data to', clientOrClients, datatype)
+		this.log(data)
 		const dataToSend = {
 			type: datatype,
 			data: data

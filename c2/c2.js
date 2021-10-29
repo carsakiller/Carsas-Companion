@@ -8,27 +8,28 @@ module.exports = class C2 extends C2LoggingUtility {
 	constructor(loglevel, app){
 		super(loglevel)
 
-		this.c2GameInterface = new C2GameInterface(loglevel, app)
-		this.c2WebInterface = new C2WebInterface(loglevel, app)
+		this.c2GameInterface = new C2GameInterface(loglevel - 1, app)
+		this.c2WebInterface = new C2WebInterface(loglevel - 1, app)
 
 		this.syncedData = {}
 
-		if(true){
+		// TESTS
+		if(false){
 			setTimeout(()=>{
 				this.c2WebInterface.sendDataTo('all', 'test-timeout', '').then((res)=>{
-					this.log('webclients test-timeout: success', res)
+					this.info('webclients test-timeout: success', res)
 				}).catch((err)=>{
-					this.log('webclients test-timeout: unsuccessful', err)
+					this.info('webclients test-timeout: unsuccessful', err)
 				})
 			}, 5000)
 		}
 
-		if(true){
+		if(false){
 			setTimeout(()=>{
 				this.c2GameInterface.sendCommand('test-timeout', '').then((res)=>{
-					this.log('game test-timeout: success', res)
+					this.info('game test-timeout: success', res)
 				}).catch((err)=>{
-					this.log('game test-timeout: unsuccessful', err)
+					this.info('game test-timeout: unsuccessful', err)
 				})
 			}, 5000)
 		}
@@ -71,7 +72,7 @@ module.exports = class C2 extends C2LoggingUtility {
 	}
 
 	handleWebClientMessage(client, message){
-		this.log('handleWebClientMessage', client.token, message.type)
+		this.info('handleWebClientMessage', client.token, message.type)
 
 		switch(message.type){
 			case 'rtt': {
@@ -121,7 +122,11 @@ module.exports = class C2 extends C2LoggingUtility {
 	}
 
 	handleGameMessage(message){
-		this.log('handleGameMessage', message.type)
+		if(message.type === 'heartbeat'){
+			this.log('handleGameMessage', message.type)
+		} else {
+			this.info('handleGameMessage', message.type)
+		}
 
 		switch(message.type){
 			case 'heartbeat': {

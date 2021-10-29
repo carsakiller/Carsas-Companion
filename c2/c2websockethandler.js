@@ -67,7 +67,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 
 		ws.on('close', ()=>{this.handleClose(client)})
 
-		this.log('new client #' + client.id, '@', req.ip)
+		this.info('new client #' + client.id, '@', req.ip)
 	}
 
 	sendToClient(client, data){
@@ -152,7 +152,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 				}
 
 				function answer(success, result){
-					that.log('responding to message from client', parsed.clientId, success, result)
+					that.info('responding to message from client', parsed.clientId)
+					that.log(success, result)
 					client.ws.send(JSON.stringify({
 						clientId: parsed.clientId,
 						success: success,
@@ -199,7 +200,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 				timeSent: new Date().getTime()
 			})
 
-			this.info(' ->', 'sending data to', client.id, data)
+			this.info(' ->', 'sending data to', client.id)
+			this.log(data)
 
 			client.ws.send(JSON.stringify({
 				serverId: myMessageId,
