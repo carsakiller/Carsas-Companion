@@ -5,11 +5,11 @@ const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
 
 module.exports = class C2 extends C2LoggingUtility {
 
-	constructor(app){
-		super()
+	constructor(loglevel, app){
+		super(loglevel)
 
-		this.c2GameInterface = new C2GameInterface(app)
-		this.c2WebInterface = new C2WebInterface(app)
+		this.c2GameInterface = new C2GameInterface(loglevel, app)
+		this.c2WebInterface = new C2WebInterface(loglevel, app)
 
 		this.syncedData = {}
 

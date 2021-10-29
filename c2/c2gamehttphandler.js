@@ -2,8 +2,8 @@ const C2Handler = require('./c2utility.js').C2Handler
 
 module.exports = class C2GameHttpHandler extends C2Handler {
 
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 
 		this.commandIdCounter = 0;
 		this.commandsToTransferToGame = []
@@ -227,6 +227,8 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	handleMessage(messageType, parsedContent){		
 		return new Promise((fulfill, reject)=>{
 
+			this.info('handleMessage', messageType)
+
 			if(typeof this.messageCallback === 'function'){
 				let promise = this.messageCallback({
 					type: messageType,
@@ -251,6 +253,8 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	}
 
 	handleCommandResponse(commandId, content){
+
+		this.info('handleCommandResponse', commandId)
 
 		for(let i in this.pendingCommandResponses){
 			let p = this.pendingCommandResponses[i];
@@ -280,7 +284,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		}
 
 		if(toSend){
-			this.log(' ->', 'transmitting command to game', toSend)
+			this.info(' ->', 'transmitting command to game', toSend)
 		}
 
 		return toSend;

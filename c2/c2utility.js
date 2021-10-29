@@ -1,22 +1,106 @@
 let mixin_LoggingUtility = Base => class extends Base {
-	constructor(){
+
+	/*
+		loglevels: error, warn, info, log
+	*/
+
+	constructor(loglevel){
 		super()
+
+		this.LOGLEVEL = {		
+			log: 4,
+			info: 3,
+			warn: 2,
+			error: 1
+		}
+
+		this.CONSOLE_COLORS = {
+			'Reset': '[0m',
+			'Bright': '[1m',
+			'Dim': '[2m',
+			'Underscore': '[4m',
+			'Blink': '[5m',
+			'Reverse': '[7m',
+			'Hidden': '[8m',
+
+			'FgBlack': '[30m',
+			'FgRed': '[31m',
+			'FgGreen': '[32m',
+			'FgYellow': '[33m',
+			'FgBlue': '[34m',
+			'FgMagenta': '[35m',
+			'FgCyan': '[36m',
+			'FgWhite': '[37m',
+
+			'BgBlack': '[40m',
+			'BgRed': '[41m',
+			'BgGreen': '[42m',
+			'BgYellow': '[43m',
+			'BgBlue': '[44m',
+			'BgMagenta': '[45m',
+			'BgCyan': '[46m',
+			'BgWhite': '[47m',
+		}
+
+		for(let key of Object.keys(this.CONSOLE_COLORS)){
+			this.CONSOLE_COLORS[key] = '\x1b' + this.CONSOLE_COLORS[key]
+		}
+
+		this.loglevel = typeof loglevel === 'string' ? this.LOGLEVEL[loglevel.toLowerCase()] | this.LOGLEVEL.log : this.LOGLEVEL.log
+	}
+
+	colorizeConsole(text, color){
+		return this.CONSOLE_COLORS[color] + text + this.CONSOLE_COLORS.Reset
 	}
 
 	error(...args){
-		console.error.apply(null, ['\x1b[34m[' + this.constructor.name + '] \x1b[31mError:\x1b[37m'].concat(args))
+		if(this.loglevel < this.LOGLEVEL.error){
+			return
+		}
+		console.error.apply(null, [
+			this.colorizeConsole('-{', 'FgBlue')
+			+ this.constructor.name
+			+ this.colorizeConsole('}-', 'FgBlue')
+			+ ' '
+			+ this.colorizeConsole('Error:', 'FgRed')
+		].concat(args))
 	}
 
 	warn(...args){
-		console.warn.apply(null, ['\x1b[34m[' + this.constructor.name + '] \x1b[33mWarning:\x1b[37m'].concat(args))
+		if(this.loglevel < this.LOGLEVEL.warn){
+			return
+		}
+		console.error.apply(null, [
+			this.colorizeConsole('-{', 'FgBlue')
+			+ this.constructor.name
+			+ this.colorizeConsole('}-', 'FgBlue')
+			+ ' '
+			+ this.colorizeConsole('Warning:', 'FgYellow')
+		].concat(args))
 	}
 
 	info(...args){
-		console.info.apply(null, ['\x1b[34m[' + this.constructor.name + '] \x1b[35mInfo:\x1b[37m'].concat(args))
+		if(this.loglevel < this.LOGLEVEL.info){
+			return
+		}
+		console.error.apply(null, [
+			this.colorizeConsole('-{', 'FgBlue')
+			+ this.constructor.name
+			+ this.colorizeConsole('}-', 'FgBlue')
+			+ ' '
+			+ this.colorizeConsole('Info:', 'FgMagenta')
+		].concat(args))
 	}
 
 	log(...args){
-		console.log.apply(null, ['\x1b[34m[' + this.constructor.name + ']\x1b[37m'].concat(args))
+		if(this.loglevel < this.LOGLEVEL.log){
+			return
+		}
+		console.error.apply(null, [
+			this.colorizeConsole('-{', 'FgBlue')
+			+ this.constructor.name
+			+ this.colorizeConsole('}-', 'FgBlue')
+		].concat(args))
 	}
 }
 

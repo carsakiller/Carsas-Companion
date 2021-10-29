@@ -9,8 +9,8 @@ module.exports = class C2GameInterface extends C2Interface {
 		(only the first registered callback can respond to a message, either by returing a promise in the callback (which will be fulfilled/rejected later) or by returning the data directly from the callback)
 	*/
 
-	constructor(app){
-		super()
+	constructor(loglevel,app){
+		super(loglevel)
 
 		this.c2GameHttpHandler = new C2GameHttpHandler()
 
@@ -19,7 +19,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		});
 
 		this.c2GameHttpHandler.setMessageCallback((message)=>{
-			this.log('<- ', 'got game message', message)
+			this.info('<- ', 'got game message', message)
 			let promise = this.dispatch('message', message)
 
 			if(promise instanceof Promise){
@@ -33,10 +33,10 @@ module.exports = class C2GameInterface extends C2Interface {
 	}
 	
 	sendCommand(command, data){
-		this.log(' ->', 'sending command', command, data)
+		this.info(' ->', 'sending command', command, data)
 		return new Promise((fulfill, reject)=>{
 			this.c2GameHttpHandler.sendCommandToGame(command, data).then((res)=>{
-				this.log('received result from command ', command, res)
+				this.info('received result from command ', command, res)
 
 				fulfill(res)
 			}).catch((err)=>{

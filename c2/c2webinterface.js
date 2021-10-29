@@ -8,8 +8,8 @@ module.exports = class C2WebInterface extends C2Interface {
 		message (only the first registered callback can respond to an message, either by returing a promise in the callback (which will be fulfilled/rejected later) or by returning the data directly from the callback)
 	*/
 
-	constructor(app){
-		super()
+	constructor(loglevel, app){
+		super(loglevel)
 
 		this.c2WebSocketHandler = new C2WebSocketHandler()
 
@@ -18,7 +18,7 @@ module.exports = class C2WebInterface extends C2Interface {
 		});
 
 		this.c2WebSocketHandler.setMessageCallback((client, message)=>{
-			this.log('<- ', 'got web client message #' + client.id, message)
+			this.info('<- ', 'got web client message #' + client.id, message)
 			let promise = this.dispatch('message', client, message)
 
 			if(promise instanceof Promise){
@@ -35,7 +35,7 @@ module.exports = class C2WebInterface extends C2Interface {
 		@clientOrClients: 'all' or a clientToken 'XYZ' or an array of clientTokens ['XYZ', 'abc']
 	*/
 	sendDataTo(clientOrClients, datatype, data){
-		this.log(' ->', 'sending data to', clientOrClients, datatype, data)
+		this.info(' ->', 'sending data to', clientOrClients, datatype, data)
 		const dataToSend = {
 			type: datatype,
 			data: data

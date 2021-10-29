@@ -91,7 +91,9 @@ app.engine('handlebars', handlebars({defaultLayout: 'default', helpers: require(
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
-app.use(morgan('dev'))
+app.use(morgan('dev', {
+  skip: function(req, res){ return req.originalUrl.startsWith('/static/')}// hide http request to static assets because the are just spamming!
+}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -113,7 +115,7 @@ function dontCacheThisRoute(req, res, next){
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2(app)
+c2 = new C2('log', app)
 
 app.get('/c2', (req, res, next)=>{
   res.render('c2');

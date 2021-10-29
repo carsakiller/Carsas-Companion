@@ -15,8 +15,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		The promise is optional. If you don't return a promise, the client will be sent a sucess response once callback() finished execution
 	*/
 
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 
 		this.clientIdCounter = 0
 		this.clients = []
@@ -174,7 +174,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	}
 
 	handleClose(client){
-		this.log('client closed connection: client #', client.id, client.req.ip)
+		this.info('client closed connection: client #', client.id, client.req.ip)
 	}
 
 	send(client, data){
@@ -199,7 +199,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 				timeSent: new Date().getTime()
 			})
 
-			this.log(' ->', 'sending data to', client.id, data)
+			this.info(' ->', 'sending data to', client.id, data)
 
 			client.ws.send(JSON.stringify({
 				serverId: myMessageId,
