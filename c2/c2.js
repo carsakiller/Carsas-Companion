@@ -81,6 +81,8 @@ module.exports = ((app)=>{
 					let dataname = message.type.substring('sync-'.length)
 					log('(§)', 'syncing data with web clients:', dataname)
 					C2WebInterface.sendDataTo('all', message.type, message.data)
+
+					return 'ok'
 				} else {
 					error('unsupported type by game', message.type)
 					return 'unsupported type:' + message.type

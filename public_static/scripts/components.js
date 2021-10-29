@@ -19,34 +19,55 @@ Now you can click the button and lock the component
 let lockableComponent = {
 	data: function(){
 		return {
-			isLocked: false
+			isComponentLocked: false,
+			isUnlockComponentOnNextSync: false
 		}
 	},
 	methods: {
-		lockComponent: function(){
-			this.isLocked = true
+		lockComponent (){
+			this.isComponentLocked = true
 		},
-		unlockComponent: function(){
-			this.isLocked = false
+		lockComponentUntilSync (){
+			this.isComponentLocked = true
+			this.unlockComponentOnNextSync()
+		},
+		unlockComponent (){
+			this.isComponentLocked = false
+		},
+		unlockComponentOnNextSync (){
+			console.log('unlockComponentOnNextSync', this.$el)
+			this.isUnlockComponentOnNextSync = true
 		}
+	},
+	beforeUpdate (){
+		console.log('beforeUpdate', this.$el, this.isUnlockComponentOnNextSync, this.isComponentLocked)
+	},
+	updated (){
+		setTimeout(()=>{
+			console.log('updated', this.$el, this.isUnlockComponentOnNextSync, this.isComponentLocked)
+			if(this.isUnlockComponentOnNextSync){
+				this.isUnlockComponentOnNextSync = false
+				this.unlockComponent()
+			}
+		}, 1)
 	}
 }
 
 Vue.component('lockable', {
 	template: `<div class="lockable">
-		<div v-if="parentIsLocked" class="lock_overlay"></div>
+		<div v-if="parentIsComponentLocked" class="lock_overlay"></div>
 	</div>`,
 	methods: {
 		lockParent (){
-			this.$parent.isLocked = true
+			this.$parent.isComponentLocked = true
 		}
 	},
 	computed: {
-		parentIsLocked: function(){
-			return this.$parent.isLocked
+		parentIsComponentLocked (){
+			return this.$parent.isComponentLocked
 		}
 	},
-	mounted: function(){
+	mounted (){
 		this.$parent.$el.style = 'position: relative; background: red;'
 	}
 })
@@ -122,27 +143,25 @@ Vue.component('player-role', {
 		<lockable/>
 		<span class="name">{{role.name}}</span>
 
-		<button class="small_button" v-if="role.isEnabled" v-on:click.stop="enableRole"><span class="im im-minus"></span></button>
-		<button class="small_button" v-else v-on:click.stop="disableRole"><span class="im im-plus"></span></button>
+		<button class="small_button" v-if="role.isEnabled" v-on:click.stop="revokeRole"><span class="im im-minus"></span></button>
+		<button class="small_button" v-else v-on:click.stop="giveRole"><span class="im im-plus"></span></button>
 	</div>`,
 	methods: {
-		enableRole () {
-			this.lockComponent()
-			C2WebClient.sendCommand('giveRole', [this.$store.userPeerId, this.player.id, this.role]).then((res)=>{
+		giveRole () {
+			this.lockComponentUntilSync()
+			C2WebClient.sendCommand('giveRole', [this.$store.state.userPeerId, this.player.id, this.role.name]).then((res)=>{
 				console.log('giveRole was successful', res)
 			}).catch((err)=>{
 				console.log('giveRole was error', err)
-			}).finally(()=>{
 				this.unlockComponent()
 			})
 		},
-		disableRole () {
-			this.lockComponent()
-			C2WebClient.sendCommand('revokeRole', [this.$store.userPeerId, this.player.id, this.role]).then((res)=>{
+		revokeRole () {
+			this.lockComponentUntilSync()
+			C2WebClient.sendCommand('revokeRole', [this.$store.state.userPeerId, this.player.id, this.role.name]).then((res)=>{
 				console.log('revokeRole was successful', res)
 			}).catch((err)=>{
 				console.log('revokeRole was error', err)
-			}).finally(()=>{
 				this.unlockComponent()
 			})
 		}

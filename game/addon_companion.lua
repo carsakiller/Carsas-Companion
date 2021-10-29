@@ -11,10 +11,74 @@ function onTick()
 
 		server.announce("----", "-------\n")
 
-		registerSyncableData("players", function() return g_players end)
+		registerSyncableData("players", function() return {{
+			id = 1,
+			name = "Pony",
+			steamid = "x64",
+			roles = {{
+				id = 0,
+				name = 'Owner',
+				isEnabled = true
+			},{
+				id = 1,
+				name = 'Admin',
+				isEnabled = true
+			}}
+		},{
+			id = 2,
+			name = "FakeData",
+			steamid = "x32",
+			roles = {{
+				id = 0,
+				name = 'owner',
+				isEnabled = true
+			},{
+				id = 1,
+				name = 'admin',
+				isEnabled = true
+			}}
+		}} end)
 		
 		registerWebServerCommandCallback("test", function(command, content)
 			server.announce("received command test: " .. content)
+			
+			return "ok"
+		end)
+		
+		registerWebServerCommandCallback("giveRole", function(command, content)
+			if not (type(content[1]) == "number") then
+				return "caller_id must be a number"
+			end
+			
+			if not (type(content[2]) == "number") then
+				return "player_id must be a number"
+			end
+			
+			if not (type(content[3]) == "string") then
+				return "role must be a string"
+			end
+			
+			server.announce("executing command", "?giveRole " .. tableJoin(content, " "))
+			syncSyncableData("players")
+			
+			return "ok"
+		end)
+		
+		registerWebServerCommandCallback("revokeRole", function(command, content)
+			if not (type(content[1]) == "number") then
+				return "caller_id must be a number"
+			end
+			
+			if not (type(content[2]) == "number") then
+				return "player_id must be a number"
+			end
+			
+			if not (type(content[3]) == "string") then
+				return "role must be a string"
+			end
+			
+			server.announce("executing command", "?revokeRole " .. tableJoin(content, " "))
+			syncSyncableData("players")
 			
 			return "ok"
 		end)
@@ -35,6 +99,15 @@ function onCustomCommand(full_message, user_peer_id, is_admin, is_auth, command,
 	
 		syncSyncableData("players")
 	end
+end
+
+
+function tableJoin(t, sep)
+	local ret = ""
+	for i,v in ipairs(t) do
+		ret = ret .. v .. (i < #t and sep or "")
+	end	
+	return ret
 end
 
 
@@ -164,6 +237,7 @@ function registerWebServerCommandCallback(commandname, callback)
 		return error("@registerWebServerCommandCallback: callback must be a function")
 	end
 	webServerCommandCallbacks[commandname] = callback
+	debug("registered command callback '" .. commandname .. "'")
 end
 
 local tickCallCounter = 0
@@ -221,14 +295,16 @@ function httpReply(port, url, response_body)
 		c2HasMoreCommands = parsed.hasMoreCommands == true
 		
 		if parsed.command then
-			debug("received command from server: " .. parsed.command)
-			
-			if webServerCommandCallbacks[parsed.command] then
+			debug("received command from server: '" .. parsed.command .. "', " .. json.stringify(parsed.commandContent or "nil"))
+		
+			if type(webServerCommandCallbacks[parsed.command]) == "function" then
 				local result = webServerCommandCallbacks[parsed.command](parsed.command, parsed.commandContent)
 				
 				sendToServer("command-response", result, {commandId = parsed.commandId})
 			else
-				return error("no callback was registered for the command: " .. parsed.command)
+				error("no callback was registered for the command: '" .. parsed.command .. "'")
+				
+				sendToServer("command-response", "no callback was registered for the command: '" .. parsed.command .. "'", {commandId = parsed.commandId})
 			end
 		end
 	end

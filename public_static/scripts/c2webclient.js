@@ -46,8 +46,7 @@ let C2WebClient = (()=>{
 				}; break;
 
 				case 'sync-players': {
-					//TODO: now update vueData
-					vueData['players'] = message.data
+					store.dispatch('setPlayers', message.data)
 				}; break;
 
 				case 'alive': {

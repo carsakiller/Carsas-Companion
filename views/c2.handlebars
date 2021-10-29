@@ -24,6 +24,7 @@
 
 	const store = new Vuex.Store({
 		state: {
+			userPeerId: 0,//TODO: get this thing from the login token
 			tabs: [{
 				id: "players",
 				name: "Players",
@@ -42,11 +43,11 @@
 				steamid: "x64",
 				roles: [{
 					id: 0,
-					name: 'owner',
+					name: 'Owner',
 					isEnabled: false
 				},{
 					id: 1,
-					name: 'admin',
+					name: 'Admin',
 					isEnabled: true
 				}]
 			},{
@@ -79,7 +80,18 @@
 			userPeerId () {
 				//TODO we need to calculate this with the help of the token the user uses to "login" to this page
 			}
+		},
+		mutations: {
+			setPlayers (state, players){
+				state.players = players
+			}
+		},
+		actions: {
+			setPlayers ({ commit }, players){
+				commit('setPlayers', players)
+			}
 		}
+
 	})
 
 	let vm = new Vue({
