@@ -7,7 +7,6 @@
 # TODO
 * version check with the script running in the game
 * detect game restart / script reload
-* make requests (e.g. for command) be able to run into a timeout
 * implement auto reloading or at least websocket reconnecting for the browser
 * lua script:
   for every command, create a field "onChangeSync" = "players"
