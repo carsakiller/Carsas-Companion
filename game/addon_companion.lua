@@ -91,8 +91,8 @@ function onTick()
 		debug("starting performance test...")
 		testRun = false
 		
-		local messageSize = 10000
-		local amountOfMessages = 100
+		local messageSize = 5000
+		local amountOfMessages = 5
 		
 		local beginTick = ticks
 		

@@ -1,31 +1,40 @@
-module.exports = (()=>{
+const C2Handler = require('./c2utility.js').C2Handler
 
-	let commandIdCounter = 0;
-	let commandsToTransferToGame = []
-	let pendingCommandResponses = []
+module.exports = class C2GameHttpHandler extends C2Handler {
 
-	let messageCallback
+	constructor(){
+		super()
 
-	let ongoingMessageTransfers = {};
+		this.commandIdCounter = 0;
+		this.commandsToTransferToGame = []
+		this.pendingCommandResponses = []
 
-	let lastPacketTimes = [] // just for debugging reason
-	let lastPacketTimesMaxEntries = 100
+		this.messageCallback = undefined
 
-	setInterval(()=>{
-		if(lastPacketTimes.length > 1){
-			let timeTotal = lastPacketTimes[0] - lastPacketTimes[lastPacketTimes.length - 1]
-			let averageTimeBetweenPackets = timeTotal / lastPacketTimes.length
-			info('Average averageTimeBetweenPackets:', averageTimeBetweenPackets, timeTotal, lastPacketTimes.length)
-			let averagePacketsPerSecond = 1000 / averageTimeBetweenPackets
-			info('Average received packets per second:', Math.floor(averagePacketsPerSecond * 10) / 10)
-		}
-	}, 1000 * 5)
+		this.ongoingMessageTransfers = {}
 
-	function onGameHTTP(req, res){
+		this.lastPacketTimes = [] // just for debugging reason
+		this.lastPacketTimesMaxEntries = 100
+
+
+		setInterval(()=>{
+			if(this.lastPacketTimes.length > 1){
+				let timeTotal = this.lastPacketTimes[0] - this.lastPacketTimes[this.lastPacketTimes.length - 1]
+				let averageTimeBetweenPackets = timeTotal / this.lastPacketTimes.length
+				this.info('Average averageTimeBetweenPackets:', averageTimeBetweenPackets, timeTotal, this.lastPacketTimes.length)
+				let averagePacketsPerSecond = 1000 / averageTimeBetweenPackets
+				this.info('Average received packets per second:', Math.floor(averagePacketsPerSecond * 10) / 10)
+			}
+		}, 1000 * 5)
+	}
+
+	onGameHTTP(req, res){
 		try {
-			lastPacketTimes.splice(0, 0, new Date().getTime())
-			if(lastPacketTimes.length > lastPacketTimesMaxEntries){
-				lastPacketTimes.pop()
+			let that = this
+
+			this.lastPacketTimes.splice(0, 0, new Date().getTime())
+			if(this.lastPacketTimes.length > this.lastPacketTimesMaxEntries){
+				this.lastPacketTimes.pop()
 			}
 
 			let data = req.query.data;
@@ -33,19 +42,19 @@ module.exports = (()=>{
 			try {
 				parsed = JSON.parse(data);
 			} catch (ex){
-				log('user json has bad format', data, ex)
+				this.log('user json has bad format', data, ex)
 				return res.json({
 					result: false
 				});
 			}
 
-			if(!ongoingMessageTransfers[parsed.packetId]){
-				ongoingMessageTransfers[parsed.packetId] = {}
+			if(!this.ongoingMessageTransfers[parsed.packetId]){
+				this.ongoingMessageTransfers[parsed.packetId] = {}
 			}
-			let omt = ongoingMessageTransfers[parsed.packetId]
+			let omt = this.ongoingMessageTransfers[parsed.packetId]
 
 			if(omt[parsed.packetPart]){
-				warn('packetPart count is duplicate, will corrupt existing packet parts!')
+				this.warn('packetPart count is duplicate, will corrupt existing packet parts!')
 			}
 			
 			omt[parsed.packetPart] = parsed.data;
@@ -67,13 +76,13 @@ module.exports = (()=>{
 				}
 			}
 
-			log('<- ', 'content part arrived #' + parsed.packetId + ':' + parsed.packetPart, 'of', maxPartsKnown ? omt.max : 'unknown')
+			this.log('<- ', 'content part arrived #' + parsed.packetId + ':' + parsed.packetPart, 'of', maxPartsKnown ? omt.max : 'unknown')
 
 			if(maxPartsKnown && allPartsArrived){//the signal, that this is the last part (yes we count upside down mate!)
-				log('final message part arrived for #' + parsed.packetId)
+				this.log('final message part arrived for #' + parsed.packetId)
 
 				if(!allPartsArrived){
-					warn('missing content part:', i)
+					this.warn('missing content part:', i)
 					return answer(false, 'missing content part')
 				}
 
@@ -85,14 +94,14 @@ module.exports = (()=>{
 					if(omt[i]){
 						content += omt[i]
 					} else {
-						warn('missing content part:', i)
+						this.warn('missing content part:', i)
 						return answer(false, 'missing content part')
 					}
 				}
 
-				delete ongoingMessageTransfers[parsed.packetId]
+				delete this.ongoingMessageTransfers[parsed.packetId]
 			
-				log('final message content (', content.length, ' chars)', content)
+				this.log('final message content (', content.length, ' chars)', content)
 
 				let parsedContent
 
@@ -102,27 +111,27 @@ module.exports = (()=>{
 					try {
 						parsedContent = JSON.parse(content)
 					} catch (ex){
-						log('error parsing content "' + content + '"', ex)
+						this.log('error parsing content "' + content + '"', ex)
 						answer(false, 'Error: check server logs')
 						return
 					}
 				}
 
 				if(parsed.type === 'command-response'){
-					let result = handleCommandResponse(parsed.commandId, parsedContent)
+					let result = this.handleCommandResponse(parsed.commandId, parsedContent)
 					if(result === undefined){
-						warn('you probably forgot to return "ok" or similar inside handleCommandResponse()!')
+						this.warn('you probably forgot to return "ok" or similar inside handleCommandResponse()!')
 					}
 					answer(result === 'ok', 'ok')
 				} else {
 
-					let promise = handleMessage(parsed.type, parsedContent)
+					let promise = this.handleMessage(parsed.type, parsedContent)
 
 					if(promise instanceof Promise){
 						promise.then((res)=>{
 							answer(true, res)
 						}).catch((err)=>{
-							error('error in callback promise', err)
+							this.error('error in callback promise', err)
 							answer(false, 'Error: check server logs')
 						})
 					} else {
@@ -132,13 +141,13 @@ module.exports = (()=>{
 					
 				}
 			} else {
-				log('waiting for remaining message parts', maxPartsKnown, allPartsArrived, omt)
-				 answer(true, undefined, true)
+				this.log('waiting for remaining message parts', maxPartsKnown, allPartsArrived, omt)
+				answer(true, undefined, true)
 			}
 
 			function answer(success, result, ignoreHasMoreCommands){
 
-				let nextCommand = getNextCommandToTransfer()
+				let nextCommand = that.getNextCommandToTransfer()
 
 				let resp = {
 					packetId: parsed.packetId,
@@ -153,8 +162,8 @@ module.exports = (()=>{
 			    	resp.commandContent = nextCommand.content;
 			    }
 
-			    if(ignoreHasMoreCommands !== true && pendingCommandResponses.length > 0){
-			    	log("pendingCommandResponses", pendingCommandResponses.length)
+			    if(ignoreHasMoreCommands !== true && that.pendingCommandResponses.length > 0){
+			    	that.log("pendingCommandResponses", that.pendingCommandResponses.length)
 			    	resp.hasMoreCommands = true
 			    }
 
@@ -162,7 +171,7 @@ module.exports = (()=>{
 			}
 
 		} catch (ex){
-			error(ex)
+			this.error(ex)
 			res.json({
 				success: false,
 				result: 'Error: check server logs'
@@ -170,16 +179,16 @@ module.exports = (()=>{
 		}
 	}
 
-	function sendCommandToGame(command, content, callback){
-		const myCommandId = commandIdCounter++;
+	sendCommandToGame(command, content, callback){
+		const myCommandId = this.commandIdCounter++;
 
-		commandsToTransferToGame.push({
+		this.commandsToTransferToGame.push({
 			id: myCommandId,
 			command: command,
 			content: content
 		})
 
-		pendingCommandResponses.push({
+		this.pendingCommandResponses.push({
 			id: myCommandId,
 			callback: callback,
 			timeScheduled: new Date().getTime(),
@@ -187,17 +196,17 @@ module.exports = (()=>{
 		})
 	}
 
-	function handleMessage(messageType, parsedContent){		
+	handleMessage(messageType, parsedContent){		
 		return new Promise((fulfill, reject)=>{
 
-			if(typeof messageCallback === 'function'){
-				let promise = messageCallback({
+			if(typeof this.messageCallback === 'function'){
+				let promise = this.messageCallback({
 					type: messageType,
 					data: parsedContent
 				})
 
 				if(promise instanceof Promise === false){
-					error('messageCallback must return a promise!')
+					this.error('messageCallback must return a promise!')
 					return reject('Error: check server logs')
 				} else {
 					promise.then((result)=>{
@@ -207,20 +216,20 @@ module.exports = (()=>{
 					})
 				}
 			} else {
-				warn('received game message but no messageCallback set')
+				this.warn('received game message but no messageCallback set')
 				reject('Error: check server logs')
 			}
 		})
 	}
 
-	function handleCommandResponse(commandId, content){
-		for(let i in pendingCommandResponses){
-			let p = pendingCommandResponses[i];
+	handleCommandResponse(commandId, content){
+		for(let i in this.pendingCommandResponses){
+			let p = this.pendingCommandResponses[i];
 
 			if(p.id === commandId){
-				log('CommandResponseTiming: ', p.timeSent - p.timeScheduled, 'ms until sent | ', new Date().getTime() - p.timeScheduled, 'ms until answered')
+				this.log('CommandResponseTiming: ', p.timeSent - p.timeScheduled, 'ms until sent | ', new Date().getTime() - p.timeScheduled, 'ms until answered')
 				
-				pendingCommandResponses.splice(i,1);
+				this.pendingCommandResponses.splice(i,1);
 
 				let ret
 				if(typeof p.callback === 'function'){
@@ -230,14 +239,14 @@ module.exports = (()=>{
 			}
 		}
 
-		warn('game sent a response for an unknown commandId', commandId, content)
+		this.warn('game sent a response for an unknown commandId', commandId, content)
 		return 'ok'
 	}
 
-	function getNextCommandToTransfer(){
-		let toSend = commandsToTransferToGame.splice(0, 1)[0];
+	getNextCommandToTransfer(){
+		let toSend = this.commandsToTransferToGame.splice(0, 1)[0];
 		if(toSend){
-			for(let p of pendingCommandResponses){
+			for(let p of this.pendingCommandResponses){
 				if(p && p.id === toSend.id){
 					p.timeSent = new Date().getTime();
 				}
@@ -245,7 +254,7 @@ module.exports = (()=>{
 		}
 
 		if(toSend){
-			log(' ->', 'transmitting command to game', toSend)
+			this.log(' ->', 'transmitting command to game', toSend)
 		}
 
 		return toSend;
@@ -263,33 +272,10 @@ module.exports = (()=>{
 
 		The promise is optional. If you don't return a promise, the client will be sent a sucess response once callback() finished execution
 	*/
-	function setMessageCallback(callback){
+	setMessageCallback(callback){
 		if(typeof callback !== 'function'){
-			error('callback must be a function')
+			this.error('callback must be a function')
 		}
-		messageCallback = callback
+		this.messageCallback = callback
 	}
-
-	function error(...args){
-		console.error.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[31mError:\x1b[37m'].concat(args))
-	}
-
-	function warn(...args){
-		console.warn.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[33mWarning:\x1b[37m'].concat(args))
-	}
-
-	function info(...args){
-		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
-	}
-
-	function log(...args){
-		console.log.apply(null, ['\x1b[34m[C2GameHTTPHandler]\x1b[37m'].concat(args))
-	}
-
-
-	return {
-		onGameHTTP: onGameHTTP,
-		setMessageCallback: setMessageCallback,
-		sendCommandToGame: sendCommandToGame
-	}
-})()
+}

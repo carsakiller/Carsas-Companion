@@ -1,53 +1,64 @@
-module.exports = ((app)=>{
+const C2GameInterface = require('./c2gameinterface.js')
+const C2WebInterface = require('./c2webinterface.js')
 
-	let C2WebInterface = require('./c2webinterface.js')(app)
+const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
 
-	let C2GameInterface = require('./c2gameinterface.js')(app)
+module.exports = class C2 extends C2LoggingUtility {
 
-	let syncedData = {}
+	constructor(app){
+		super()
 
+		this.c2GameInterface = new C2GameInterface(app)
+		this.c2WebInterface = new C2WebInterface(app)
 
-	if(false){
-		setTimeout(()=>{//test performance of http transmission
-			let messageSize = 10000
-			let amountOfMessages = 100
+		this.syncedData = {}
 
-			let message = ""
-			for(let i=0;i<messageSize;i++){
-				message += "Y"
-			}
+		if(true){
+			setTimeout(()=>{//test performance of http transmission
+				let messageSize = 4000
+				let amountOfMessages = 4
 
-			let beginTime = new Date().getTime()
+				let message = ""
+				for(let i=0;i<messageSize;i++){
+					message += "Y"
+				}
 
-			let promises = []
+				let beginTime = new Date().getTime()
 
-			for(let i=0; i<amountOfMessages; i++){
-				promises.push(C2GameInterface.sendCommand('test', message))
-			}
+				let promises = []
 
-			Promise.all(promises).then((res)=>{
-				let endTime = new Date().getTime()
+				for(let i=0; i<amountOfMessages; i++){
+					promises.push(this.c2GameInterface.sendCommand('test', message))
+				}
 
-				info('Performance Test Result: took', Math.floor((endTime - beginTime) / 100) / 10, 's for',amountOfMessages, 'messages with', messageSize, 'chars each') 
-			}).catch((err)=>{
-				error('Performance Test Failed:', err)
-			})
-		}, 1000)
+				Promise.all(promises).then((res)=>{
+					let endTime = new Date().getTime()
+
+					this.info('Performance Test Result: took', Math.floor((endTime - beginTime) / 100) / 10, 's for',amountOfMessages, 'messages with', messageSize, 'chars each') 
+				}).catch((err)=>{
+					this.error('Performance Test Failed:', err)
+				})
+			}, 1000)
+		}
+
+		this.c2WebInterface.on('message', (...args)=>{
+			this.handleWebClientMessage.apply(this, args)
+		})
+
+		this.c2GameInterface.on('message', (...args)=>{
+			this.handleGameMessage.apply(this, args)
+		})
 	}
 
-	C2WebInterface.on('message', handleWebClientMessage)
-
-	C2GameInterface.on('message', handleGameMessage)
-
-	function handleWebClientMessage(client, message){
-		log('handleWebClientMessage', client.token, message.type)
+	handleWebClientMessage(client, message){
+		this.log('handleWebClientMessage', client.token, message.type)
 
 		switch(message.type){
 			case 'rtt': {
-				C2WebInterface.sendDataTo(client.token, 'rtt-response', message.data).then((res)=>{
-					log('rtt-response success:', res)
+				this.c2WebInterface.sendDataTo(client.token, 'rtt-response', message.data).then((res)=>{
+					this.log('rtt-response success:', res)
 				}).catch((err)=>{
-					log('rtt-response unsuccessful:', err)
+					this.log('rtt-response unsuccessful:', err)
 				})
 
 				return message.data
@@ -55,11 +66,11 @@ module.exports = ((app)=>{
 
 			case 'test': {
 				return new Promise((fulfill, reject)=>{
-					C2GameInterface.sendCommand('test', message.data).then((res)=>{
-						log('test success:', res)
+					this.c2GameInterface.sendCommand('test', message.data).then((res)=>{
+						this.log('test success:', res)
 						fulfill(res)
 					}).catch((err)=>{
-						log('test unsuccessful:', err)
+						this.log('test unsuccessful:', err)
 						reject(err)
 					})			
 				})
@@ -70,17 +81,17 @@ module.exports = ((app)=>{
 				if(message.type.startsWith('command-')){
 					return new Promise((fulfill, reject)=>{
 						let commandname = message.type.substring('command-'.length)
-						log('(?)', 'executing command:', commandname)
-						C2GameInterface.sendCommand(commandname, message.data).then((res)=>{
-							log('command', commandname, 'success:', res)
+						this.log('(?)', 'executing command:', commandname)
+						this.c2GameInterface.sendCommand(commandname, message.data).then((res)=>{
+							this.log('command', commandname, 'success:', res)
 							fulfill(res)
 						}).catch((err)=>{
-							log('command', commandname, 'unsuccessful:', err)
+							this.log('command', commandname, 'unsuccessful:', err)
 							reject(err)
 						})
 					})
 				} else {
-					error('unsupported type by client', message.type)
+					this.error('unsupported type by client', message.type)
 					return new Promise((fulfill, reject)=>{
 						reject('unsupported type', message.type)
 					})
@@ -89,15 +100,15 @@ module.exports = ((app)=>{
 		}
 	}
 
-	function handleGameMessage(message){
-		log('handleGameMessage', message.type)
+	handleGameMessage(message){
+		this.log('handleGameMessage', message.type)
 
 		switch(message.type){
 			case 'heartbeat': {
-				C2WebInterface.sendDataTo('all', 'alive').then((res)=>{
-					log('alive success:', res)
+				this.c2WebInterface.sendDataTo('all', 'alive').then((res)=>{
+					this.log('alive success:', res)
 				}).catch((err)=>{
-					log('alive unsuccessful:', err)
+					this.log('alive unsuccessful:', err)
 				})
 
 				return 'good to know!'
@@ -111,35 +122,15 @@ module.exports = ((app)=>{
 
 				if(message.type.startsWith('sync-')){
 					let dataname = message.type.substring('sync-'.length)
-					log('(§)', 'syncing data with web clients:', dataname)
-					C2WebInterface.sendDataTo('all', message.type, message.data)
+					this.log('(§)', 'syncing data with web clients:', dataname)
+					this.c2WebInterface.sendDataTo('all', message.type, message.data)
 
 					return 'ok'
 				} else {
-					error('unsupported type by game', message.type)
+					this.error('unsupported type by game', message.type)
 					return 'unsupported type:' + message.type
 				}
 			}
 		}
 	}
-
-	function error(...args){
-		console.error.apply(null, ['\x1b[34m[C2] \x1b[31mError:\x1b[37m'].concat(args))
-	}
-
-	function warn(...args){
-		console.warn.apply(null, ['\x1b[34m[C2] \x1b[33mWarning:\x1b[37m'].concat(args))
-	}
-
-	function info(...args){
-		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
-	}
-
-	function log(...args){
-		console.log.apply(null, ['\x1b[34m[C2]\x1b[37m'].concat(args))
-	}
-
-	return {
-
-	}
-})
+}

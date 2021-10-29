@@ -111,7 +111,9 @@ function dontCacheThisRoute(req, res, next){
 
 
 
-c2 = require('./c2/c2.js')(app);
+let C2 = require('./c2/c2.js')
+
+c2 = new C2(app)
 
 app.get('/c2', (req, res, next)=>{
   res.render('c2');
