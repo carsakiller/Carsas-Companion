@@ -48,6 +48,11 @@ function onTick()
 			return "ok"
 		end)
 		
+		registerWebServerCommandCallback("test-timeout", function(command, content)
+			server.announce("", "please ignore next lua exception")
+			return nil + 1--force into a timeout
+		end)
+		
 		registerWebServerCommandCallback("giveRole", function(command, content)
 			if not (type(content[1]) == "number") then
 				return "caller_id must be a number"

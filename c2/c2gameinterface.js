@@ -35,16 +35,12 @@ module.exports = class C2GameInterface extends C2Interface {
 	sendCommand(command, data){
 		this.log(' ->', 'sending command', command, data)
 		return new Promise((fulfill, reject)=>{
-			this.c2GameHttpHandler.sendCommandToGame(command, data, (res)=>{
+			this.c2GameHttpHandler.sendCommandToGame(command, data).then((res)=>{
 				this.log('received result from command ', command, res)
 
-				if(res === 'ok'){
-					fulfill(res)
-				} else {
-					reject(res)
-				}
-
-				return 'ok'
+				fulfill(res)
+			}).catch((err)=>{
+				reject(err)
 			})
 		})
 	}

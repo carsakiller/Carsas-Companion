@@ -13,9 +13,29 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		this.syncedData = {}
 
+		if(true){
+			setTimeout(()=>{
+				this.c2WebInterface.sendDataTo('all', 'test-timeout', '').then((res)=>{
+					this.log('webclients test-timeout: success', res)
+				}).catch((err)=>{
+					this.log('webclients test-timeout: unsuccessful', err)
+				})
+			}, 5000)
+		}
+
+		if(true){
+			setTimeout(()=>{
+				this.c2GameInterface.sendCommand('test-timeout', '').then((res)=>{
+					this.log('game test-timeout: success', res)
+				}).catch((err)=>{
+					this.log('game test-timeout: unsuccessful', err)
+				})
+			}, 5000)
+		}
+
 		if(false){
 			setTimeout(()=>{//test performance of http transmission
-				let messageSize = 4000
+				let messageSize = 5000
 				let amountOfMessages = 4
 
 				let message = ""

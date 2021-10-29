@@ -22,15 +22,40 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		this.clients = []
 
 		this.messageIdCounter = 0
-		this.pendingMessages = []
+		this.pendingMessageResponses = []
+
+		this.PENDING_MESSAGE_RESPONSE_TIMEOUT = 1000 * 20
+
+		setInterval(()=>{
+			this.checkPendingMessageResponsesForTimeout()
+		}, 100)
+	}
+
+	checkPendingMessageResponsesForTimeout(){
+		for(let i in this.pendingMessageResponses){
+			let pm = this.pendingMessageResponses[i]
+
+			let timePassed = new Date().getTime() - pm.timeSent
+
+			if( timePassed > this.PENDING_MESSAGE_RESPONSE_TIMEOUT){
+				this.warn('pending message (', pm.id, ') response from webclient timed out after', this.PENDING_MESSAGE_RESPONSE_TIMEOUT, 'ms')
+				pm.reject({
+					success: false,
+					result: 'Timeout: WebClient not responding'
+				})
+
+				this.pendingMessageResponses.splice(i, 1)
+
+				break
+			}
+		}
 	}
 
 	addClient(ws, req){
 		let client = {
 			id: this.clientIdCounter++,
 			ws: ws,
-			req: req,
-			time: Date.now()
+			req: req
 		}
 
 		this.clients.push(client)
@@ -79,8 +104,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 
 			if(typeof parsed.serverId === 'number'){
 				// response to server message
-				for(let i in this.pendingMessages){
-					let pm = this.pendingMessages[i]
+				for(let i in this.pendingMessageResponses){
+					let pm = this.pendingMessageResponses[i]
 
 					if(pm.id === parsed.serverId){
 						if(parsed.success === true){
@@ -89,7 +114,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 							pm.reject(parsed.data)
 						}
 
-						this.pendingMessages.splice(i, 1)
+						this.pendingMessageResponses.splice(i, 1)
 
 						break
 					}
@@ -102,43 +127,37 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					return
 				}
 
-
 				let promise
+
+				let that = this
 
 				try {
 					let parsedInternalData = JSON.parse(parsed.data)
 					promise = this.messageCallback(client, parsedInternalData)
 				} catch (ex){
-					client.ws.send(JSON.stringify({
-						clientId: parsed.clientId,
-						success: false,
-						data: JSON.stringify(ex.toString())
-					}))
+					answer(false, ex.toString())
 					return
 				}
 
 				if(promise instanceof Promise === false){
 					this.error('messageCallback must return a promise!')
-					client.ws.send(JSON.stringify({
-						clientId: parsed.clientId,
-						success: false,
-						data: JSON.stringify('Error: check server logs')
-					}))
+					answer(false, 'Error: check server logs')
 				} else {
 					promise.then((result)=>{
-						client.ws.send(JSON.stringify({
-							clientId: parsed.clientId,
-							success: true,
-							data: JSON.stringify(result)
-						}))
+						answer(true, result)
 					}).catch((err)=>{
 						this.handleError(client, err)
-						client.ws.send(JSON.stringify({
-							clientId: parsed.clientId,
-							success: false,
-							data: JSON.stringify(err)
-						}))
+						answer(false, err)
 					})
+				}
+
+				function answer(success, result){
+					that.log('responding to message from client', parsed.clientId, success, result)
+					client.ws.send(JSON.stringify({
+						clientId: parsed.clientId,
+						success: success,
+						data: JSON.stringify(result)
+					}))
 				}
 
 			} else {
@@ -173,11 +192,14 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 
 			const myMessageId = this.messageIdCounter++
 
-			this.pendingMessages.push({
+			this.pendingMessageResponses.push({
 				id: myMessageId,
 				fulfill: fulfill,
-				reject: reject
+				reject: reject,
+				timeSent: new Date().getTime()
 			})
+
+			this.log(' ->', 'sending data to', client.id, data)
 
 			client.ws.send(JSON.stringify({
 				serverId: myMessageId,

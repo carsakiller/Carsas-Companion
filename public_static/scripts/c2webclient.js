@@ -45,12 +45,18 @@ let C2WebClient = (()=>{
 					fulfill(rtt + 'ms')
 				}; break;
 
+				case 'test-timeout': {
+					//ignore so it runs into a timeout
+				}; break;
+
 				case 'sync-players': {
 					store.dispatch('setPlayers', message.data)
+					fulfill()
 				}; break;
 
 				case 'alive': {
 					//TODO
+					fulfill()
 				}; break;
 
 				default: {

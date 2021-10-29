@@ -1,4 +1,4 @@
-const WebSocks = require('./c2websockethandler.js')
+const C2WebSocketHandler = require('./c2websockethandler.js')
 const C2Interface = require('./c2utility.js').C2Interface
 
 module.exports = class C2WebInterface extends C2Interface {
@@ -11,13 +11,13 @@ module.exports = class C2WebInterface extends C2Interface {
 	constructor(app){
 		super()
 
-		this.webSocks = new WebSocks()
+		this.c2WebSocketHandler = new C2WebSocketHandler()
 
 		app.ws('/ws', (ws, req) => {
-		 	this.webSocks.addClient(ws, req)
+		 	this.c2WebSocketHandler.addClient(ws, req)
 		});
 
-		this.webSocks.setMessageCallback((client, message)=>{
+		this.c2WebSocketHandler.setMessageCallback((client, message)=>{
 			this.log('<- ', 'got web client message #' + client.id, message)
 			let promise = this.dispatch('message', client, message)
 
@@ -42,15 +42,15 @@ module.exports = class C2WebInterface extends C2Interface {
 		}
 
 		if(clientOrClients === 'all'){
-			return this.webSocks.sendToAllClients(dataToSend)
+			return this.c2WebSocketHandler.sendToAllClients(dataToSend)
 		} else if(clientOrClients instanceof Array){
 			let promises = []
 			for(let cT of clientOrClients){
-				promises.push(this.webSocks.sendToClientToken(cT, dataToSend))
+				promises.push(this.c2WebSocketHandler.sendToClientToken(cT, dataToSend))
 			}
 			return Promise.all(promises)
 		} else if(typeof clientOrClients === 'string'){
-			return this.webSocks.sendToClientToken(clientOrClients, dataToSend)
+			return this.c2WebSocketHandler.sendToClientToken(clientOrClients, dataToSend)
 		} else {
 			this.error('unsupported clientOrClients type!')
 			return reject('unsupported clientOrClients type!')

@@ -5,10 +5,10 @@
 
 
 # TODO
-* check what the char limit for responses for server.httpGet() requests is!
 * version check with the script running in the game
 * detect game restart / script reload
 * make requests (e.g. for command) be able to run into a timeout
+* implement auto reloading or at least websocket reconnecting for the browser
 * lua script:
   for every command, create a field "onChangeSync" = "players"
   after a command was executed, it checks that field, and if existing, starts the sync for the defined data

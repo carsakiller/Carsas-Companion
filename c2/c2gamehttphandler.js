@@ -9,14 +9,16 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		this.commandsToTransferToGame = []
 		this.pendingCommandResponses = []
 
+		this.PENDING_COMMAND_RESPONSE_TIMEOUT = 1000 * 20
+
 		this.messageCallback = undefined
 
 		this.ongoingMessageTransfers = {}
 
-		this.lastPacketTimes = [] // just for debugging reason
+		// just for debugging reason: calculate packets per sedonc
+		this.lastPacketTimes = []
 		this.lastPacketTimesMaxEntries = 100
-
-
+		/*
 		setInterval(()=>{
 			if(this.lastPacketTimes.length > 1){
 				let timeTotal = this.lastPacketTimes[0] - this.lastPacketTimes[this.lastPacketTimes.length - 1]
@@ -26,6 +28,30 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				this.info('Average received packets per second:', Math.floor(averagePacketsPerSecond * 10) / 10)
 			}
 		}, 1000 * 5)
+		*/
+
+		setInterval(()=>{
+			this.checkPendingCommandResponsesForTimeout()
+		}, 100)
+	}
+
+	checkPendingCommandResponsesForTimeout(){
+		for(let i in this.pendingCommandResponses){
+			let pcr = this.pendingCommandResponses[i]
+
+			let timePassed = new Date().getTime() - pcr.timeScheduled
+
+			if( timePassed > this.PENDING_COMMAND_RESPONSE_TIMEOUT){
+				this.warn('pending command (', pcr.commandname, ') response from game timed out after', this.PENDING_COMMAND_RESPONSE_TIMEOUT, 'ms')
+				if(typeof pcr.callback === 'function'){
+					pcr.reject('Timeout: Game not responding');
+				}
+				
+				this.pendingCommandResponses.splice(i,1);
+
+				break
+			}
+		}
 	}
 
 	onGameHTTP(req, res){
@@ -119,9 +145,6 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 
 				if(parsed.type === 'command-response'){
 					let result = this.handleCommandResponse(parsed.commandId, parsedContent)
-					if(result === undefined){
-						this.warn('you probably forgot to return "ok" or similar inside handleCommandResponse()!')
-					}
 					answer(result === 'ok', 'ok')
 				} else {
 
@@ -162,8 +185,8 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 			    	resp.commandContent = nextCommand.content;
 			    }
 
-			    if(ignoreHasMoreCommands !== true && that.pendingCommandResponses.length > 0){
-			    	that.log("pendingCommandResponses", that.pendingCommandResponses.length)
+			    if(ignoreHasMoreCommands !== true && that.getNextCommandToTransfer.length > 0){
+			    	that.log("pendingCommandResponses", that.getNextCommandToTransfer.length)
 			    	resp.hasMoreCommands = true
 			    }
 
@@ -179,20 +202,25 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		}
 	}
 
-	sendCommandToGame(command, content, callback){
-		const myCommandId = this.commandIdCounter++;
+	sendCommandToGame(command, content){
+		return new Promise((fulfill, reject)=>{
 
-		this.commandsToTransferToGame.push({
-			id: myCommandId,
-			command: command,
-			content: content
-		})
+			const myCommandId = this.commandIdCounter++;
 
-		this.pendingCommandResponses.push({
-			id: myCommandId,
-			callback: callback,
-			timeScheduled: new Date().getTime(),
-			parts: []
+			this.commandsToTransferToGame.push({
+				id: myCommandId,
+				command: command,
+				content: content
+			})
+
+			this.pendingCommandResponses.push({
+				id: myCommandId,
+				commandname: command,
+				fulfill: fulfill,
+				reject: reject,
+				timeScheduled: new Date().getTime(),
+				parts: []
+			})		
 		})
 	}
 
@@ -223,6 +251,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	}
 
 	handleCommandResponse(commandId, content){
+
 		for(let i in this.pendingCommandResponses){
 			let p = this.pendingCommandResponses[i];
 
@@ -231,11 +260,8 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				
 				this.pendingCommandResponses.splice(i,1);
 
-				let ret
-				if(typeof p.callback === 'function'){
-					ret = p.callback(content);
-				}
-				return ret
+				p.fulfill(content)
+				return 'ok'
 			}
 		}
 
