@@ -4,8 +4,36 @@ module.exports = ((app)=>{
 
 	let C2GameInterface = require('./c2gameinterface.js')(app)
 
-
 	let syncedData = {}
+
+
+	if(false){
+		setTimeout(()=>{//test performance of http transmission
+			let messageSize = 10000
+			let amountOfMessages = 100
+
+			let message = ""
+			for(let i=0;i<messageSize;i++){
+				message += "Y"
+			}
+
+			let beginTime = new Date().getTime()
+
+			let promises = []
+
+			for(let i=0; i<amountOfMessages; i++){
+				promises.push(C2GameInterface.sendCommand('test', message))
+			}
+
+			Promise.all(promises).then((res)=>{
+				let endTime = new Date().getTime()
+
+				info('Performance Test Result: took', Math.floor((endTime - beginTime) / 100) / 10, 's for',amountOfMessages, 'messages with', messageSize, 'chars each') 
+			}).catch((err)=>{
+				error('Performance Test Failed:', err)
+			})
+		}, 1000)
+	}
 
 	C2WebInterface.on('message', handleWebClientMessage)
 
@@ -75,6 +103,10 @@ module.exports = ((app)=>{
 				return 'good to know!'
 			}; break;
 
+			case 'test-performance': {
+				return ''
+			}; break;
+
 			default: {
 
 				if(message.type.startsWith('sync-')){
@@ -97,6 +129,10 @@ module.exports = ((app)=>{
 
 	function warn(...args){
 		console.warn.apply(null, ['\x1b[34m[C2] \x1b[33mWarning:\x1b[37m'].concat(args))
+	}
+
+	function info(...args){
+		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
 	}
 
 	function log(...args){

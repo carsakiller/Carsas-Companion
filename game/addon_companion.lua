@@ -4,7 +4,10 @@ initialize = true
 
 g_players = {}
 
+local testRun = false
+local ticks = 0
 function onTick()
+	ticks = ticks + 1
 	
 	if initialize then
 		initialize = false
@@ -83,6 +86,51 @@ function onTick()
 			return "ok"
 		end)
 	end
+	
+	if testRun and serverIsAvailable then
+		debug("starting performance test...")
+		testRun = false
+		
+		local messageSize = 10000
+		local amountOfMessages = 100
+		
+		local beginTick = ticks
+		
+		local sentCount = 0
+		
+		local responses = {}
+		
+		for i=1,amountOfMessages do
+			local myI = i
+			local message = ""
+			
+			for ii=1,messageSize do
+				message = message .. "z"
+			end
+			
+			local sent, err = sendToServer("test-performance", message, nil, function(success, res)
+				responses[myI] = success
+				
+				if myI == amountOfMessages then
+					local endTick = ticks
+					
+					if success then
+						debug("Performance Test Result: " .. ( math.floor((endTick - beginTick)/6)/10 ) .. "s for " .. amountOfMessages .. " messages with " .. messageSize .. " chars each" )
+					else
+						debug("Performance Test Failed: " .. json.stringify(res) )
+					end
+					debug("sent " .. sentCount .. " of " .. amountOfMessages)
+				end
+			end)
+			
+			if sent then
+				sentCount = sentCount + 1
+			else
+				debug("Performance Test Send Error: " .. err)
+			end
+		end
+		
+	end
 
 	syncTick()
 end
@@ -135,7 +183,16 @@ function syncSyncableData(name)
 	
 	local data = syncableData[name]()
 	
-	sendToServer("sync-" .. name, data)
+	local sent, err = sendToServer("sync-" .. name, data, nil, function (success, result)
+		if sent then
+			debug("sync-" .. name .. " -> success")
+		else
+			error("sync-" .. name .. " -> failed")
+		end
+	end)
+	if not success then
+		error("error when sending sync-" .. name .. ": " .. (err or "nil"))
+	end
 end
 
 function error(msg)
@@ -144,6 +201,12 @@ end
 
 function debug(msg)
 	server.announce("C2 Debug", msg)
+end
+
+function debugDetail(msg)
+	if false then
+		debug(msg)
+	end
 end
 
 
@@ -157,14 +220,24 @@ end
 -- IMPORTANT: call the syncTick() function at the end of onTick() !!!
 --
 
+serverIsAvailable = false
 local HTTP_GET_URL_CHAR_LIMIT = 4000 --TODO calc more precise
 local HTTP_GET_API_PORT = 3000
 local HTTP_GET_API_URL = "/game-api?data="
 local packetSendingQueue = {}
 local packetToServerIdCounter = 0
+local pendingPacketParts = {}
+local lastSentPacketPartHasBeenRespondedTo = false
+local lastSentPacketIdent = nil
 -- @data: table, string, number, bool (can be multidimensional tables; circular references not allowed!)
 -- @meta: a table of additional fields to be send to the server
-function sendToServer(datatype, data, meta --[[optional]])
+-- @callback: called once server responds callback(success, response)
+-- @ignoreServerNotAvailable: only used by heartbeat!
+--
+--
+-- returns true --if your data will be sent
+-- returns false, "error message" --if not
+function sendToServer(datatype, data, meta --[[optional]], callback--[[optional]], ignoreServerNotAvailable--[[optional]])
 	--[[
 	
 	Packet Structure (example):
@@ -179,29 +252,48 @@ function sendToServer(datatype, data, meta --[[optional]])
 	]]--
 
 	if not( type(datatype) == "string") then
-		return error("@sendToServer: dataname must be a string")
+		error("@sendToServer: dataname must be a string")
+		
+		return false, "dataname must be a string"
 	end
 
 	local myPacketId = packetToServerIdCounter
 	packetToServerIdCounter = packetToServerIdCounter + 1
+	
+	if callback and not (type(callback) == "function") then
+		return false, "callback must be a function"
+	end
+	
+	if not ignoreServerNotAvailable and not serverIsAvailable then
+		return false, "Server not available"
+	end
+	
+	--[[
+	if #packetSendingQueue > 100 then
+		return false, "Too many packets!"--TODO remove in production? this just stops infinite filling of packets which prevents from debugging chat
+	end
+	]]--
+	
+	c2HasMoreCommands = false
 	
 	local stringifiedData = json.stringify(data)
 	local encodedData = urlencode(string.gsub(stringifiedData, '"', '\\"'))
 	
 	local url = HTTP_GET_API_URL
 	
-	local packetPartCounter = 0
+	local packetPartCounter = 1
 	
-	debug("encodedData: " .. encodedData)
+	--debug("encodedData: " .. encodedData)
 
 	repeat
 		local myPacketPart = packetPartCounter
-		packetPartCounter = packetPartCounter +1 
+		packetPartCounter = packetPartCounter + 1 
 		
 		local packet = json.parse(json.stringify(meta))
 		packet.type = datatype
 		packet.packetId = myPacketId
 		packet.packetPart = myPacketPart
+		packet.morePackets = 1--1 = true, 0 = false
 		
 		local DATA_PLACEHOLDER = 'DATA_PLACEHOLDERINO'
 		
@@ -215,6 +307,10 @@ function sendToServer(datatype, data, meta --[[optional]])
 		local maxLength = HTTP_GET_URL_CHAR_LIMIT - encodedPacketLength
 		local myPartOfTheData = string.sub(encodedData, 1, maxLength)
 		encodedData = string.sub(encodedData, maxLength + 1)
+		
+		if string.len(encodedData) == 0 then
+			packet.morePackets = 0
+		end
 	
 		local packetString = urlencode(json.stringify(packet))
 		local from, to = string.find(packetString, urlencode(DATA_PLACEHOLDER), 1, true)
@@ -222,10 +318,24 @@ function sendToServer(datatype, data, meta --[[optional]])
 		local after = string.sub(packetString, to + 1)
 		packetString = before .. myPartOfTheData .. after
 		
-		debug("queuing packet, size: " .. string.len(packetString) .. ", part: " .. myPacketPart)
+		debugDetail("queuing packet, type: " .. datatype .. ", size: " .. string.len(packetString) .. ", part: " .. myPacketPart)
 		
-		table.insert(packetSendingQueue, packetString)
+		table.insert(packetSendingQueue, {
+			packetId = myPacketId,
+			packetPart = myPacketPart,
+			data = packetString
+		})
+		
+		table.insert(pendingPacketParts, {
+			packetId = myPacketId,
+			packetPart = myPacketPart,
+			morePackets = packet.morePackets,
+			callback = callback
+		})
+		
 	until (string.len(encodedData) == 0)
+	
+	return true
 end
 
 webServerCommandCallbacks = {}
@@ -240,30 +350,99 @@ function registerWebServerCommandCallback(commandname, callback)
 	debug("registered command callback '" .. commandname .. "'")
 end
 
+local function calcPacketIdent(packet)
+	if packet.packetId == nil or packet.packetPart == nil then
+		return nil
+	end
+	return packet.packetId .. ":" .. packet.packetPart
+end
+
+local function samePacketIdent(a, b)
+	local ia = calcPacketIdent(a)
+	local ib = calcPacketIdent(b)
+	return ia and ib and (ia == ib)
+end
+
+local lastPacketSentTickCallCount = 0
 local tickCallCounter = 0
-local lastPacketSendTickCallCount = 0
-local HTTP_GET_TIMEOUT_BETWEEN_SEND = 30 -- in tick calls, not ticks! TODO: calculate precisely
-function checkPacketSendingQueue()
+local HTTP_MAX_TIME_NECESSARY_BETWEEN_REQUESTS = 60 --in case we have a problem inside httpReply, and don't detect that the last sent message was replied to, then allow another request after this time
+local function checkPacketSendingQueue()
 	tickCallCounter = tickCallCounter + 1
-	if #packetSendingQueue > 0 and tickCallCounter - lastPacketSendTickCallCount > HTTP_GET_TIMEOUT_BETWEEN_SEND then
-		lastPacketSendTickCallCount = tickCallCounter
+	if (#packetSendingQueue > 0) and (lastSentPacketPartHasBeenRespondedTo or (lastPacketSentTickCallCount == 0) or (tickCallCounter -  lastPacketSentTickCallCount > HTTP_MAX_TIME_NECESSARY_BETWEEN_REQUESTS) ) then
+		lastPacketSentTickCallCount = tickCallCounter
 		
 		local packetToSend = table.remove(packetSendingQueue, 1)
 		
-		debug("sending packet to server: " .. urldecode(packetToSend))
+		debugDetail("sending packet to server: " .. urldecode(packetToSend.data))
 		
-		server.httpGet(HTTP_GET_API_PORT, HTTP_GET_API_URL .. packetToSend)
+		server.httpGet(HTTP_GET_API_PORT, HTTP_GET_API_URL .. packetToSend.data)
+		
+		lastSentPacketPartHasBeenRespondedTo = false
+		lastSentPacketIdent = calcPacketIdent(packetToSend)
+	elseif #packetSendingQueue > 0  and tickCallCounter % 60 == 0 then
+		if not lastSentPacketPartHasBeenRespondedTo then
+			debug("skipping packetQueue, reason: not responded")
+		elseif not (lastPacketSentTickCallCount == 0) then
+			debug("skipping packetQueue, reason: not first")
+		end
+	end
+	
+	if tickCallCounter % 60 * 5 == 0 and #packetSendingQueue > 5 then
+		debug("#packetSendingQueue " .. #packetSendingQueue)
+	end
+end
+
+local lastHeartbeatTriggered = 0
+local function triggerHeartbeat()
+	lastHeartbeatTriggered = tickCallCounter
+	local sent, err = sendToServer("heartbeat", "", nil, function(success, result)
+		if success then
+			lastSucessfulHeartbeat = tickCallCounter
+			if not serverIsAvailable then
+				debug("C2 WebServer is now available")
+			end
+			serverIsAvailable = true
+		else
+			if serverIsAvailable then
+				debug("C2 WebServer is not available anymore")
+			end
+			serverIsAvailable = false
+			
+			debug("heartbeat failed: " .. result) 
+		end
+	end, true)
+	
+	if not sent then
+		error("error when sending heartbeat: " .. (err or "nil"))
 	end
 end
 
 local c2HasMoreCommands = false
-local HTTP_GET_HEARTBEAT_TIMEOUT = 60 * 5
+local HTTP_GET_HEARTBEAT_TIMEOUT = 60 * 5 -- at least one heartbeat every 5 seconds
 function syncTick()
 	checkPacketSendingQueue()
 	
-	if (c2HasMoreCommands and #packetSendingQueue == 0 and tickCallCounter - lastPacketSendTickCallCount > HTTP_GET_TIMEOUT_BETWEEN_SEND)
-		or (tickCallCounter - lastPacketSendTickCallCount > HTTP_GET_HEARTBEAT_TIMEOUT) then
-		sendToServer("heartbeat", "")
+	if lastSentPacketPartHasBeenRespondedTo and c2HasMoreCommands then
+		debug("trigger heartbeat, reason: moreCommands")
+		triggerHeartbeat()
+	elseif (tickCallCounter - lastPacketSentTickCallCount) > HTTP_GET_HEARTBEAT_TIMEOUT and (tickCallCounter - lastHeartbeatTriggered) > HTTP_GET_HEARTBEAT_TIMEOUT then
+		debug("trigger heartbeat, reason: time")
+		triggerHeartbeat()
+	end
+end
+
+local function failAllPendingHTTPRequests(reason)
+	if #pendingPacketParts > 0 then
+		for k,v in pairs(pendingPacketParts) do
+			if v.morePackets == 0 and v.callback then
+				v.callback(false, reason)
+			end
+		end
+		
+		pendingPacketParts = {}
+		
+		debug("Failed all pending packets. Reason: " .. reason)
+		lastSentPacketPartHasBeenRespondedTo = true -- TODO: is this the correct behaviour?
 	end
 end
 
@@ -271,28 +450,73 @@ end
 function httpReply(port, url, response_body)
 	if port == HTTP_GET_API_PORT and string.sub(url, 1, string.len(HTTP_GET_API_URL)) == HTTP_GET_API_URL then
 		if string.sub(response_body, 1, string.len("connect():")) == "connect():" then
-			return error("C2 WebServer is not running!")
+			failAllPendingHTTPRequests("C2 WebServer is not running!")
+			return
 		end
 		
 		if string.sub(response_body, 1, string.len("timeout")) == "timeout" then
-			return error("C2 WebServer Request timed out: " .. url)
+			local urlDataPart = urldecode( string.sub(url, string.len(HTTP_GET_API_URL) + 1) )
+			local parsedOriginalPacket = json.parse(urlDataPart)
+			
+			if parsedOriginalPacket == nil then
+				debug("@httpReply parsingOriginal failed for: '" .. urlDataPart .. "'")
+				-- since we cannot say which pending message failed, fail all of them (better then not failing one of them which leaves behind a callback that will never be called, sad story)
+				failAllPendingHTTPRequests("C2 WebServer Request timed out")
+			else 
+				if lastSentPacketIdent == calcPacketIdent(parsedOriginalPacket) then
+					lastSentPacketPartHasBeenRespondedTo = true
+				end
+					
+				for k,v in pairs(pendingPacketParts) do
+					if samePacketIdent(v, parsedOriginalPacket) then
+						
+						if v.morePackets == 0 and v.callback then
+							v.callback(false, "request timed out")
+						end
+						
+						pendingPacketParts[k] = nil
+						break
+					end
+				end
+			end
+			
+			return
 		end
 		
 		local parsed = json.parse(response_body)
 		
 		if parsed == nil then
-			debug("@httpReply parsing failed for: '" .. response_body .. "'")
-			parsed = {}
+			return error("@httpReply parsing failed for: '" .. response_body .. "'")
 		end
 		
-		if parsed.result == "ok" then
-			-- do nothing, everything was fine
-			debug("received response from server: ok")
-		else
-			error("server reported result: " .. (parsed.result or "nil"))
+		debugDetail("@httpReply parsed: " .. json.stringify(parsed))
+		
+		if calcPacketIdent(parsed) and lastSentPacketIdent == calcPacketIdent(parsed) then
+			lastSentPacketPartHasBeenRespondedTo = true
+		end
+		
+		local foundPendingPacketPart = false
+		for k,v in pairs(pendingPacketParts) do
+			if samePacketIdent(v, parsed) then
+				foundPendingPacketPart = true
+				
+				if v.morePackets == 0 and v.callback then
+					v.callback(parsed.success, parsed.result)
+				end
+				
+				pendingPacketParts[k] = nil
+				break
+			end
+		end
+		
+		if not foundPendingPacketPart then
+			debug("received response from server but no pending packetPart found! " .. calcPacketIdent(parsed))
 		end
 		
 		c2HasMoreCommands = parsed.hasMoreCommands == true
+		if c2HasMoreCommands then
+			debug("c2 has more commands for us!")
+		end
 		
 		if parsed.command then
 			debug("received command from server: '" .. parsed.command .. "', " .. json.stringify(parsed.commandContent or "nil"))
@@ -300,11 +524,17 @@ function httpReply(port, url, response_body)
 			if type(webServerCommandCallbacks[parsed.command]) == "function" then
 				local result = webServerCommandCallbacks[parsed.command](parsed.command, parsed.commandContent)
 				
-				sendToServer("command-response", result, {commandId = parsed.commandId})
+				local sent, err = sendToServer("command-response", result, {commandId = parsed.commandId})
+				if not sent then
+					error("error when sending command response: " .. (err or "nil"))
+				end
 			else
 				error("no callback was registered for the command: '" .. parsed.command .. "'")
 				
-				sendToServer("command-response", "no callback was registered for the command: '" .. parsed.command .. "'", {commandId = parsed.commandId})
+				local sent, err = sendToServer("command-response", "no callback was registered for the command: '" .. parsed.command .. "'", {commandId = parsed.commandId})
+				if not sent then
+					error("error when sending command response: " .. (err or "nil"))
+				end
 			end
 		end
 	end

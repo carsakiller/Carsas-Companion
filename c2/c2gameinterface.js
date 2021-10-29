@@ -3,13 +3,7 @@ module.exports = ((app)=>{
 	let C2GameHttpHandler = require('./c2gamehttphandler.js')
 
 	app.use('/game-api', (req, res)=>{
-		try {
-			C2GameHttpHandler.onGameHTTP(req,res)
-		} catch (ex){
-			res.json({
-				result: 'Error: check server logs'
-			})
-		}
+		C2GameHttpHandler.onGameHTTP(req,res)
 	});
 
 
@@ -84,6 +78,10 @@ module.exports = ((app)=>{
 
 	function warn(...args){
 		console.warn.apply(null, ['\x1b[34m[C2GameInterface] \x1b[33mWarning:\x1b[37m'].concat(args))
+	}
+
+	function info(...args){
+		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
 	}
 
 	function log(...args){

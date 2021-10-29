@@ -8,96 +8,165 @@ module.exports = (()=>{
 
 	let ongoingMessageTransfers = {};
 
+	let lastPacketTimes = [] // just for debugging reason
+	let lastPacketTimesMaxEntries = 100
+
+	setInterval(()=>{
+		if(lastPacketTimes.length > 1){
+			let timeTotal = lastPacketTimes[0] - lastPacketTimes[lastPacketTimes.length - 1]
+			let averageTimeBetweenPackets = timeTotal / lastPacketTimes.length
+			info('Average averageTimeBetweenPackets:', averageTimeBetweenPackets, timeTotal, lastPacketTimes.length)
+			let averagePacketsPerSecond = 1000 / averageTimeBetweenPackets
+			info('Average received packets per second:', Math.floor(averagePacketsPerSecond * 10) / 10)
+		}
+	}, 1000 * 5)
+
 	function onGameHTTP(req, res){
-		let data = req.query.data;
-		let parsed
 		try {
-			parsed = JSON.parse(data);
-		} catch (ex){
-			log('user json has bad format', data, ex)
-			return res.json({
-				result: false
-			});
-		}
+			lastPacketTimes.splice(0, 0, new Date().getTime())
+			if(lastPacketTimes.length > lastPacketTimesMaxEntries){
+				lastPacketTimes.pop()
+			}
 
+			let data = req.query.data;
+			let parsed
+			try {
+				parsed = JSON.parse(data);
+			} catch (ex){
+				log('user json has bad format', data, ex)
+				return res.json({
+					result: false
+				});
+			}
 
-		if(!ongoingMessageTransfers[parsed.packetId]){
-			ongoingMessageTransfers[parsed.packetId] = [];
-		}
+			if(!ongoingMessageTransfers[parsed.packetId]){
+				ongoingMessageTransfers[parsed.packetId] = {}
+			}
+			let omt = ongoingMessageTransfers[parsed.packetId]
 
-		if(ongoingMessageTransfers[parsed.packetId].length > parsed.packetPart){
-			warn('packetPart count is invalid, will corrup existing packet parts!')
-		}
-		
-		ongoingMessageTransfers[parsed.packetId].push(parsed.data);
+			if(omt[parsed.packetPart]){
+				warn('packetPart count is duplicate, will corrupt existing packet parts!')
+			}
+			
+			omt[parsed.packetPart] = parsed.data;
 
-		let packetPart = parsed.packetPart;
+			if(parsed.morePackets === 0){
+				omt.max = parsed.packetPart
+			}
 
-		log('<- ', 'content part arrived #' + parsed.packetId + ':' + packetPart)
+			/* parts could arrive here asynchronously, but normally they arrive synchronously */
 
-		if(packetPart === 0){//the signal, that this is the last part (yes we count upside down mate!)
-			let content = ongoingMessageTransfers[parsed.packetId].join('');
-			delete ongoingMessageTransfers[parsed.packetId]
-		
-			log('final message part arrived for #' + parsed.packetId, content)
-
-			let parsedContent
-
-			if(content === undefined || content === null || content === ''){
-				parsedContent = undefined
-			} else {
-				try {
-					parsedContent = JSON.parse(content)
-				} catch (ex){
-					log('error parsing content "' + content + '"', ex)
-					answer(ex)
-					return
+			let maxPartsKnown = typeof omt.max === 'number'
+			let allPartsArrived = false
+			if(maxPartsKnown){
+				allPartsArrived = true
+				for(let i = 1; i<=omt.max; i++){
+					if(!omt[i]){
+						allPartsArrived = false
+					}
 				}
 			}
 
-			if(parsed.type === 'command-response'){
-				let result = handleCommandResponse(parsed.commandId, parsedContent)
-				if(result === undefined){
-					warn('you probably forgot to return "ok" or similar inside c2.handleCommandResponse()!')
+			log('<- ', 'content part arrived #' + parsed.packetId + ':' + parsed.packetPart, 'of', maxPartsKnown ? omt.max : 'unknown')
+
+			if(maxPartsKnown && allPartsArrived){//the signal, that this is the last part (yes we count upside down mate!)
+				log('final message part arrived for #' + parsed.packetId)
+
+				if(!allPartsArrived){
+					warn('missing content part:', i)
+					return answer(false, 'missing content part')
 				}
-				return result
-			} else {
 
-				let promise = handleMessage(parsed.type, parsedContent)
+				let parts = []
 
-				//TODO: check how data is expected to arrive at the game httpReply() and what keywords for successful transmissions are / flags
-				if(promise instanceof Promise){
-					promise.then((res)=>{
-						answer(res)
-					}).catch((err)=>{
-						error('error in callback promise', err)
-						answer('Error: check server logs')
-					})
+				let content = ""
+
+				for(let i = 1; i<=omt.max; i++){
+					if(omt[i]){
+						content += omt[i]
+					} else {
+						warn('missing content part:', i)
+						return answer(false, 'missing content part')
+					}
+				}
+
+				delete ongoingMessageTransfers[parsed.packetId]
+			
+				log('final message content (', content.length, ' chars)', content)
+
+				let parsedContent
+
+				if(content === undefined || content === null || content === ''){
+					parsedContent = undefined
 				} else {
-					answer('')
+					try {
+						parsedContent = JSON.parse(content)
+					} catch (ex){
+						log('error parsing content "' + content + '"', ex)
+						answer(false, 'Error: check server logs')
+						return
+					}
 				}
 
-				function answer(result){
+				if(parsed.type === 'command-response'){
+					let result = handleCommandResponse(parsed.commandId, parsedContent)
+					if(result === undefined){
+						warn('you probably forgot to return "ok" or similar inside handleCommandResponse()!')
+					}
+					answer(result === 'ok', 'ok')
+				} else {
 
-					let nextCommand = getNextCommandToTransfer()
+					let promise = handleMessage(parsed.type, parsedContent)
 
-					let resp = {
-				    	result: result
-				    }
+					if(promise instanceof Promise){
+						promise.then((res)=>{
+							answer(true, res)
+						}).catch((err)=>{
+							error('error in callback promise', err)
+							answer(false, 'Error: check server logs')
+						})
+					} else {
+						answer(true, 'ok')
+					}
 
-				    if(nextCommand){
-				    	resp.command = nextCommand.command;
-				    	resp.commandId = nextCommand.id;
-				    	resp.commandContent = nextCommand.content;
-				    }
-
-				    if(pendingCommandResponses > 0){
-				    	resp.hasMoreCommands = true
-				    }
-
-				    res.json(resp);
+					
 				}
+			} else {
+				log('waiting for remaining message parts', maxPartsKnown, allPartsArrived, omt)
+				 answer(true, undefined, true)
 			}
+
+			function answer(success, result, ignoreHasMoreCommands){
+
+				let nextCommand = getNextCommandToTransfer()
+
+				let resp = {
+					packetId: parsed.packetId,
+					packetPart: parsed.packetPart,
+					success: success,
+			    	result: result
+			    }
+
+			    if(nextCommand){
+			    	resp.command = nextCommand.command;
+			    	resp.commandId = nextCommand.id;
+			    	resp.commandContent = nextCommand.content;
+			    }
+
+			    if(ignoreHasMoreCommands !== true && pendingCommandResponses.length > 0){
+			    	log("pendingCommandResponses", pendingCommandResponses.length)
+			    	resp.hasMoreCommands = true
+			    }
+
+			    res.json(resp);
+			}
+
+		} catch (ex){
+			error(ex)
+			res.json({
+				success: false,
+				result: 'Error: check server logs'
+			})
 		}
 	}
 
@@ -139,7 +208,7 @@ module.exports = (()=>{
 				}
 			} else {
 				warn('received game message but no messageCallback set')
-				answer('Error: check server logs')
+				reject('Error: check server logs')
 			}
 		})
 	}
@@ -150,11 +219,13 @@ module.exports = (()=>{
 
 			if(p.id === commandId){
 				log('CommandResponseTiming: ', p.timeSent - p.timeScheduled, 'ms until sent | ', new Date().getTime() - p.timeScheduled, 'ms until answered')
+				
+				pendingCommandResponses.splice(i,1);
+
 				let ret
 				if(typeof p.callback === 'function'){
 					ret = p.callback(content);
 				}
-				delete pendingCommandResponses[i];
 				return ret
 			}
 		}
@@ -205,6 +276,10 @@ module.exports = (()=>{
 
 	function warn(...args){
 		console.warn.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[33mWarning:\x1b[37m'].concat(args))
+	}
+
+	function info(...args){
+		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
 	}
 
 	function log(...args){

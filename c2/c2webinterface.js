@@ -83,6 +83,10 @@ module.exports = ((app)=>{
 		console.warn.apply(null, ['\x1b[34m[C2WebInterface] \x1b[33mWarning:\x1b[37m'].concat(args))
 	}
 
+	function info(...args){
+		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
+	}
+
 	function log(...args){
 		console.log.apply(null, ['\x1b[34m[C2WebInterface]\x1b[37m'].concat(args))
 	}

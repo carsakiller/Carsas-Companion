@@ -62,13 +62,20 @@ module.exports = (()=>{
 
 			if(typeof parsed.serverId === 'number'){
 				// response to server message
-				if(pendingMessages[parsed.serverId]){
-					if(parsed.success === true){
-						pendingMessages[parsed.serverId].fulfill(parsed.data)
-					} else {
-						pendingMessages[parsed.serverId].reject(parsed.data)
+				for(let i in pendingMessages){
+					let pm = pendingMessages[i]
+
+					if(pm.id === parsed.serverId){
+						if(parsed.success === true){
+							pm.fulfill(parsed.data)
+						} else {
+							pm.reject(parsed.data)
+						}
+
+						pendingMessages.splice(i, 1)
+						
+						break
 					}
-					delete pendingMessages[parsed.serverId]
 				}
 			} else if (typeof parsed.clientId === 'number'){
 				// message from the client
@@ -187,6 +194,10 @@ module.exports = (()=>{
 
 	function warn(...args){
 		console.warn.apply(null, ['\x1b[34m[WebSocks] \x1b[33mWarning:\x1b[37m'].concat(args))
+	}
+
+	function info(...args){
+		console.info.apply(null, ['\x1b[34m[C2GameHTTPHandler] \x1b[35mInfo:\x1b[37m'].concat(args))
 	}
 
 	function log(...args){
