@@ -19,7 +19,7 @@ module.exports = class C2WebInterface extends C2Interface {
 
 		this.webSocks.setMessageCallback((client, message)=>{
 			this.log('<- ', 'got web client message #' + client.id, message)
-			let promise = this._dispatch('message', client, message)
+			let promise = this.dispatch('message', client, message)
 
 			if(promise instanceof Promise){
 				return promise

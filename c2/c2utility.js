@@ -43,7 +43,7 @@ let mixin_EventManager = Base => class extends Base {
 		}
 	}
 
-	_dispatch(eventname, ...data){
+	dispatch(eventname, ...data){
 		if(this.eventListeners[eventname]){
 			for(let l of this.eventListeners[eventname]){
 				return l.apply(null, data)

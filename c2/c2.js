@@ -13,7 +13,7 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		this.syncedData = {}
 
-		if(true){
+		if(false){
 			setTimeout(()=>{//test performance of http transmission
 				let messageSize = 4000
 				let amountOfMessages = 4

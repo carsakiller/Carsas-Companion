@@ -20,7 +20,7 @@ module.exports = class C2GameInterface extends C2Interface {
 
 		this.c2GameHttpHandler.setMessageCallback((message)=>{
 			this.log('<- ', 'got game message', message)
-			let promise = this._dispatch('message', message)
+			let promise = this.dispatch('message', message)
 
 			if(promise instanceof Promise){
 				return promise

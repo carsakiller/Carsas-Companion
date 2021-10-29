@@ -42,7 +42,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 
 		ws.on('close', ()=>{this.handleClose(client)})
 
-		log('new client #' + client.id, '@', req.ip)
+		this.log('new client #' + client.id, '@', req.ip)
 	}
 
 	sendToClient(client, data){
@@ -64,7 +64,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	sendToAllClients(data){
 		let promises = []
 		for(let c of this.clients){
-			promises.push(sendToClient(c, data))
+			promises.push(this.sendToClient(c, data))
 		}
 		return Promise.all(promises)
 	}
@@ -97,7 +97,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			} else if (typeof parsed.clientId === 'number'){
 				// message from the client
 
-				if(typeof messageCallback !== 'function'){
+				if(typeof this.messageCallback !== 'function'){
 					this.warn('received a message but no messageCallback was set')
 					return
 				}
