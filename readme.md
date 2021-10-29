@@ -1,10 +1,44 @@
-# Setup build system
-- install node (e.g. v12)
-- install compass `$ gem install compass`
+# How to code
 
+## Setup build tools
+* if you are on windows you will need a command line tool, i suggest the official one from git: https://gitforwindows.org/
+* install node (e.g. v12)
+* install compass (stylesheet parsing): `$ gem install compass`
+* install nodemon (restart node server on code changes): `npm install -g nodemon`
+
+## Coding
+* command line tool 1 : `cd compass & compass watch`
+* command line tool 2 : `nodemon`
+
+## Creating executables
+### install pkg
+`npm i pkg -g`
+### configure your package.json
+```
+    "bin": "app.js",
+    "main": "app.js",
+    "pkg": {
+        "assets": [
+            "views/**/*",
+            "public_static/**/*"
+        ],
+        "outputPath": "dist"
+    },
+```
+## run
+`pkg .`
+
+# Documentation (haha)
+
+## Workflow for data sync from browser to game:
+Component defines methods (e.g. a button that triggers revoking a rule from a player) which will be called on button press.
+The method then sends that command to the game, if game responds with success, wait until game syncs new player data (game triggers that by itself ^^ or do we do that from the website?)), if fails, do nothing and show error message.
 
 
 # TODO
+
+## Before going into production:
+* check app.js for necessary adjustments (mainly HTTP headers and security things), we should maybe do this automatically depending on development or production environment (especially when building an executable)
 
 ## All
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
@@ -36,34 +70,5 @@
 * Statistics: how do we do the database? Is handling it in a simple object to RAM intensive    
 
 ## Other
-* Discord link: use discord roles as members
-
-- Addon: Money management by player. E.g. having infinite money, and when users do stuff (e.g. spawn in vehicle or sell) then change their money
-- Addon: Discord chat link (bot)
-
-# Documentation (haha)
-
-## Workflow for data sync from browser to game:
-Component defines methods (e.g. a button that triggers revoking a rule from a player) which will be called on button press.
-The method then sends that command to the game, if game responds with success, wait until game syncs new player data (game triggers that by itself ^^ or do we do that from the website?)), if fails, do nothing and show error message.
-
-# Before going into production:
-* check app.js for necessary adjustments
-
-# Building a standalone .exe
-## install pkg
-`npm i pkg -g`
-## configure your package.json
-```
-    "bin": "index.js",
-    "main": "index.js",
-    "pkg": {
-        "assets": [
-            "views/**/*",
-            "public_static/**/*"
-        ],
-        "outputPath": "dist"
-    },
-```
-## run
-`pkg .`
+* Discord link: use discord role memebers for gameaddon role members (synced)
+* Discord chat link (bot) to mirror game chat and a discord channel
