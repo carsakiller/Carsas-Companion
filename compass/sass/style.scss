@@ -9,9 +9,13 @@ body {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
+
+	* {
+		box-sizing: border-box;
+	}
 }
 
-.button, .small_button {
+button, .small_button {
 	display: inline-flex;
 	flex-direction: row;
 	justify-content: center;
@@ -19,6 +23,7 @@ body {
 	padding: 0.4em 1em;
 	background: transparent;
 	color: $text-color;
+	font-weight: 600;
 	border: 1px solid $text-color;
 	border-radius: 3px;
 	transition: all 0.2s ease 0s;
@@ -32,14 +37,33 @@ body {
 		background: #9996;
 	}
 
-	&.button {
-		font-weight: 600;
-	}
-
 	&.small_button {
 		font-size: 80%;
+		font-weight: 400;
 		padding: 0.2em 0.4em;	
 	}
 }
 
+.list {
+	display: flex;
+	flex-direction: column;
+	margin: 1em;
 
+	> * {
+		
+		&:not(:last-child) {
+			margin-bottom: 1em;
+		}
+	}
+}
+
+textarea, input {
+	padding: 0.3em 0.5em;
+	border: 1px solid shade($text-edit-background, 30%);
+	border-radius: 3px;
+	color: $text-edit-foreground;
+	background: $text-edit-background;
+	font-family: inherit;
+	font-style: inherit;
+	font-size: inherit;
+}

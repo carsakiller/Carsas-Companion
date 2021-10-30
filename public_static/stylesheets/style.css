@@ -1728,55 +1728,79 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   max-height: 100%;
   overflow-y: auto;
 }
-
-/* line 62, ../../compass/sass/_components.scss */
-.tab_players .player_list {
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
+/* line 57, ../../compass/sass/_components.scss */
+#app .tabs .tab_body .division {
+  margin: 1em;
 }
-/* line 67, ../../compass/sass/_components.scss */
+/* line 60, ../../compass/sass/_components.scss */
+#app .tabs .tab_body .division .division_head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  padding: 1em;
+  background: #00446c;
+}
+/* line 68, ../../compass/sass/_components.scss */
+#app .tabs .tab_body .division .division_head .extend_arrow {
+  margin-left: 1em;
+  font-size: 0.8em;
+}
+/* line 74, ../../compass/sass/_components.scss */
+#app .tabs .tab_body .division .division_body {
+  position: relative;
+  padding: 1em;
+  background: #003d61;
+}
+/* line 79, ../../compass/sass/_components.scss */
+#app .tabs .tab_body .division .division_body:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to bottom, #002941 0%, rgba(0, 61, 97, 0) 100%);
+}
+
+/* line 98, ../../compass/sass/_components.scss */
 .tab_players .player_list .player {
   background: #07192B;
 }
-/* line 70, ../../compass/sass/_components.scss */
-.tab_players .player_list .player:not(:last-child) {
-  margin-bottom: 1em;
-}
-/* line 74, ../../compass/sass/_components.scss */
+/* line 101, ../../compass/sass/_components.scss */
 .tab_players .player_list .player.is_banned .name {
   color: #c92f2f;
 }
-/* line 78, ../../compass/sass/_components.scss */
+/* line 105, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0.5em 1em;
 }
-/* line 84, ../../compass/sass/_components.scss */
+/* line 111, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .state {
   font-size: 1.5em;
   min-width: 2.5em;
   text-align: center;
 }
-/* line 89, ../../compass/sass/_components.scss */
+/* line 116, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .state .id {
   color: #379249;
   font-weight: 500;
 }
-/* line 94, ../../compass/sass/_components.scss */
+/* line 121, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .state .offline {
   color: #c92f2f;
   font-size: 0.8em;
 }
-/* line 100, ../../compass/sass/_components.scss */
+/* line 127, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container {
   display: flex;
   flex-direction: column;
   margin-left: 1em;
 }
-/* line 105, ../../compass/sass/_components.scss */
+/* line 132, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .name {
   font-size: 1.3em;
   font-weight: 500;
@@ -1785,76 +1809,76 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   cursor: pointer;
   margin-bottom: 0.2em;
 }
-/* line 113, ../../compass/sass/_components.scss */
+/* line 140, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .name .extend_arrow {
   font-size: 0.8em;
   margin-left: 0.5em;
   line-height: 1.2em;
 }
-/* line 120, ../../compass/sass/_components.scss */
+/* line 147, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 126, ../../compass/sass/_components.scss */
+/* line 153, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .steamid:hover {
   color: #ddd;
 }
-/* line 130, ../../compass/sass/_components.scss */
+/* line 157, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .steamid .icon {
   font-size: 0.8em;
   position: relative;
   top: 0.1em;
   margin-right: 0.5em;
 }
-/* line 139, ../../compass/sass/_components.scss */
+/* line 166, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .gap {
   width: 100%;
 }
-/* line 143, ../../compass/sass/_components.scss */
+/* line 170, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .buttons {
   display: flex;
   flex-direction: row;
   margin-left: 1em;
 }
-/* line 148, ../../compass/sass/_components.scss */
+/* line 175, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .buttons button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 154, ../../compass/sass/_components.scss */
+/* line 181, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .body {
   display: flex;
   flex-direction: column;
   background: #07192B;
 }
-/* line 160, ../../compass/sass/_components.scss */
-.tab_players .player_list .player .player_role {
+/* line 186, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .body .player_role {
   padding: 0.3em 0.6em;
   font-size: 1.2em;
 }
-/* line 164, ../../compass/sass/_components.scss */
-.tab_players .player_list .player .player_role .name {
+/* line 190, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .body .player_role .name {
   color: #f3f3f3;
   margin-right: 0.5em;
 }
-/* line 169, ../../compass/sass/_components.scss */
-.tab_players .player_list .player .player_role.enabled {
+/* line 195, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .body .player_role.enabled {
   background: #379249;
 }
-/* line 173, ../../compass/sass/_components.scss */
-.tab_players .player_list .player .player_role.disabled {
+/* line 199, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .body .player_role.disabled {
   background: #c92f2f;
 }
 
-/* line 183, ../../compass/sass/_components.scss */
+/* line 210, ../../compass/sass/_components.scss */
 .tab_vehicles .vehicle_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 188, ../../compass/sass/_components.scss */
+/* line 215, ../../compass/sass/_components.scss */
 .tab_vehicles .vehicle_list .vehicle {
   display: flex;
   flex-direction: row;
@@ -1862,7 +1886,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   padding: 0.5em 1em;
   background: #07192B;
 }
-/* line 195, ../../compass/sass/_components.scss */
+/* line 222, ../../compass/sass/_components.scss */
 .tab_vehicles .vehicle_list .vehicle .id {
   font-size: 1.5em;
   min-width: 2.5em;
@@ -1870,39 +1894,65 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   color: #f3f3f3;
   font-weight: 500;
 }
-/* line 203, ../../compass/sass/_components.scss */
+/* line 230, ../../compass/sass/_components.scss */
 .tab_vehicles .vehicle_list .vehicle .name {
   font-size: 1.3em;
   font-weight: 500;
   margin-right: 1em;
 }
-/* line 209, ../../compass/sass/_components.scss */
+/* line 236, ../../compass/sass/_components.scss */
 .tab_vehicles .vehicle_list .vehicle .gap {
   width: 100%;
 }
 
-/* line 222, ../../compass/sass/_components.scss */
+/* line 251, ../../compass/sass/_components.scss */
+.tab_rules .new_rule_container textarea {
+  width: 100%;
+  min-height: 2em;
+  min-width: 100%;
+  max-width: 100%;
+  margin-bottom: 1em;
+}
+/* line 262, ../../compass/sass/_components.scss */
+.tab_rules .rule_list .rule {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #07192B;
+  padding: 0.5em 1em;
+}
+/* line 269, ../../compass/sass/_components.scss */
+.tab_rules .rule_list .rule:not(:last-child) {
+  margin-bottom: 1em;
+}
+/* line 273, ../../compass/sass/_components.scss */
+.tab_rules .rule_list .rule .text {
+  margin-right: 1em;
+  word-wrap: anywhere;
+}
+
+/* line 283, ../../compass/sass/_components.scss */
 .tab_logs .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 227, ../../compass/sass/_components.scss */
+/* line 288, ../../compass/sass/_components.scss */
 .tab_logs .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 232, ../../compass/sass/_components.scss */
+/* line 293, ../../compass/sass/_components.scss */
 .tab_logs .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 236, ../../compass/sass/_components.scss */
+/* line 297, ../../compass/sass/_components.scss */
 .tab_logs .log_list .log_entry .time {
   margin-right: 1em;
 }
 
-/* line 244, ../../compass/sass/_components.scss */
+/* line 305, ../../compass/sass/_components.scss */
 .lockable .lock_overlay {
   position: absolute;
   top: 0;
@@ -1920,9 +1970,13 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+/* line 13, ../../compass/sass/style.scss */
+body * {
+  box-sizing: border-box;
+}
 
-/* line 14, ../../compass/sass/style.scss */
-.button, .small_button {
+/* line 18, ../../compass/sass/style.scss */
+button, .small_button {
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
@@ -1930,25 +1984,46 @@ body {
   padding: 0.4em 1em;
   background: transparent;
   color: #f3f3f3;
+  font-weight: 600;
   border: 1px solid #f3f3f3;
   border-radius: 3px;
   transition: all 0.2s ease 0s;
   cursor: pointer;
 }
-/* line 27, ../../compass/sass/style.scss */
-.button .im, .small_button .im {
+/* line 32, ../../compass/sass/style.scss */
+button .im, .small_button .im {
   font-size: 1em;
 }
-/* line 31, ../../compass/sass/style.scss */
-.button:hover, .small_button:hover {
+/* line 36, ../../compass/sass/style.scss */
+button:hover, .small_button:hover {
   background: #9996;
 }
-/* line 35, ../../compass/sass/style.scss */
-.button.button, .small_button.button {
-  font-weight: 600;
-}
-/* line 39, ../../compass/sass/style.scss */
-.button.small_button, .small_button.small_button {
+/* line 40, ../../compass/sass/style.scss */
+button.small_button, .small_button.small_button {
   font-size: 80%;
+  font-weight: 400;
   padding: 0.2em 0.4em;
+}
+
+/* line 47, ../../compass/sass/style.scss */
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+}
+/* line 54, ../../compass/sass/style.scss */
+.list > *:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+/* line 60, ../../compass/sass/style.scss */
+textarea, input {
+  padding: 0.3em 0.5em;
+  border: 1px solid #242424;
+  border-radius: 3px;
+  color: #f3f3f3;
+  background: #333;
+  font-family: inherit;
+  font-style: inherit;
+  font-size: inherit;
 }

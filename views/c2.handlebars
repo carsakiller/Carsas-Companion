@@ -62,7 +62,7 @@
 				name: 'Logs',
 				iconClass: 'im-note-o'
 			}],
-			currentTab: 'players',
+			currentTab: 'rules',
 			activeTabClass: 'active',
 
 			players: {
@@ -222,6 +222,9 @@
 			roles (){
 				return store.state.roles
 			},
+			rules (){
+				return store.state.rules
+			},
 			preferences (){
 				return store.state.preferences
 			},
@@ -239,6 +242,7 @@
 			return {
 				players: this.players,
 				vehicles: this.vehicles,
+				roles: this.rules,
 				rules: this.rules,
 				preferences: this.preferences,
 				gamesettings: this.gamesettings,
@@ -261,13 +265,14 @@
 	})
 
 
+	/* TODO
 	function registerTab(id, name, iconClass){
 		store.dispatch('addTab', {
 			id: id,
 			name: name,
 			iconClass: iconClass
 		})
-	}
+	}*/
 
 </script>
 
