@@ -180,21 +180,157 @@ registerVueComponent('division', {
 	}
 })
 
+registerVueComponent('spacer-horizontal', {
+	props: {
+		height: {
+			type: String,
+			default: '1em'
+		}
+	},
+	template: `<div :style="'clear: both; height: ' + height"/>`
+})
+
+registerVueComponent('steamid', {
+	props: {
+		steamid: {
+			type: String,
+			default: ''
+		}
+	},
+	template: `
+		<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" v-bind:href="'https://steamcommunity.com/profiles/' + this.steamid"><span class="icon im im-external-link"></span>{{steamid}}</a>
+		<span v-else class="steamid">"Invalid SteamId"</span>`
+})
+
+registerVueComponent('tab', {
+	data: function (){
+		return {
+			isSelected: false
+		}
+	},
+	props: {
+		title: {
+			type: String,
+			default: 'Tab'
+		}
+	},
+	template: `<div class="tab" v-show="isSelected">
+		<slot/>
+	</div>`,
+	created: function(){
+		this.$parent.tabs.push(this)
+	}
+})
+
+registerVueComponent('tabs', {
+	data: function (){
+		return {
+			selectedIndex: 0,
+			tabs: []
+		}
+	},
+	template: `<div class="tabs">
+		<div class="tabs_selector">
+			<div v-for="(tab, index) in tabs" :key="index" @click="selectTab(index)" :class="['entry', {selected: (index === selectedIndex)}]">
+				{{tab.title}}
+			</div>
+		</div>
+		
+		<slot/>
+	</div>`,
+	methods: {
+		selectTab (i){
+			this.selectedIndex = i
+
+			this.tabs.forEach((tab, index) => {
+		    	tab.isSelected = (index === i)
+		    })
+		}
+	},
+	mounted: function (){
+		this.selectTab(0)
+	}
+})
+
 /*
 
 ---- COMPONENTS ----
 
 */
 
-registerVueComponent('tab-players', {
+
+registerVueComponent('page', {
+	data: function (){
+		return {
+			isSelected: false
+		}
+	},
+	props: {
+		title: {
+			type: String,
+			default: 'Page'
+		},
+		icon: {
+			type: String,
+			default: ''
+		}
+	},
+	template: `<div class="page" v-show="isSelected">
+		<div class="page_head">
+			<h2>{{title}}</h2>
+		</div>
+		<div class="page_body">
+			<slot/>
+		</div>
+	</div>`,
+	created: function(){
+		this.$parent.pages.push(this)
+	}
+})
+
+registerVueComponent('pages', {
+	data: function (){
+		return {
+			selectedIndex: 0,
+			pages: []
+		}
+	},
+	props: {
+		'selectedindex': {
+			type: Number,
+			default: 0
+		}
+	},
+	template: `<div class="pages">
+		<div class="sidebar">
+			<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :alt="page.title">
+				<span :class="['im', 'im-' + page.icon]"/>
+			</div>
+		</div>
+
+		<slot/>
+	</div>`,
+	methods: {
+		selectPage (i){
+			this.selectedIndex = i
+
+			this.pages.forEach((page, index) => {
+		    	page.isSelected = (index === i)
+		    })
+		}
+	},
+	created: function (){
+		this.selectedIndex = this.selectedindex
+	},
+	mounted: function (){
+		this.selectPage(this.selectedIndex)
+	}
+})
+
+registerVueComponent('players-management', {
 	props: ['players'],
-	template: `<div class="tab_players">
-		<div class="tab_head">
-			<h2>Player Management</h2>
-		</div>
-		<div class="tab_body">
-			<player-list v-bind:players="players"/>
-		</div>
+	template: `<div class="players_management">
+		<player-list v-bind:players="players"/>
 	</div>`
 })
 
@@ -211,6 +347,7 @@ registerVueComponent('player', {
 			isExtended: false
 		}
 	},
+	inject: ['banned'],
 	props: ['player', 'steamid'],
 	template: `<div class="player" key="{{player.id}}" v-bind:class="[{is_banned: player.banned}]">
 		<div class="head" v-on:click="isExtended = !isExtended">
@@ -225,7 +362,7 @@ registerVueComponent('player', {
 					<span class="im im-angle-up extend_arrow" v-if="isExtended"></span>
 					<span class="im im-angle-down extend_arrow" v-else></span>
 				</div>
-				<a class="steamid" target="_blank" rel="noopener noreferrer" v-bind:href="'https://steamcommunity.com/profiles/' + this.steamid"><span class="icon im im-external-link"></span>{{steamid}}</a>
+				<steamid :steamid="steamid"/>
 			</div>
 
 			<div class="gap"/>
@@ -237,7 +374,16 @@ registerVueComponent('player', {
 		</div>
 
 		<div class="body" v-if="isExtended">
-			<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" v-bind:key="roleName"/>
+
+			<p v-if="player.banned">Player was banned by <steamid :steamid="banned[steamid]"/>.</p>
+
+			<spacer-horizontal/>
+
+			<tabs>
+				<tab :title="'Roles'">
+					<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" v-bind:key="roleName"/>
+				</tab>
+			</tabs>
 		</div>
 	</div>`,
 	methods: {
@@ -279,22 +425,17 @@ registerVueComponent('player-role', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('tab-vehicles', {
+registerVueComponent('vehicles-management', {
 	props: ['vehicles'],
-	template: `<div class="tab_vehicles">
-		<div class="tab_head">
-			<h2>Vehicle Management</h2>
-		</div>
-		<div class="tab_body">
-			<vehicle-list v-bind:vehicles="vehicles"/>
-		</div>
+	template: `<div class="vehicles_management">
+		<vehicle-list v-bind:vehicles="vehicles"/>
 	</div>`
 })
 
 registerVueComponent('vehicle-list', {
 	props: ['vehicles'],
 	template: `<div class="list vehicle_list">
-		<vehicle v-for="(vehicle, vehicleId) of vehicles" v-bind:vehicle="vehicle" v-bind:vehicleId="vehicleId" v-bind:key="vehicle_id"/>
+		<vehicle v-for="(vehicle, vehicleId) of vehicles" v-bind:vehicle="vehicle" v-bind:vehicleId="vehicleId" v-bind:key="vehicleId"/>
 	</div>`
 })
 
@@ -318,43 +459,70 @@ registerVueComponent('vehicle', {
 	}
 })
 
-registerVueComponent('tab-roles', {
+registerVueComponent('roles-management', {
+	data: function (){
+		return {
+			newRoleText: ''
+		}
+	},
 	props: ['roles'],
-	template: `<div class="tab_roles">
-		<div class="tab_head">
-			<h2>Role Management</h2>
-		</div>
-		<div class="tab_body">
-			<role-list v-bind:roles="roles"/>
-		</div>
-	</div>`
+	template: `<div class="roles_management">
+		<division class="new_role_container" v-bind:startExtended="true">
+			<input v-model="newRoleText" placeholder="New Role Name"/>
+			<button v-on:click="addNewRole">Add new Role</button>
+		</division>
+		<role-list v-bind:roles="roles"/>
+	</div>`,
+	methods: {
+		addNewRole (){
+			if(this.newRoleText && this.newRoleText.length > 0){
+				this.callGameCommandAndWaitForSync('addRole', this.newRoleText).then(()=>{
+					this.newRoleText = ''
+				})
+			}
+		}
+	},
+	mixins: [gameCommandMixin]
 })
 
 registerVueComponent('role-list', {
 	props: ['roles'],
 	template: `<div class="list role_list">
-		<role v-for="(role, roleName) of roles" v-bind:role="role" v-bind:key="roleName"/>
+		<role v-for="(role, roleName) of roles" v-bind:role="role" v-bind:roleName="roleName" v-bind:key="roleName"/>
 	</div>`
 })
 
 registerVueComponent('role', {
 	props: ['role', 'roleName'],
 	template: `<div class="role">
-		<span class="name">{{roleName}}</span>
-		<div class="requirements">
-			<span class="admin im im-crown" v-if="role.admin"></span>
-			<span class="auth im im-check-mark" v-if="role.auth"></span>
+		<div class="role_top_container">
+			<span class="name">{{roleName}}</span>
+
+			<div class="buttons">
+				<button v-on:click="remove">Delete</button>
+			</div>
 		</div>
 
-		<command-list v-bind:commands="role.commands"/>
-		
-		<member-list v-bind:members="role.members"/>
+		<spacer-horizontal/>
 
-		<div class="gap"/>
+		<tabs>
+			<tab :title="'Requirements'">
+				
+				<spacer-horizontal/>
 
-		<div class="buttons">
-			<button v-on:click="remove">Delete</button>
-		</div>
+				<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
+				
+				<spacer-horizontal/>
+
+				<requirement-list v-bind:role="role"/>
+			</tab>
+			<tab :title="'Commands'">
+				<command-list v-bind:commands="role.commands"/>
+			</tab>
+			<tab :title="'Members'">
+				<member-list v-bind:members="role.members"/>
+			</tab>
+		</tabs>
 	</div>`,
 	methods: {
 		remove (){
@@ -363,10 +531,19 @@ registerVueComponent('role', {
 	}
 })
 
+registerVueComponent('requirement-list', {
+	props: ['role'],
+	template: `<div class="requirements">
+		<span class="admin im im-crown" v-if="role.admin"></span>
+		<span class="auth im im-check-mark" v-if="role.auth"></span>
+	</div>`
+})
+
+
 registerVueComponent('command-list', {
 	props: ['commands'],
 	template: `<div class="list command_list">
-		<span v-for="(isCommand, commandName, index) of roles" v-bind:key="commandName">{{commandName}}
+		<span v-for="(isCommand, commandName, index) of commands" v-bind:key="commandName">{{commandName}}
 			<span v-if="index != Object.keys(commands).length - 1">, </span>
 		</span>
 	</div>`
@@ -381,24 +558,19 @@ registerVueComponent('member-list', {
 	</div>`
 })
 
-registerVueComponent('tab-rules', {
+registerVueComponent('rules-management', {
 	data: function (){
 		return {
 			newRuleText: ''
 		}
 	},
 	props: ['rules'],
-	template: `<div class="tab_rules">
-		<div class="tab_head">
-			<h2>Rules Management</h2>
-		</div>
-		<div class="tab_body">
-			<division class="new_rule_container" v-bind:startExtended="true">
-				<textarea v-model="newRuleText" placeholder="New rule text" cols="30" roles="5"/>
-				<button v-on:click="addNewRule">Add Rule</button>
-			</division>
-			<rule-list v-bind:rules="rules"/>
-		</div>
+	template: `<div class="rules_management">
+		<division class="new_rule_container" v-bind:startExtended="true">
+			<textarea v-model="newRuleText" placeholder="New rule text" cols="30" roles="5"/>
+			<button v-on:click="addNewRule">Add new Rule</button>
+		</division>
+		<rule-list v-bind:rules="rules"/>
 	</div>`,
 	methods: {
 		addNewRule (){
@@ -436,52 +608,26 @@ registerVueComponent('rule', {
 
 
 
-registerVueComponent('tab-preferences', {
+registerVueComponent('preferences-management', {
 	props: ['preferences'],
-	template: `<div class="tab_preferences">
-		<div class="tab_head">
-			<h2>C2 Preferences</h2>
-		</div>
-		<div class="tab_body">
-			TODO
-		</div>
+	template: `<div class="preferences_management">
+		TODO
 	</div>`
 })
 
 
-registerVueComponent('tab-gamesettings', {
+registerVueComponent('gamesettings-management', {
 	props: ['gamesettings'],
-	template: `<div class="tab_gamesettings">
-		<div class="tab_head">
-			<h2>Game Settings</h2>
-		</div>
-		<div class="tab_body">
-			TODO
-		</div>
+	template: `<div class="gamesettings_management">
+		TODO
 	</div>`
 })
 
-registerVueComponent('tab-banned', {
-	props: ['banned'],
-	template: `<div class="tab_banned">
-		<div class="tab_head">
-			<h2>Banned Players</h2>
-		</div>
-		<div class="tab_body">
-			TODO
-		</div>
-	</div>`
-})
 
-registerVueComponent('tab-logs', {
+registerVueComponent('logs-management', {
 	props: ['logs'],
-	template: `<div class="tab_logs">
-		<div class="tab_head">
-			<h2>Logs Management</h2>
-		</div>
-		<div class="tab_body">
-			<log-list v-bind:logs="logs"></log-list>
-		</div>
+	template: `<div class="logs_management">
+		<log-list v-bind:logs="logs"></log-list>
 	</div>`
 })
 

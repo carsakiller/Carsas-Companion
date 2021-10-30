@@ -1,22 +1,29 @@
 {{{{vue-js}}}}
 
 <div id="app">
-	<div class="sidebar">
-		<div class="sidebar_entry" v-for="tab in tabs" v-bind:key="tab.id" v-bind:class="currentTab === tab.id ? activeTabClass : ''" v-on:click="switchToTab(tab.id)">
-			<span class="im" v-bind:class="tab.iconClass"></span>
-		</div>
-	</div>
-
-	<div class="tabs">
-		<tab-players v-if="currentTab === 'players'" v-bind:players="players"></tab-players>
-		<tab-vehicles v-if="currentTab === 'vehicles'" v-bind:vehicles="vehicles"></tab-vehicles>
-		<tab-roles v-if="currentTab === 'roles'" v-bind:roles="roles"></tab-roles>
-		<tab-rules v-if="currentTab === 'rules'" v-bind:rules="rules"></tab-rules>
-		<tab-preferences v-if="currentTab === 'preferences'" v-bind:preferences="preferences"></tab-preferences>
-		<tab-gamesettings v-if="currentTab === 'gamesettings'" v-bind:gamesettings="gamesettings"></tab-gamesettings>
-		<tab-banned v-if="currentTab === 'banned'" v-bind:banned="banned"></tab-banned>
-		<tab-logs v-if="currentTab === 'logs'" v-bind:logs="logs"></tab-logs>
-	</div>
+	<pages v-bind:selectedindex="2">
+		<page :title="'Players'" :icon="'users'">
+			<players-management v-bind:players="players"></players-management>
+		</page>
+		<page :title="'Vehicles'" :icon="'car'">
+			<vehicles-management v-bind:vehicles="vehicles"></vehicles-management>
+		</page>
+		<page :title="'Roles'" :icon="'crown'">
+			<roles-management v-bind:roles="roles"></roles-management>
+		</page>
+		<page :title="'Rules'" :icon="'task-o'">
+			<rules-management v-bind:rules="rules"></rules-management>
+		</page>
+		<page :title="'Preferences'" :icon="'control-panel'">
+			<preferences-management v-bind:preferences="preferences"></preferences-management>
+		</page>
+		<page :title="'Game Settings'" :icon="'wrench'">
+			<gamesettings-management v-bind:gamesettings="gamesettings"></gamesettings-management>
+		</page>
+		<page :title="'Logs'" :icon="'note-o'">
+			<logs-management v-bind:logs="logs"></logs-management>
+		</page>
+	</pages>
 
 </div>
 
@@ -29,41 +36,6 @@
 	const store = Vuex.createStore({
 		state: {
 			userPeerId: 0,//TODO: get this thing from the login token
-			tabs: [{
-				id: 'players',
-				name: 'Players',
-				iconClass: 'im-users'
-			},{
-				id: 'vehicles',
-				name: 'Vehicles',
-				iconClass: 'im-car'
-			},{
-				id: 'roles',
-				name: 'Roles',
-				iconClass: 'im-crown'
-			},{
-				id: 'rules',
-				name: 'rules',
-				iconClass: 'im-task-o'
-			},{
-				id: 'preferences',
-				name: 'Preferences',
-				iconClass: 'im-control-panel'
-			},{
-				id: 'gamesettings',
-				name: 'Game Settings',
-				iconClass: 'im-wrench'
-			},{
-				id: 'banned',
-				name: 'Banned Players',
-				iconClass: 'im-flag'
-			},{
-				id: 'logs',
-				name: 'Logs',
-				iconClass: 'im-note-o'
-			}],
-			currentTab: 'rules',
-			activeTabClass: 'active',
 
 			players: {
 				'x32' /* steam_id */ : {
@@ -179,24 +151,23 @@
 		mutations: {
 			setPlayers (state, players){
 				state.players = players
-			},
-			switchTab (state, tab){
-				state.currentTab = tab
-			},
+			}
+			/*,
 			addTab (state, tab){
 				state.tabs.push(tab)
-			}
+			}*/
 		},
 		actions: {
 			setPlayers ({ commit }, players){
 				commit('setPlayers', players)
-			},
+			}
+			/*,
 			switchTab ({commit}, tab){
 				commit('switchTab', tab)
 			},
 			addTab ({ commit }, tab){
 				commit('addTab', tab)
-			}
+			}*/
 		}
 
 	})
@@ -249,12 +220,13 @@
 				banned: this.banned,
 				logs: this.logs
 			}
-		},
+		}
+		/*,
 		methods: {
 			switchToTab (tab){
 				store.dispatch('switchTab', tab)
 			}
-		}
+		}*/
 	})
 
 	app.use(store)

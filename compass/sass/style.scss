@@ -67,3 +67,56 @@ textarea, input {
 	font-style: inherit;
 	font-size: inherit;
 }
+
+.tabs {
+
+	.tabs_selector {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		max-width: 100%;
+		border-bottom: 2px solid shade($text-color, 20%);
+
+		.entry {
+			padding: 0.5em 1em;
+			border: 1px solid $text-color;
+			border-bottom: none;
+			cursor: pointer;
+			transition: all 0.2s ease 0s;
+
+			&:hover {
+				background: $primary;
+			}
+
+			&.selected {
+				background: $primary;
+			}
+		}
+	}
+
+	.tab {
+
+	}
+}
+
+.steamid {
+	font-size: 0.9em;
+	font-style: italic;
+	color: #aaa;
+	transition: all 0.2s ease 0s;
+
+	&:hover {
+		color: #ddd;
+	}
+
+	.icon {
+		font-size: 0.8em;
+		position: relative;
+		top: 0.1em;
+		margin-right: 0.5em;
+	}
+}
+
+p {
+	line-height: 1.2em;
+}
