@@ -53,7 +53,7 @@ let lockableComponent = {
 	}
 }
 
-Vue.component('lockable', {
+app.component('lockable', {
 	template: `<div class="lockable">
 		<div v-if="parentIsComponentLocked" class="lock_overlay"></div>
 	</div>`,
@@ -73,7 +73,7 @@ Vue.component('lockable', {
 })
 
 
-Vue.component('tab-players', {
+app.component('tab-players', {
 	props: ['players'],
 	template: `<div class="tab_players">
 		<div class="tab_head">
@@ -85,14 +85,14 @@ Vue.component('tab-players', {
 	</div>`
 })
 
-Vue.component('player-list', {
+app.component('player-list', {
 	props: ['players'],
 	template: `<div class="player_list">
 		<player v-for="player in players" v-bind:player="player" v-bind:key="player.id"></player>
 	</div>`
 })
 
-Vue.component('player', {
+app.component('player', {
 	data: function (){
 		return {
 			isExtended: false
@@ -131,7 +131,7 @@ Vue.component('player', {
 	}
 })
 
-Vue.component('player-role', {
+app.component('player-role', {
 	data: function (){
 		return {
 			enabledClass: 'enabled',
@@ -170,7 +170,7 @@ Vue.component('player-role', {
 })
 
 
-Vue.component('tab-logs', {
+app.component('tab-logs', {
 	props: ['logs'],
 	template: `<div class="tab_logs">
 		<div class="tab_head">
@@ -182,14 +182,14 @@ Vue.component('tab-logs', {
 	</div>`
 })
 
-Vue.component('logs-list', {
+app.component('logs-list', {
 	props: ['logs'],
 	template: `<div class="logs_list">
 		<log-entry v-for="(entry, entry_index) of logs" v-bind:entry="entry" v-bind:key="entry_index"></log-entry>
 	</div>`
 })
 
-Vue.component('log-entry', {
+app.component('log-entry', {
 	props: ['entry'],
 	template: `<div class="log_entry">
 		<div class="time">{{new Date(entry.time).toLocaleString()}}</div>

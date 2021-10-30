@@ -1,6 +1,6 @@
 {{{{vue-js}}}}
 
-<div class="app">
+<div id="app">
 	<div class="sidebar">
 		<div class="sidebar_entry" v-for="tab in tabs" v-bind:key="tab.id" v-bind:class="currentTab === tab.id ? activeTabClass : ''" v-on:click="currentTab = tab.id">
 			<span class="im" v-bind:class="tab.iconClass"></span>
@@ -20,61 +20,126 @@
 
 <script type="text/javascript">
 
-	Vue.use(Vuex)
-
-	const store = new Vuex.Store({
+	const store = Vuex.createStore({
 		state: {
 			userPeerId: 0,//TODO: get this thing from the login token
 			tabs: [{
-				id: "players",
-				name: "Players",
-				iconClass: "im-user-male"
+				id: 'players',
+				name: 'Players',
+				iconClass: 'im-user-male'
 			},{
-				id: "logs",
-				name: "Logs",
-				iconClass: "im-note-o"
+				id: 'logs',
+				name: 'Logs',
+				iconClass: 'im-note-o'
 			}],
-			currentTab: "players",
+			currentTab: 'players',
 			activeTabClass: 'active',
 
-			players: [{
-				id: 1,
-				name: "Pony",
-				steamid: "x64",
-				roles: [{
-					id: 0,
-					name: 'Owner',
-					isEnabled: false
-				},{
-					id: 1,
-					name: 'Admin',
-					isEnabled: true
-				}]
-			},{
-				id: 2,
-				name: "Carsa",
-				steamid: "x32",
-				roles: [{
-					id: 0,
-					name: 'owner',
-					isEnabled: true
-				},{
-					id: 1,
-					name: 'admin',
-					isEnabled: true
-				}]
-			}],
+			players: {
+				'x32' /* steam_id */ : {
+					name: 'Pony',
+					banned: false,
+					roles: {
+						Admin: true
+					},
+					peer_id: 1
+				},
+				'x64': {
+					name: 'Carsa',
+					banned: false,
+					roles: {
+						Owner: true
+					}
+				},
+				'x99': {
+					name: 'aBannedUser',
+					banned: true,
+					roles: {
+						Owner: true
+					}
+				}
+			},
 
-			logs: [{
-				time: new Date().getTime(),
-				message: 'server started'
-			},{
-				time: new Date().getTime(),
-				message: 'fondling ponies'
-			},{
-				time: new Date().getTime(),
-				message: 'loading lasers'
-			}]
+			vehicles: {
+				1 /* vehicle_id */: {
+					owner: 'x32',//steam_id
+					name: 'Bus',
+					ui_id: 'ui_id'
+				}
+			},
+
+			roles: {
+				Owner: {
+					commands: {
+						ban: true,
+						unban: true
+					},
+					admin: true,
+					auth: true,
+					members: [
+						'x64'
+					]
+				},
+				Admin: {
+					commands: {
+						unban: true
+					},
+					admin: true,
+					auth: true,
+					members: [
+						'x32'
+					]
+				}
+			},
+
+			rules: [
+				'dont be a dick',
+				'help out'
+			],
+
+			preferences: {
+				cheats: {
+					value: false,
+					type: 'bool'
+				},
+				maxMass : {
+					value: 1000,
+					type: 'number'
+				},
+				welcomeNew : {
+					value: 'Welcome to this Stormworks server!',
+					type: 'string'
+				},
+				startEquipment : {
+					value: [
+						{id: 15, slot: 'B', data1: 1},
+						{id: 6, slot: 'C'},
+						{id: 11, slot: 'E', data1: 3},
+					],
+					type: 'table'
+				}
+			},
+
+			gameSettings: {
+				npc_damage: true /* right now only supports booleans but will have numbers in the future */
+			},
+
+			banned: {
+				"x99": "x64"
+			},
+
+			logs: [
+				{
+					time: new Date().getTime(),
+					message: 'server started'
+				},{
+					time: new Date().getTime(),
+					message: 'fondling ponies'
+				},{
+					time: new Date().getTime(),
+					message: 'loading lasers'
+				}
+			]
 		},
 		computed: {
 			userPeerId () {
@@ -84,18 +149,23 @@
 		mutations: {
 			setPlayers (state, players){
 				state.players = players
+			},
+			addTab (state, tab){
+				state.tabs.push(tab)
 			}
 		},
 		actions: {
 			setPlayers ({ commit }, players){
 				commit('setPlayers', players)
+			},
+			addTab ({ commit }, tab){
+				commit('addTab', tab)
 			}
 		}
 
 	})
 
-	let vm = new Vue({
-		el: '.app',
+	let app = Vue.createApp({
 		store: store,
 		computed: {
 			tabs (){
@@ -114,14 +184,28 @@
 				return store.state.logs
 			}
 		}
-	});
+	})
+
+	app.use(store)
 
 	$(window).on('load', ()=>{
-		//C2WebClient.setVueData(vueData)
+		// TODO empty the store and get freshly synced data
+		let vm = app.mount('#app')
 	})
+
+
+	function registerTab(id, name, iconClass){
+		store.dispatch('addTab', {
+			id: id,
+			name: name,
+			iconClass: iconClass
+		})
+	}
 
 </script>
 
+
+<script type="text/javascript" src="/static/scripts/components.js"></script>
 
 <script type="text/javascript" src="/static/scripts/websock.js"></script>
 <script type="text/javascript" src="/static/scripts/c2webclient.js"></script>
