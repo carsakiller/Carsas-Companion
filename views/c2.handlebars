@@ -2,13 +2,19 @@
 
 <div id="app">
 	<div class="sidebar">
-		<div class="sidebar_entry" v-for="tab in tabs" v-bind:key="tab.id" v-bind:class="currentTab === tab.id ? activeTabClass : ''" v-on:click="currentTab = tab.id">
+		<div class="sidebar_entry" v-for="tab in tabs" v-bind:key="tab.id" v-bind:class="currentTab === tab.id ? activeTabClass : ''" v-on:click="switchToTab(tab.id)">
 			<span class="im" v-bind:class="tab.iconClass"></span>
 		</div>
 	</div>
 
 	<div class="tabs">
 		<tab-players v-if="currentTab === 'players'" v-bind:players="players"></tab-players>
+		<tab-vehicles v-if="currentTab === 'vehicles'" v-bind:vehicles="vehicles"></tab-vehicles>
+		<tab-roles v-if="currentTab === 'roles'" v-bind:roles="roles"></tab-roles>
+		<tab-rules v-if="currentTab === 'rules'" v-bind:rules="rules"></tab-rules>
+		<tab-preferences v-if="currentTab === 'preferences'" v-bind:preferences="preferences"></tab-preferences>
+		<tab-gamesettings v-if="currentTab === 'gamesettings'" v-bind:gamesettings="gamesettings"></tab-gamesettings>
+		<tab-banned v-if="currentTab === 'banned'" v-bind:banned="banned"></tab-banned>
 		<tab-logs v-if="currentTab === 'logs'" v-bind:logs="logs"></tab-logs>
 	</div>
 
@@ -26,7 +32,31 @@
 			tabs: [{
 				id: 'players',
 				name: 'Players',
-				iconClass: 'im-user-male'
+				iconClass: 'im-users'
+			},{
+				id: 'vehicles',
+				name: 'Vehicles',
+				iconClass: 'im-car'
+			},{
+				id: 'roles',
+				name: 'Roles',
+				iconClass: 'im-crown'
+			},{
+				id: 'rules',
+				name: 'rules',
+				iconClass: 'im-task-o'
+			},{
+				id: 'preferences',
+				name: 'Preferences',
+				iconClass: 'im-control-panel'
+			},{
+				id: 'gamesettings',
+				name: 'Game Settings',
+				iconClass: 'im-wrench'
+			},{
+				id: 'banned',
+				name: 'Banned Players',
+				iconClass: 'im-flag'
 			},{
 				id: 'logs',
 				name: 'Logs',
@@ -150,6 +180,9 @@
 			setPlayers (state, players){
 				state.players = players
 			},
+			switchTab (state, tab){
+				state.currentTab = tab
+			},
 			addTab (state, tab){
 				state.tabs.push(tab)
 			}
@@ -157,6 +190,9 @@
 		actions: {
 			setPlayers ({ commit }, players){
 				commit('setPlayers', players)
+			},
+			switchTab ({commit}, tab){
+				commit('switchTab', tab)
 			},
 			addTab ({ commit }, tab){
 				commit('addTab', tab)
@@ -166,7 +202,6 @@
 	})
 
 	let app = Vue.createApp({
-		store: store,
 		computed: {
 			tabs (){
 				return store.state.tabs
@@ -177,8 +212,24 @@
 			activeTabClass (){
 				return store.state.activeTabClass
 			},
+
 			players (){
 				return store.state.players
+			},
+			vehicles (){
+				return store.state.vehicles
+			},
+			roles (){
+				return store.state.roles
+			},
+			preferences (){
+				return store.state.preferences
+			},
+			gamesettings (){
+				return store.state.gamesettings
+			},
+			banned (){
+				return store.state.banned
 			},
 			logs (){
 				return store.state.logs
@@ -190,9 +241,14 @@
 				vehicles: this.vehicles,
 				rules: this.rules,
 				preferences: this.preferences,
-				gameSettings: this.gameSettings,
+				gamesettings: this.gamesettings,
 				banned: this.banned,
 				logs: this.logs
+			}
+		},
+		methods: {
+			switchToTab (tab){
+				store.dispatch('switchTab', tab)
 			}
 		}
 	})

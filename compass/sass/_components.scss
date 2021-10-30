@@ -108,6 +108,7 @@
 						display: flex;
 						flex-direction: row;
 						cursor: pointer;
+						margin-bottom: 0.2em;
 
 						.extend_arrow {
 							font-size: 0.8em;
@@ -120,6 +121,18 @@
 						font-size: 0.9em;
 						font-style: italic;
 						color: #aaa;
+						transition: all 0.2s ease 0s;
+
+						&:hover {
+							color: #ddd;
+						}
+
+						.icon {
+							font-size: 0.8em;
+							position: relative;
+							top: 0.1em;
+							margin-right: 0.5em;
+						}
 					}
 				}
 
@@ -145,7 +158,13 @@
 			}
 
 			.player_role {
-				padding: 0.3em;
+				padding: 0.3em 0.6em;
+				font-size: 1.2em;
+
+				.name {
+					color: $text-color;
+					margin-right: 0.5em;
+				}
 
 				&.enabled {
 					background: $enabled;
@@ -159,9 +178,48 @@
 	}
 }
 
+.tab_vehicles {
+
+	.vehicle_list {
+		display: flex;
+		flex-direction: column;
+		padding: 1em;
+
+		.vehicle {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			padding: 0.5em 1em;
+			background: $tertiary;
+
+			.id {
+				font-size: 1.5em;
+				min-width: 2.5em;
+				text-align: center;
+				color: $text-color;
+				font-weight: 500;
+			}
+
+			.name {
+				font-size: 1.3em;
+				font-weight: 500;
+				margin-right: 1em;
+			}
+
+			.gap {
+				width: 100%;
+			}
+
+			.owner {
+
+			}
+		}
+	}
+}
+
 .tab_logs {
 
-	.logs_list {
+	.log_list {
 		display: flex;
 		flex-direction: column;
 		padding: 1em;

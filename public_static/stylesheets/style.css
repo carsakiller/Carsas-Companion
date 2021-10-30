@@ -1783,74 +1783,126 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   display: flex;
   flex-direction: row;
   cursor: pointer;
+  margin-bottom: 0.2em;
 }
-/* line 112, ../../compass/sass/_components.scss */
+/* line 113, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .name .extend_arrow {
   font-size: 0.8em;
   margin-left: 0.5em;
   line-height: 1.2em;
 }
-/* line 119, ../../compass/sass/_components.scss */
+/* line 120, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
+  transition: all 0.2s ease 0s;
 }
 /* line 126, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .name_container .steamid:hover {
+  color: #ddd;
+}
+/* line 130, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .name_container .steamid .icon {
+  font-size: 0.8em;
+  position: relative;
+  top: 0.1em;
+  margin-right: 0.5em;
+}
+/* line 139, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .gap {
   width: 100%;
 }
-/* line 130, ../../compass/sass/_components.scss */
+/* line 143, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .buttons {
   display: flex;
   flex-direction: row;
   margin-left: 1em;
 }
-/* line 135, ../../compass/sass/_components.scss */
+/* line 148, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .buttons button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 141, ../../compass/sass/_components.scss */
+/* line 154, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .body {
   display: flex;
   flex-direction: column;
   background: #07192B;
 }
-/* line 147, ../../compass/sass/_components.scss */
+/* line 160, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .player_role {
-  padding: 0.3em;
+  padding: 0.3em 0.6em;
+  font-size: 1.2em;
 }
-/* line 150, ../../compass/sass/_components.scss */
+/* line 164, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .player_role .name {
+  color: #f3f3f3;
+  margin-right: 0.5em;
+}
+/* line 169, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .player_role.enabled {
   background: #379249;
 }
-/* line 154, ../../compass/sass/_components.scss */
+/* line 173, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .player_role.disabled {
   background: #c92f2f;
 }
 
-/* line 164, ../../compass/sass/_components.scss */
-.tab_logs .logs_list {
+/* line 183, ../../compass/sass/_components.scss */
+.tab_vehicles .vehicle_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 169, ../../compass/sass/_components.scss */
-.tab_logs .logs_list .log_entry {
+/* line 188, ../../compass/sass/_components.scss */
+.tab_vehicles .vehicle_list .vehicle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5em 1em;
+  background: #07192B;
+}
+/* line 195, ../../compass/sass/_components.scss */
+.tab_vehicles .vehicle_list .vehicle .id {
+  font-size: 1.5em;
+  min-width: 2.5em;
+  text-align: center;
+  color: #f3f3f3;
+  font-weight: 500;
+}
+/* line 203, ../../compass/sass/_components.scss */
+.tab_vehicles .vehicle_list .vehicle .name {
+  font-size: 1.3em;
+  font-weight: 500;
+  margin-right: 1em;
+}
+/* line 209, ../../compass/sass/_components.scss */
+.tab_vehicles .vehicle_list .vehicle .gap {
+  width: 100%;
+}
+
+/* line 222, ../../compass/sass/_components.scss */
+.tab_logs .log_list {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+/* line 227, ../../compass/sass/_components.scss */
+.tab_logs .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 174, ../../compass/sass/_components.scss */
-.tab_logs .logs_list .log_entry:not(:last-child) {
+/* line 232, ../../compass/sass/_components.scss */
+.tab_logs .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 178, ../../compass/sass/_components.scss */
-.tab_logs .logs_list .log_entry .time {
+/* line 236, ../../compass/sass/_components.scss */
+.tab_logs .log_list .log_entry .time {
   margin-right: 1em;
 }
 
-/* line 186, ../../compass/sass/_components.scss */
+/* line 244, ../../compass/sass/_components.scss */
 .lockable .lock_overlay {
   position: absolute;
   top: 0;
@@ -1898,5 +1950,5 @@ body {
 /* line 39, ../../compass/sass/style.scss */
 .button.small_button, .small_button.small_button {
   font-size: 80%;
-  padding: 0.2em 0.3em;
+  padding: 0.2em 0.4em;
 }
