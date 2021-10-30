@@ -264,7 +264,12 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				
 				this.pendingCommandResponses.splice(i,1);
 
-				p.fulfill(content)
+				if(content === 'ok'){
+					p.fulfill(content)
+				} else {
+					p.reject(content)
+				}
+
 				return 'ok'
 			}
 		}

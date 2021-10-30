@@ -50,6 +50,7 @@ The method then sends that command to the game, if game responds with success, w
 ## WebServer
 * version check with the script running in the game
 * detect game server restart / script reload
+* when did not receive a heartbeat / any message for some time, set server to notAvailable (inform webclients, and directly reject their requests)
 
 ## GameAddon
 * for every command, create a field "onChangeSync" = "players"

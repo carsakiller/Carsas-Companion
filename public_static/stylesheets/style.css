@@ -1744,25 +1744,39 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   margin-bottom: 1em;
 }
 /* line 74, ../../compass/sass/_components.scss */
+.tab_players .player_list .player.is_banned .name {
+  color: #c92f2f;
+}
+/* line 78, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0.5em 1em;
 }
-/* line 80, ../../compass/sass/_components.scss */
-.tab_players .player_list .player .head .id {
+/* line 84, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .state {
+  font-size: 1.5em;
   min-width: 2.5em;
   text-align: center;
-  font-size: 1.5em;
+}
+/* line 89, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .state .id {
+  color: #379249;
   font-weight: 500;
 }
-/* line 87, ../../compass/sass/_components.scss */
+/* line 94, ../../compass/sass/_components.scss */
+.tab_players .player_list .player .head .state .offline {
+  color: #c92f2f;
+  font-size: 0.8em;
+}
+/* line 100, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container {
   display: flex;
   flex-direction: column;
+  margin-left: 1em;
 }
-/* line 91, ../../compass/sass/_components.scss */
+/* line 105, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .name {
   font-size: 1.3em;
   font-weight: 500;
@@ -1770,73 +1784,73 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   flex-direction: row;
   cursor: pointer;
 }
-/* line 98, ../../compass/sass/_components.scss */
+/* line 112, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .name .extend_arrow {
   font-size: 0.8em;
   margin-left: 0.5em;
   line-height: 1.2em;
 }
-/* line 105, ../../compass/sass/_components.scss */
+/* line 119, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .name_container .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
 }
-/* line 112, ../../compass/sass/_components.scss */
+/* line 126, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .gap {
   width: 100%;
 }
-/* line 116, ../../compass/sass/_components.scss */
+/* line 130, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .buttons {
   display: flex;
   flex-direction: row;
   margin-left: 1em;
 }
-/* line 121, ../../compass/sass/_components.scss */
+/* line 135, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .head .buttons button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 127, ../../compass/sass/_components.scss */
+/* line 141, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .body {
   display: flex;
   flex-direction: column;
   background: #07192B;
 }
-/* line 133, ../../compass/sass/_components.scss */
+/* line 147, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .player_role {
   padding: 0.3em;
 }
-/* line 136, ../../compass/sass/_components.scss */
+/* line 150, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .player_role.enabled {
   background: #379249;
 }
-/* line 140, ../../compass/sass/_components.scss */
+/* line 154, ../../compass/sass/_components.scss */
 .tab_players .player_list .player .player_role.disabled {
   background: #c92f2f;
 }
 
-/* line 150, ../../compass/sass/_components.scss */
+/* line 164, ../../compass/sass/_components.scss */
 .tab_logs .logs_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 155, ../../compass/sass/_components.scss */
+/* line 169, ../../compass/sass/_components.scss */
 .tab_logs .logs_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 160, ../../compass/sass/_components.scss */
+/* line 174, ../../compass/sass/_components.scss */
 .tab_logs .logs_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 164, ../../compass/sass/_components.scss */
+/* line 178, ../../compass/sass/_components.scss */
 .tab_logs .logs_list .log_entry .time {
   margin-right: 1em;
 }
 
-/* line 172, ../../compass/sass/_components.scss */
+/* line 186, ../../compass/sass/_components.scss */
 .lockable .lock_overlay {
   position: absolute;
   top: 0;
@@ -1875,7 +1889,7 @@ body {
 }
 /* line 31, ../../compass/sass/style.scss */
 .button:hover, .small_button:hover {
-  background: #0006;
+  background: #9996;
 }
 /* line 35, ../../compass/sass/style.scss */
 .button.button, .small_button.button {

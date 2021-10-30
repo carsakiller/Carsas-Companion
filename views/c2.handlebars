@@ -183,6 +183,17 @@
 			logs (){
 				return store.state.logs
 			}
+		},
+		provide (){
+			return {
+				players: this.players,
+				vehicles: this.vehicles,
+				rules: this.rules,
+				preferences: this.preferences,
+				gameSettings: this.gameSettings,
+				banned: this.banned,
+				logs: this.logs
+			}
 		}
 	})
 

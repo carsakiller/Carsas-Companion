@@ -88,7 +88,7 @@ app.component('tab-players', {
 app.component('player-list', {
 	props: ['players'],
 	template: `<div class="player_list">
-		<player v-for="player in players" v-bind:player="player" v-bind:key="player.id"></player>
+		<player v-for="(player, steamid) in players" v-bind:player="player" v-bind:steamid="steamid" v-bind:key="steamid"></player>
 	</div>`
 })
 
@@ -98,16 +98,21 @@ app.component('player', {
 			isExtended: false
 		}
 	},
-	props: ['player'],
-	template: `<div class="player" key="{{player.id}}">
+	props: ['player', 'steamid'],
+	template: `<div class="player" key="{{player.id}}" v-bind:class="[{is_banned: player.banned}]">
 		<div class="head" v-on:click="isExtended = !isExtended">
-			<span class="id">{{player.id}}</span>
+			
+			<div class="state">
+				<span class="id" v-if="player.peer_id">{{player.peer_id}}</span>
+				<span class="offline im im-power" v-else></span>
+			</div>
+
 			<div class="name_container">
 				<div class="name">{{player.name}}
 					<span class="im im-angle-up extend_arrow" v-if="isExtended"></span>
 					<span class="im im-angle-down extend_arrow" v-else></span>
 				</div>
-				<a class="steamid" v-once v-bind:href="'https://steamcommunity.com/profiles/' + this.player.steamid">{{player.steamid}}</a>
+				<a class="steamid" target="_blank" rel="noopener noreferrer" v-bind:href="'https://steamcommunity.com/profiles/' + this.steamid">{{steamid}}</a>
 			</div>
 			<div class="gap">
 			</div>
@@ -118,14 +123,14 @@ app.component('player', {
 		</div>
 
 		<div class="body" v-if="isExtended">
-			<player-role v-for="role in player.roles" v-bind:role="role" v-bind:player="player" v-bind:key="role.id"></player-role>
+			<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" v-bind:key="roleName"></player-role>
 		</div>
 	</div>`,
 	methods: {
-		kick: function (){
+		kick (){
 			alert('not implemented')
 		},
-		ban: function (){
+		ban (){
 			alert('not implemented')
 		}
 	}
@@ -138,18 +143,18 @@ app.component('player-role', {
 			disabledClass: 'disabled'
 		}
 	},
-	props: ['role', 'player'],
-	template: `<div class="player_role" key="{{role.id}}" v-bind:class="role.isEnabled ? enabledClass : disabledClass">
+	props: ['hasRole', 'roleName', 'player'],
+	template: `<div class="player_role" v-bind:class="hasRole ? enabledClass : disabledClass">
 		<lockable/>
-		<span class="name">{{role.name}}</span>
+		<span class="name">{{roleName}}</span>
 
-		<button class="small_button" v-if="role.isEnabled" v-on:click.stop="revokeRole"><span class="im im-minus"></span></button>
+		<button class="small_button" v-if="hasRole" v-on:click.stop="revokeRole"><span class="im im-minus"></span></button>
 		<button class="small_button" v-else v-on:click.stop="giveRole"><span class="im im-plus"></span></button>
 	</div>`,
 	methods: {
 		giveRole () {
 			this.lockComponentUntilSync()
-			C2WebClient.sendCommand('giveRole', [this.$store.state.userPeerId, this.player.id, this.role.name]).then((res)=>{
+			C2WebClient.sendCommand('giveRole', [this.$store.state.userPeerId, this.player.peer_id, this.roleName]).then((res)=>{
 				console.log('giveRole was successful', res)
 			}).catch((err)=>{
 				console.log('giveRole was error', err)
@@ -158,7 +163,7 @@ app.component('player-role', {
 		},
 		revokeRole () {
 			this.lockComponentUntilSync()
-			C2WebClient.sendCommand('revokeRole', [this.$store.state.userPeerId, this.player.id, this.role.name]).then((res)=>{
+			C2WebClient.sendCommand('revokeRole', [this.$store.state.userPeerId, this.player.peer_id, this.roleName]).then((res)=>{
 				console.log('revokeRole was successful', res)
 			}).catch((err)=>{
 				console.log('revokeRole was error', err)

@@ -54,15 +54,16 @@ function onTick()
 		end)
 		
 		registerWebServerCommandCallback("giveRole", function(command, content)
-			if not (type(content[1]) == "number") then
+			args = splitArgs(content)
+			if not (type(args[1]) == "number") then
 				return "caller_id must be a number"
 			end
 			
-			if not (type(content[2]) == "number") then
+			if not (type(args[2]) == "number") then
 				return "player_id must be a number"
 			end
 			
-			if not (type(content[3]) == "string") then
+			if not (type(args[3]) == "string") then
 				return "role must be a string"
 			end
 			
@@ -73,15 +74,16 @@ function onTick()
 		end)
 		
 		registerWebServerCommandCallback("revokeRole", function(command, content)
-			if not (type(content[1]) == "number") then
+			args = splitArgs(content)
+			if not (type(args[1]) == "number") then
 				return "caller_id must be a number"
 			end
 			
-			if not (type(content[2]) == "number") then
+			if not (type(args[2]) == "number") then
 				return "player_id must be a number"
 			end
 			
-			if not (type(content[3]) == "string") then
+			if not (type(args[3]) == "string") then
 				return "role must be a string"
 			end
 			
@@ -154,6 +156,16 @@ function onCustomCommand(full_message, user_peer_id, is_admin, is_auth, command,
 	end
 end
 
+function splitArgs(inputstr)
+	local sep = "%s"
+	local t={}
+	for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+		local num = tonumber(str)
+		table.insert(t, num == nil and str or num)
+	end
+	return t
+end
+
 
 function tableJoin(t, sep)
 	local ret = ""
@@ -209,7 +221,7 @@ function debug(msg)
 end
 
 function debugDetail(msg)
-	if false then
+	if true then
 		debug(msg)
 	end
 end
@@ -524,7 +536,7 @@ function httpReply(port, url, response_body)
 		end
 		
 		if parsed.command then
-			debug("received command from server: '" .. parsed.command .. "', " .. json.stringify(parsed.commandContent or "nil"))
+			debug("received command from server: '" .. parsed.command .. "', " .. json.stringify(parsed.commandContent))
 		
 			if type(webServerCommandCallbacks[parsed.command]) == "function" then
 				local result = webServerCommandCallbacks[parsed.command](parsed.command, parsed.commandContent)

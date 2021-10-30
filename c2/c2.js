@@ -8,10 +8,14 @@ module.exports = class C2 extends C2LoggingUtility {
 	constructor(loglevel, app){
 		super(loglevel)
 
-		this.c2GameInterface = new C2GameInterface(loglevel - 1, app)
-		this.c2WebInterface = new C2WebInterface(loglevel - 1, app)
+		this.c2GameInterface = new C2GameInterface(loglevel, app)
+		this.c2WebInterface = new C2WebInterface(loglevel, app)
 
 		this.syncedData = {}
+
+		process.on('unhandledRejection', error => {
+		  this.error(error);
+		});
 
 		// TESTS
 		if(false){
@@ -63,11 +67,11 @@ module.exports = class C2 extends C2LoggingUtility {
 		}
 
 		this.c2WebInterface.on('message', (...args)=>{
-			this.handleWebClientMessage.apply(this, args)
+			return this.handleWebClientMessage.apply(this, args)
 		})
 
 		this.c2GameInterface.on('message', (...args)=>{
-			this.handleGameMessage.apply(this, args)
+			return this.handleGameMessage.apply(this, args)
 		})
 	}
 
@@ -102,7 +106,7 @@ module.exports = class C2 extends C2LoggingUtility {
 				if(message.type.startsWith('command-')){
 					return new Promise((fulfill, reject)=>{
 						let commandname = message.type.substring('command-'.length)
-						this.log('(?)', 'executing command:', commandname)
+						this.log('(?)', 'executing command:', commandname, message.data)
 						this.c2GameInterface.sendCommand(commandname, message.data).then((res)=>{
 							this.log('command', commandname, 'success:', res)
 							fulfill(res)

@@ -7,7 +7,7 @@ let C2WebClient = (()=>{
 	/*
 		loglevels: 1 = error, 2 = warn, 3 = info, 4 = log
 	*/
-	const LOGLEVEL = 3
+	const LOGLEVEL = 4
 
 	ws.on('open', ()=>{
 		log('is now open')
@@ -86,10 +86,27 @@ let C2WebClient = (()=>{
 
 	function sendCommand(command, data){
 		return new Promise((fulfill, reject)=>{
-			log('sendCommand', command, data)
+			let dataString = toString(data)
+
+			function toString(it){
+				if(it === undefined || it === null){
+					return 'nil'
+				} else if (it instanceof Array){
+					let all = ''
+					for(let i in it){
+						all += toString(it[i]) + (i < it.length - 1 ? ' ' : '')
+					}
+					return all
+				} else {
+					return '' + it
+				}
+			}
+
+			log('sendCommand', command, dataString )
+
 			ws.send({
 				type: 'command-' + command,
-				data: data
+				data: dataString
 			}).then((res)=>{
 				log('received response for command', command, res)
 				fulfill(res)

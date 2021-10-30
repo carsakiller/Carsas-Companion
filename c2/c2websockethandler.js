@@ -103,7 +103,9 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			}
 
 			if(typeof parsed.serverId === 'number'){
-				// response to server message
+				this.info('received response to server message', parsed.serverId)
+				this.log(parsed.data)
+
 				for(let i in this.pendingMessageResponses){
 					let pm = this.pendingMessageResponses[i]
 
@@ -120,7 +122,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					}
 				}
 			} else if (typeof parsed.clientId === 'number'){
-				// message from the client
+				this.info('received new message from webclient #' + client.id, parsed.clientId)
+				this.log(parsed.data)
 
 				if(typeof this.messageCallback !== 'function'){
 					this.warn('received a message but no messageCallback was set')

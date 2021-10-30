@@ -48,6 +48,9 @@ class WebSock {
 
 	constructor(url, token){
 		console.log('new WebSock', url)
+
+		this.LOGLEVEL = 3
+
 		this.listeners = {}
 
 		this.messageIdCounter = 0
@@ -74,7 +77,9 @@ class WebSock {
 				let parsed = JSON.parse(evt.data)
 
 				if(typeof parsed.clientId === 'number'){
-					// response to client message
+					this.info('received response to client message', parsed.clientId)
+					this.log(parsed.data)
+
 					for(let i in this.pendingMessages){
 						let pm = this.pendingMessages[i]
 
@@ -90,10 +95,12 @@ class WebSock {
 					}
 
 					//not found
-					this._error('did not find message with id', parsed.clientId, 'in pendingMessages!')
+					this.error('did not find message with id', parsed.clientId, 'in pendingMessages!')
 
 				} else if (typeof parsed.serverId === 'number'){
-					// message from the server
+					this.info('received new message from the server', parsed.serverId)
+
+					let that = this
 
 					let promise
 
@@ -101,46 +108,35 @@ class WebSock {
 						let parsedInternalData = JSON.parse(parsed.data)
 						promise = this._dispatch('message', parsedInternalData)
 					} catch (ex){
-						this.websocket.send(JSON.stringify({
-							serverId: parsed.serverId,
-							token: this.token,
-							success: false,
-							data: JSON.stringify(ex.toString())
-						}))
+						answer(false, ex.toString())
 						return
 					}
 
 					if(promise instanceof Promise){
 						promise.then((result)=>{
-							this.websocket.send(JSON.stringify({
-								serverId: parsed.serverId,
-								token: this.token,
-								success: true,
-								data: JSON.stringify(result)
-							}))
+							answer(true, result)
 						}).catch((err)=>{
-							this._error('Error in message callback promise:', err)
-							this.websocket.send(JSON.stringify({
-								serverId: parsed.serverId,
-								token: this.token,
-								success: false,
-								data: JSON.stringify('Error: check browser logs')
-							}))
+							this.error('Error in message callback promise:', err)
+							anser(false, 'Error: check browser logs')
 						})
 					} else {
-						this.websocket.send(JSON.stringify({
+						answer(true, undefined)
+					}
+
+					function answer(success, data){
+						that.websocket.send(JSON.stringify({
 							serverId: parsed.serverId,
-							token: this.token,
-							success: true,
-							data: JSON.stringify(undefined)
+							token: that.token,
+							success: success,
+							data: JSON.stringify(data)
 						}))
 					}
 
 				} else {
-					return this._error('server message did not contain an id')
+					return this.error('server message did not contain an id')
 				}
 			} catch (ex){
-				this._error('Error parsing websocket message', ex)
+				this.error('Error parsing websocket message', ex)
 			}
 		}
 
@@ -156,7 +152,7 @@ class WebSock {
 		}
 
 		this.websocket.onerror = (evt)=>{
-			this._error(evt)
+			this.error(evt)
 			this._dispatch('error', evt)
 		}
 	}
@@ -211,6 +207,9 @@ class WebSock {
 
 			const myMessageId = this.messageIdCounter++
 
+			this.info('sending message to server', myMessageId)
+			this.log(data)
+
 			this.pendingMessages.push({
 				id: myMessageId,
 				timeSent: new Date().getTime,
@@ -226,8 +225,33 @@ class WebSock {
 		})
 	}
 
-	_error(...args){
-		console.error.apply(null, ['WebSock Error:'].concat(args))
+	
+	error(...args){
+		if( this.LOGLEVEL < 1){
+			return
+		}
+		console.error.apply(null, ['WebSock Wrror:'].concat(args))
+	}
+
+	warn(...args){
+		if( this.LOGLEVEL < 2){
+			return
+		}
+		console.warn.apply(null, ['WebSock Warning:'].concat(args))
+	}
+
+	info(...args){
+		if( this.LOGLEVEL < 3){
+			return
+		}
+		console.info.apply(null, ['WebSock Info:'].concat(args))
+	}
+
+	log(...args){
+		if( this.LOGLEVEL < 4){
+			return
+		}
+		console.log.apply(null, ['WebSock:'].concat(args))
 	}
 
 	isOpen(){
