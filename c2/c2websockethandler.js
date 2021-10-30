@@ -149,7 +149,6 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					promise.then((result)=>{
 						answer(true, result)
 					}).catch((err)=>{
-						this.handleError(client, err)
 						answer(false, err)
 					})
 				}

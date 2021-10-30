@@ -43,9 +43,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 
 			if( timePassed > this.PENDING_COMMAND_RESPONSE_TIMEOUT){
 				this.warn('pending command (', pcr.commandname, ') response from game timed out after', this.PENDING_COMMAND_RESPONSE_TIMEOUT, 'ms')
-				if(typeof pcr.callback === 'function'){
-					pcr.reject('Timeout: Game not responding');
-				}
+				pcr.reject('Timeout: Game not responding');
 				
 				this.pendingCommandResponses.splice(i,1);
 
