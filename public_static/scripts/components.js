@@ -443,9 +443,14 @@ registerVueComponent('player', {
 			isExtended: false
 		}
 	},
+	computed: {
+		isBanned (){
+			return !!this.banned[this.steamid]
+		}
+	},
 	inject: ['banned'],
 	props: ['player', 'steamid'],
-	template: `<div class="player" key="{{player.id}}" v-bind:class="[{is_banned: player.banned}]">
+	template: `<div class="player" key="{{player.id}}" v-bind:class="[{is_banned: isBanned}]">
 		<div class="head" v-on:click="isExtended = !isExtended">
 			
 			<player-state :player="player" :steamid="steamid"/>
@@ -474,7 +479,7 @@ registerVueComponent('player', {
 
 			<tabs>
 				<tab :title="'Roles'">
-					<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" v-bind:key="roleName"/>
+					<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" :steamid="steamid" v-bind:key="roleName"/>
 				</tab>
 			</tabs>
 		</div>
@@ -484,10 +489,10 @@ registerVueComponent('player', {
 			alert('not implemented')//TODO: requires new command			
 		},
 		ban (){
-			this.callGameCommandAndWaitForSync('banPlayer', [this.player.steamid])
+			this.callGameCommandAndWaitForSync('banPlayer', this.steamid)
 		},
 		unban (){
-			this.callGameCommandAndWaitForSync('unban', [this.player.steamid])
+			this.callGameCommandAndWaitForSync('unban', this.steamid)
 		}
 	}
 })
@@ -499,7 +504,8 @@ registerVueComponent('player-role', {
 			disabledClass: 'disabled'
 		}
 	},
-	props: ['hasRole', 'roleName', 'player'],
+	inject: ['myPeerId'],
+	props: ['hasRole', 'roleName', 'player', 'steamid'],
 	template: `<div class="player_role" v-bind:class="hasRole ? enabledClass : disabledClass">
 		<lockable/>
 		<span class="name">{{roleName}}</span>
@@ -509,10 +515,10 @@ registerVueComponent('player-role', {
 	</div>`,
 	methods: {
 		giveRole () {
-			this.callGameCommandAndWaitForSync('giveRole', [this.$store.state.userPeerId, this.player.peer_id, this.roleName])
+			this.callGameCommandAndWaitForSync('giveRole', [this.myPeerId, this.steamid, this.roleName])
 		},
 		revokeRole () {
-			this.callGameCommandAndWaitForSync('revokeRole', [this.$store.state.userPeerId, this.player.peer_id, this.roleName])
+			this.callGameCommandAndWaitForSync('revokeRole', [this.myPeerId, this.steamid, this.roleName])
 		}
 	},
 	mixins: [gameCommandMixin]
@@ -686,19 +692,25 @@ registerVueComponent('command-list', {
 
 registerVueComponent('member-list', {
 	props: ['members'],
-	inject: ['players'],
+	inject: ['players', 'myPeerId'],
 	template: `<div class="list member_list">
 		<div class="member" v-for="(steamid, index) of members" v-bind:key="steamid">
 			<player-state :player="getPlayer(steamid)" :steamid="steamid"/>
 			<spacer-vertical/>
 			<span class="name">{{getPlayer(steamid).name}}</span>
+			<spacer-vertical/>
+			<span class="small_button im im-minus" @click="removeMember(steamid)"></span>
 		</div>
 	</div>`,
 	methods: {
 		getPlayer (steamid){
 			return this.players[steamid]
+		},
+		removeMember (steamid){
+			this.callGameCommandAndWaitForSync('revokeRole ', [this.myPeerId, steamid])
 		}
-	}
+	},
+	mixins: [gameCommandMixin]
 })
 
 registerVueComponent('rules-management', {

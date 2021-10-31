@@ -35,12 +35,9 @@
 
 	const store = Vuex.createStore({
 		state: {
-			userPeerId: 0,//TODO: get this thing from the login token
-
 			players: {
 				'x32' /* steam_id */ : {
 					name: 'Pony',
-					banned: false,
 					roles: {
 						Admin: true
 					},
@@ -48,14 +45,12 @@
 				},
 				'x64': {
 					name: 'Carsa',
-					banned: false,
 					roles: {
 						Owner: true
 					}
 				},
 				'x99': {
 					name: 'aBannedUser',
-					banned: true,
 					roles: {
 						Owner: true
 					}
@@ -151,13 +146,8 @@
 
 				},
 				orderFood: {
-					
+
 				}
-			}
-		},
-		computed: {
-			userPeerId () {
-				//TODO we need to calculate this with the help of the token the user uses to "login" to this page
 			}
 		},
 		mutations: {
@@ -192,6 +182,11 @@
 
 	let app = Vue.createApp({//TODO: what the fuck am i doing here? We probably should move this into the components, so they use provide/inject, or directly access the vuex store (that's why we have it don't we?)
 		computed: {
+			myPeerId () {
+				//TODO we need to calculate this with the help of the token the user uses to "login" to this page
+				return 1
+			},
+
 			tabs (){
 				return store.state.tabs
 			},
@@ -229,6 +224,8 @@
 		},
 		provide (){
 			return {
+				myPeerId: this.myPeerId,
+
 				players: this.players,
 				vehicles: this.vehicles,
 				roles: this.rules,
