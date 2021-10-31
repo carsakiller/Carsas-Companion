@@ -201,6 +201,16 @@ registerVueComponent('spacer-horizontal', {
 	template: `<div :style="'clear: both; height: ' + height"/>`
 })
 
+registerVueComponent('spacer-vertical', {
+	props: {
+		width: {
+			type: String,
+			default: '1em'
+		}
+	},
+	template: `<div :style="'display: inline-block; width: ' + width"/>`
+})
+
 registerVueComponent('steamid', {
 	props: {
 		steamid: {
@@ -417,6 +427,16 @@ registerVueComponent('player-list', {
 	</div>`
 })
 
+
+registerVueComponent('player-state', {
+	props: ['player', 'steamid'],
+	template: `<div class="player_state">
+		<span class="id" v-if="player.peer_id">{{player.peer_id}}</span>
+		<span class="offline im im-power" v-else></span>
+	</div>`
+})
+
+
 registerVueComponent('player', {
 	data: function (){
 		return {
@@ -428,10 +448,7 @@ registerVueComponent('player', {
 	template: `<div class="player" key="{{player.id}}" v-bind:class="[{is_banned: player.banned}]">
 		<div class="head" v-on:click="isExtended = !isExtended">
 			
-			<div class="state">
-				<span class="id" v-if="player.peer_id">{{player.peer_id}}</span>
-				<span class="offline im im-power" v-else></span>
-			</div>
+			<player-state :player="player" :steamid="steamid"/>
 
 			<div class="name_container">
 				<div class="name">{{player.name}}
@@ -669,11 +686,19 @@ registerVueComponent('command-list', {
 
 registerVueComponent('member-list', {
 	props: ['members'],
+	inject: ['players'],
 	template: `<div class="list member_list">
-		<span v-for="(steamid, index) of members" v-bind:key="steamid">{{steamid}}
-			<span v-if="index != Object.keys(members).length - 1">, </span>
-		</span>
-	</div>`
+		<div class="member" v-for="(steamid, index) of members" v-bind:key="steamid">
+			<player-state :player="getPlayer(steamid)" :steamid="steamid"/>
+			<spacer-vertical/>
+			<span class="name">{{getPlayer(steamid).name}}</span>
+		</div>
+	</div>`,
+	methods: {
+		getPlayer (steamid){
+			return this.players[steamid]
+		}
+	}
 })
 
 registerVueComponent('rules-management', {
