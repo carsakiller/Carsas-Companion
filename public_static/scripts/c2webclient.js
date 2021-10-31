@@ -12,27 +12,29 @@ let C2WebClient = (()=>{
 	ws.on('open', ()=>{
 		log('is now open')
 
-		setTimeout(()=>{
-			ws.send({
-				type: 'rtt',
-				data: new Date().getTime()
-			}).then((res)=>{
-				log('rtt response success', res)
-			}).catch((err)=>{
-				log('rtt response unsuccessful', err)
-			})
-		}, 1000)
+		if(false){
+			setTimeout(()=>{
+				ws.send({
+					type: 'rtt',
+					data: new Date().getTime()
+				}).then((res)=>{
+					log('rtt response success', res)
+				}).catch((err)=>{
+					log('rtt response unsuccessful', err)
+				})
+			}, 1000)
 
-		setTimeout(()=>{
-			ws.send({
-				type: 'test',
-				data: 'hello?'
-			}).then((res)=>{
-				log('test response success', res)
-			}).catch((err)=>{
-				log('test response unsuccessful', err)
-			})
-		}, 10000)
+			setTimeout(()=>{
+				ws.send({
+					type: 'test',
+					data: 'hello?'
+				}).then((res)=>{
+					log('test response success', res)
+				}).catch((err)=>{
+					log('test response unsuccessful', err)
+				})
+			}, 10000)
+		}
 	})
 
 	ws.on('close', ()=>{

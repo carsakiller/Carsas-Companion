@@ -1961,33 +1961,35 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* line 314, ../../compass/sass/_components.scss */
 .rules_management .rule_list .rule .text {
   margin-right: 1em;
-  word-wrap: anywhere;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
-/* line 324, ../../compass/sass/_components.scss */
+/* line 325, ../../compass/sass/_components.scss */
 .logs_management .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 329, ../../compass/sass/_components.scss */
+/* line 330, ../../compass/sass/_components.scss */
 .logs_management .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 334, ../../compass/sass/_components.scss */
+/* line 335, ../../compass/sass/_components.scss */
 .logs_management .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 338, ../../compass/sass/_components.scss */
+/* line 339, ../../compass/sass/_components.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
 }
 
-/* line 346, ../../compass/sass/_components.scss */
+/* line 347, ../../compass/sass/_components.scss */
 .lockable .lock_overlay {
   position: absolute;
+  z-index: 9999;
   top: 0;
   left: 0;
   height: 100%;
@@ -1995,7 +1997,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   background: #000a;
 }
 
-/* line 358, ../../compass/sass/_components.scss */
+/* line 360, ../../compass/sass/_components.scss */
 .tabs .tabs_selector {
   display: flex;
   flex-direction: row;
@@ -2003,7 +2005,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   max-width: 100%;
   border-bottom: 2px solid #c2c2c2;
 }
-/* line 365, ../../compass/sass/_components.scss */
+/* line 367, ../../compass/sass/_components.scss */
 .tabs .tabs_selector .entry {
   padding: 0.5em 1em;
   border: 1px solid #f3f3f3;
@@ -2011,27 +2013,27 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   cursor: pointer;
   transition: all 0.2s ease 0s;
 }
-/* line 372, ../../compass/sass/_components.scss */
+/* line 374, ../../compass/sass/_components.scss */
 .tabs .tabs_selector .entry:hover {
   background: #00254a;
 }
-/* line 376, ../../compass/sass/_components.scss */
+/* line 378, ../../compass/sass/_components.scss */
 .tabs .tabs_selector .entry.selected {
   background: #00254a;
 }
 
-/* line 387, ../../compass/sass/_components.scss */
+/* line 389, ../../compass/sass/_components.scss */
 .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 393, ../../compass/sass/_components.scss */
+/* line 395, ../../compass/sass/_components.scss */
 .steamid:hover {
   color: #ddd;
 }
-/* line 397, ../../compass/sass/_components.scss */
+/* line 399, ../../compass/sass/_components.scss */
 .steamid .icon {
   font-size: 0.8em;
   position: relative;
@@ -2039,60 +2041,68 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   margin-right: 0.5em;
 }
 
-/* line 405, ../../compass/sass/_components.scss */
+/* line 407, ../../compass/sass/_components.scss */
 .toggleable_element {
   display: flex;
   flex-direction: row;
-  margin-bottom: 1em;
+  align-items: flex-start;
 }
-/* line 410, ../../compass/sass/_components.scss */
+/* line 412, ../../compass/sass/_components.scss */
 .toggleable_element .front {
   position: relative;
-  margin-right: 1em;
+  margin-right: 0.5em;
 }
-/* line 414, ../../compass/sass/_components.scss */
+/* line 416, ../../compass/sass/_components.scss */
 .toggleable_element .front input[type="checkbox"] {
   position: absolute;
   left: -10000000000000px;
 }
-/* line 418, ../../compass/sass/_components.scss */
+/* line 420, ../../compass/sass/_components.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:before {
   background: #379249;
 }
-/* line 422, ../../compass/sass/_components.scss */
+/* line 424, ../../compass/sass/_components.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:after {
-  transform: translateX(1em);
+  transform: translateX(0.7em);
 }
-/* line 427, ../../compass/sass/_components.scss */
+/* line 429, ../../compass/sass/_components.scss */
 .toggleable_element .front .checkbox_slider {
-  position: relative;
+  display: inline-block;
+  height: 1em;
+  line-height: 0;
   margin-right: 1.5em;
   cursor: pointer;
 }
-/* line 432, ../../compass/sass/_components.scss */
+/* line 436, ../../compass/sass/_components.scss */
 .toggleable_element .front .checkbox_slider:before {
   content: '';
   position: absolute;
   top: 0em;
   left: 0;
-  width: 2.2em;
-  height: 1.2em;
+  width: 1.7em;
+  height: 1em;
   background: #c92f2f;
   border-radius: 100000px;
   transition: all 0.2s ease;
 }
-/* line 444, ../../compass/sass/_components.scss */
+/* line 448, ../../compass/sass/_components.scss */
 .toggleable_element .front .checkbox_slider:after {
   content: '';
   position: absolute;
-  top: 0.2em;
-  left: 0.2em;
-  width: 0.8em;
-  height: 0.8em;
+  top: 0em;
+  left: 0em;
+  width: 1em;
+  height: 1em;
   background: #f3f3f3;
   border-radius: 10000px;
   transition: all 0.2s ease;
   transform: translateX(0);
+}
+/* line 463, ../../compass/sass/_components.scss */
+.toggleable_element .rear {
+  max-width: 100%;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 /* line 6, ../../compass/sass/style.scss */

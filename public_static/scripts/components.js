@@ -31,6 +31,8 @@ function uuid() {
 */
 
 
+
+
 let loggingMixin = {
 	data: function (){
 		return {
@@ -91,7 +93,8 @@ let lockableComponentMixin = {
 	data: function(){
 		return {
 			isComponentLocked: false,
-			isUnlockComponentOnNextSync: false
+			isUnlockComponentOnNextSync: false,
+			timeSetOnNextSync: 0
 		}
 	},
 	methods: {
@@ -111,12 +114,14 @@ let lockableComponentMixin = {
 		unlockComponentOnNextSync (){
 			this.log('unlockComponentOnNextSync')
 			this.isUnlockComponentOnNextSync = true
+			this.timeSetOnNextSync = Date.now()
 		}
 	},
 	updated (){
 		setTimeout(()=>{
-			if(this.isUnlockComponentOnNextSync){
+			if(this.isUnlockComponentOnNextSync && (Date.now() - this.timeSetOnNextSync > 10) ){// a sync from the game will NEVER happen within 10ms (this prevents other update calls to look like a sync) TODO: does it make sense to add a global event ('sync') which is called by "c2webclient" when a sync arrives?
 				this.isUnlockComponentOnNextSync = false
+				this.timeSetOnNextSync = 0
 				this.unlockComponent()
 			}
 		}, 1)
@@ -214,6 +219,7 @@ registerVueComponent('toggleable-element', {
 			skipNextWatch: false,
 			oldVal: false,
 			val: false,
+			oldInitialValue: false,
 			uiid: uuid()
 		}
 	},
@@ -242,32 +248,33 @@ registerVueComponent('toggleable-element', {
 			<slot/>
 		</div>
 	</div>`,
-	mounted: function (){
+	created: function (){
 		this.skipNextWatch = true
 		this.val = this.initialValue
+		this.oldVal = this.val
+		this.oldInitialValue = this.initialValue
 	},
 	watch: {
 		val: function (){
 			if(this.skipNextWatch){
 				this.skipNextWatch = false
+				this.log('skipping watch')
 			} else {
 				this.log('watch val changed to', this.val)
-				if(this.onValueChange){
-					this.onValueChange(this.valueName, this.val)
-				}
+				this.onValueChange(this.valueName, this.val)
+				//this.skipNextWatch = true
+				this.oldVal = this.val
 			}
 		}
 	},
 	updated: function (){
-		if(this.val === this.oldVal){
-			// updated props
+		if(this.initialValue !== this.oldInitialValue){
+			this.log('updated [cause: props change]', this.valueName, this.initialValue)
 			this.skipNextWatch = true
-			this.val = this.initialValue//TODO: this triggers another update, can we "prevent that" with computed properties? Or do we just not care since the loop stops when val === initialValue?
-		} else {
-			// user clicked input
-			this.oldVal = this.val
+			this.oldInitialValue = this.initialValue
+			this.val = this.initialValue
+			this.oldVal = this.initialValue
 		}
-		this.log('updated', this.valueName, 'to', this.val)
 	}
 })
 
@@ -607,14 +614,20 @@ registerVueComponent('requirement-list', {
 		<lockable/>
 
 		<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onRequirementChange">isAdmin</toggleable-element>
+		<spacer-horizontal/>
 		<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onRequirementChange">isAuth</toggleable-element>
 	</div>`,
 	methods: {
 		onRequirementChange (name, value){
 			this.log('onRequirementChange', name, value)
-			this.role[name] = value
-			//TODO: we need to skil the update trigger by `this.role[name] == value`
-			this.callGameCommandAndWaitForSync('rolePerms', [this.roleName, this.role.admin, this.role.auth])
+			let updatedRole = {
+				admin: this.role.admin,
+				auth: this.role.auth
+			}
+
+			updatedRole[name] = value
+
+			this.callGameCommandAndWaitForSync('rolePerms', [this.roleName, updatedRole.admin, updatedRole.auth])
 		}
 	},
 	mixins: [gameCommandMixin]
