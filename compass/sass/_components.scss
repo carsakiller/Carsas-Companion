@@ -419,10 +419,15 @@
 
 			&:checked + span:before {
 				background: $enabled;
+				border: 1px solid $enabled;
 			}
 
 			&:checked + span:after {
 				transform: translateX(0.7em);
+			}
+
+			&:focus + span:before {
+				border: 1px solid blue !important;
 			}
 		}
 
@@ -441,6 +446,7 @@
 				width: 1.7em;
 				height: 1em;
 				background: $disabled;
+				border: 1px solid $disabled;
 				border-radius: 100000px;
 				transition: all 0.2s ease;
 			}

@@ -262,7 +262,6 @@ registerVueComponent('toggleable-element', {
 			} else {
 				this.log('watch val changed to', this.val)
 				this.onValueChange(this.valueName, this.val)
-				//this.skipNextWatch = true
 				this.oldVal = this.val
 			}
 		}

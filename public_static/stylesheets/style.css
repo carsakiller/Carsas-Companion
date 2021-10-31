@@ -2060,12 +2060,17 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* line 420, ../../compass/sass/_components.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:before {
   background: #379249;
+  border: 1px solid #379249;
 }
-/* line 424, ../../compass/sass/_components.scss */
+/* line 425, ../../compass/sass/_components.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:after {
   transform: translateX(0.7em);
 }
 /* line 429, ../../compass/sass/_components.scss */
+.toggleable_element .front input[type="checkbox"]:focus + span:before {
+  border: 1px solid blue !important;
+}
+/* line 434, ../../compass/sass/_components.scss */
 .toggleable_element .front .checkbox_slider {
   display: inline-block;
   height: 1em;
@@ -2073,7 +2078,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   margin-right: 1.5em;
   cursor: pointer;
 }
-/* line 436, ../../compass/sass/_components.scss */
+/* line 441, ../../compass/sass/_components.scss */
 .toggleable_element .front .checkbox_slider:before {
   content: '';
   position: absolute;
@@ -2082,10 +2087,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   width: 1.7em;
   height: 1em;
   background: #c92f2f;
+  border: 1px solid #c92f2f;
   border-radius: 100000px;
   transition: all 0.2s ease;
 }
-/* line 448, ../../compass/sass/_components.scss */
+/* line 454, ../../compass/sass/_components.scss */
 .toggleable_element .front .checkbox_slider:after {
   content: '';
   position: absolute;
@@ -2098,7 +2104,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   transition: all 0.2s ease;
   transform: translateX(0);
 }
-/* line 463, ../../compass/sass/_components.scss */
+/* line 469, ../../compass/sass/_components.scss */
 .toggleable_element .rear {
   max-width: 100%;
   word-break: break-all;

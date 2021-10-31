@@ -46,6 +46,7 @@ The method then sends that command to the game, if game responds with success, w
 
 ## Browser
 * implement auto reloading or at least websocket reconnecting for the browser
+* when we lock a component, we need to disable the input, otherwise one can just use the accessibility features (press tab to select eh input and space to change it, e.g. a checkbox)
 
 ## WebServer
 * version check with the script running in the game
