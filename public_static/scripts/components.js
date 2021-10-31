@@ -478,8 +478,9 @@ registerVueComponent('player', {
 			<div class="gap"/>
 
 			<div class="buttons">
-				<button v-on:click="kick">Kick</button>
-				<button v-on:click="ban">Ban</button>
+				<button v-if="!isBanned" v-on:click="kick">Kick</button>
+				<button v-if="!isBanned" v-on:click="ban">Ban</button>
+				<button v-else v-on:click="unban">Unban</button>
 			</div>
 		</div>
 
@@ -506,7 +507,8 @@ registerVueComponent('player', {
 		unban (){
 			this.callGameCommandAndWaitForSync('unban', this.steamid)
 		}
-	}
+	},
+	mixins: [gameCommandMixin]
 })
 
 registerVueComponent('player-role', {

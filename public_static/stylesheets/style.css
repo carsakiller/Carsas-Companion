@@ -2137,7 +2137,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* line 498, ../../compass/sass/_components.scss */
 .status_bar {
   width: 100%;
-  padding: 1em 2em;
+  padding: 0.7em 2em;
   color: #f3f3f3;
   text-align: center;
   font-size: 2em;
