@@ -504,7 +504,6 @@ registerVueComponent('player-role', {
 			disabledClass: 'disabled'
 		}
 	},
-	inject: ['myPeerId'],
 	props: ['hasRole', 'roleName', 'player', 'steamid'],
 	template: `<div class="player_role" v-bind:class="hasRole ? enabledClass : disabledClass">
 		<lockable/>
@@ -515,10 +514,10 @@ registerVueComponent('player-role', {
 	</div>`,
 	methods: {
 		giveRole () {
-			this.callGameCommandAndWaitForSync('giveRole', [this.myPeerId, this.steamid, this.roleName])
+			this.callGameCommandAndWaitForSync('giveRole', [this.steamid, this.roleName])
 		},
 		revokeRole () {
-			this.callGameCommandAndWaitForSync('revokeRole', [this.myPeerId, this.steamid, this.roleName])
+			this.callGameCommandAndWaitForSync('revokeRole', [this.steamid, this.roleName])
 		}
 	},
 	mixins: [gameCommandMixin]
@@ -638,7 +637,7 @@ registerVueComponent('role', {
 				<command-list v-bind:commands="allCommands" :roleName="roleName"/>
 			</tab>
 			<tab :title="'Members'">
-				<member-list v-bind:members="role.members"/>
+				<member-list v-bind:members="role.members" :roleName="roleName"/>
 			</tab>
 		</tabs>
 	</div>`,
@@ -691,8 +690,8 @@ registerVueComponent('command-list', {
 })
 
 registerVueComponent('member-list', {
-	props: ['members'],
-	inject: ['players', 'myPeerId'],
+	props: ['members', 'roleName'],
+	inject: ['players'],
 	template: `<div class="list member_list">
 		<div class="member" v-for="(steamid, index) of members" v-bind:key="steamid">
 			<player-state :player="getPlayer(steamid)" :steamid="steamid"/>
@@ -707,7 +706,7 @@ registerVueComponent('member-list', {
 			return this.players[steamid]
 		},
 		removeMember (steamid){
-			this.callGameCommandAndWaitForSync('revokeRole ', [this.myPeerId, steamid])
+			this.callGameCommandAndWaitForSync('revokeRole ', [steamid, this.roleName])
 		}
 	},
 	mixins: [gameCommandMixin]
