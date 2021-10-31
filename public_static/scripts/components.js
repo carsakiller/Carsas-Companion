@@ -18,6 +18,11 @@ function registerVueComponent (name, options){
 	return app.component(name, options)
 }
 
+function uuid() {
+	return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+		(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+	);
+}
 
 /*
 
@@ -157,6 +162,7 @@ let gameCommandMixin = {
 	}
 }
 
+
 registerVueComponent('division', {
 	data: function (){
 		return {
@@ -200,6 +206,69 @@ registerVueComponent('steamid', {
 	template: `
 		<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" v-bind:href="'https://steamcommunity.com/profiles/' + this.steamid"><span class="icon im im-external-link"></span>{{steamid}}</a>
 		<span v-else class="steamid">"Invalid SteamId"</span>`
+})
+
+registerVueComponent('toggleable-element', {
+	data: function (){
+		return {
+			skipNextWatch: false,
+			oldVal: false,
+			val: false,
+			uiid: uuid()
+		}
+	},
+	props: {
+		'initial-value': {
+			type: Boolean,
+			required: true
+		},
+		'value-name': {
+			type: String,
+			required: true
+		},
+		'onValueChange': {
+			type: Function,
+			required: true
+		}
+	},
+	template: `<div class="toggleable_element">
+		<div class="front">
+			<label :for="uiid">
+				<input type="checkbox" :id="uiid" v-model="val">
+				<span class="checkbox_slider"/>
+			</label>
+		</div>
+		<div class="rear">
+			<slot/>
+		</div>
+	</div>`,
+	mounted: function (){
+		this.skipNextWatch = true
+		this.val = this.initialValue
+	},
+	watch: {
+		val: function (){
+			if(this.skipNextWatch){
+				this.skipNextWatch = false
+			} else {
+				this.log('watch val changed to', this.val)
+				if(this.onValueChange){
+					this.onValueChange(this.valueName, this.val)
+				}
+			}
+		}
+	},
+	updated: function (){
+		if(this.val === this.oldVal){
+			// updated props
+			this.skipNextWatch = true
+			this.val = this.initialValue//TODO: this triggers another update, can we "prevent that" with computed properties? Or do we just not care since the loop stops when val === initialValue?
+		} else {
+			// user clicked input
+			this.oldVal = this.val
+		}
+		this.log('updated', this.valueName, 'to', this.val)
+	}
 })
 
 registerVueComponent('tab', {
@@ -514,7 +583,7 @@ registerVueComponent('role', {
 				
 				<spacer-horizontal/>
 
-				<requirement-list v-bind:role="role"/>
+				<requirement-list v-bind:role="role" :roleName="roleName"/>
 			</tab>
 			<tab :title="'Commands'">
 				<command-list v-bind:commands="role.commands"/>
@@ -532,11 +601,23 @@ registerVueComponent('role', {
 })
 
 registerVueComponent('requirement-list', {
-	props: ['role'],
+	props: ['role', 'roleName'],
 	template: `<div class="requirements">
-		<span class="admin im im-crown" v-if="role.admin"></span>
-		<span class="auth im im-check-mark" v-if="role.auth"></span>
-	</div>`
+
+		<lockable/>
+
+		<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onRequirementChange">isAdmin</toggleable-element>
+		<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onRequirementChange">isAuth</toggleable-element>
+	</div>`,
+	methods: {
+		onRequirementChange (name, value){
+			this.log('onRequirementChange', name, value)
+			this.role[name] = value
+			//TODO: we need to skil the update trigger by `this.role[name] == value`
+			this.callGameCommandAndWaitForSync('rolePerms', [this.roleName, this.role.admin, this.role.auth])
+		}
+	},
+	mixins: [gameCommandMixin]
 })
 
 

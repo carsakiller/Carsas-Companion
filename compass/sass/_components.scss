@@ -352,3 +352,111 @@
 		background: #000a;
 	}
 }
+
+.tabs {
+
+	.tabs_selector {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		max-width: 100%;
+		border-bottom: 2px solid shade($text-color, 20%);
+
+		.entry {
+			padding: 0.5em 1em;
+			border: 1px solid $text-color;
+			border-bottom: none;
+			cursor: pointer;
+			transition: all 0.2s ease 0s;
+
+			&:hover {
+				background: $primary;
+			}
+
+			&.selected {
+				background: $primary;
+			}
+		}
+	}
+
+	.tab {
+
+	}
+}
+
+.steamid {
+	font-size: 0.9em;
+	font-style: italic;
+	color: #aaa;
+	transition: all 0.2s ease 0s;
+
+	&:hover {
+		color: #ddd;
+	}
+
+	.icon {
+		font-size: 0.8em;
+		position: relative;
+		top: 0.1em;
+		margin-right: 0.5em;
+	}
+}
+
+.toggleable_element {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 1em;
+
+	.front {
+		position: relative;
+		margin-right: 1em;
+
+		input[type="checkbox"] {
+			position: absolute;
+			left: -10000000000000px;			
+
+			&:checked + span:before {
+				background: $enabled;
+			}
+
+			&:checked + span:after {
+				transform: translateX(1em);
+			}
+		}
+
+		.checkbox_slider {
+			position: relative;
+			margin-right: 1.5em;
+			cursor: pointer;
+
+			&:before {
+				content: '';
+				position: absolute;
+				top: 0em;
+				left: 0;
+				width: 2.2em;
+				height: 1.2em;
+				background: $disabled;
+				border-radius: 100000px;
+				transition: all 0.2s ease;
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				top: 0.2em;
+				left: 0.2em;
+				width: 0.8em;
+				height: 0.8em;
+				background: $text-color;				
+				border-radius: 10000px;
+				transition: all 0.2s ease;
+				transform: translateX(0);
+			}
+		}
+	}
+
+	.rear {
+
+	}
+}

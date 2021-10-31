@@ -151,6 +151,9 @@
 		mutations: {
 			setPlayers (state, players){
 				state.players = players
+			},
+			test (state){
+				state.roles.Owner.auth = false
 			}
 			/*,
 			addTab (state, tab){
@@ -160,6 +163,9 @@
 		actions: {
 			setPlayers ({ commit }, players){
 				commit('setPlayers', players)
+			},
+			test ({commit}){
+				commit('test')
 			}
 			/*,
 			switchTab ({commit}, tab){
