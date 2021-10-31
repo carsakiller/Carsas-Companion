@@ -94,7 +94,9 @@ class WebSock {
 		if(evt.data === '*RELOAD_PAGE*'){
 			this.preventReconnect = true
 			this.websocket.close()
-			document.location.reload()
+			setTimeout(()=>{// give the server some time to finish building resources (e.g. compass)
+				document.location.reload()
+			}, 1000)
 			return
 		}
 
