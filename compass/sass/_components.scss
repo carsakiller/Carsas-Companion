@@ -61,40 +61,6 @@
 			.page_body {
 				max-height: 100%;
 				overflow-y: auto;
-
-				.division {
-					margin: 1em;
-
-					.division_head {
-						display: flex;
-						flex-direction: row;
-						align-items: center;
-						cursor: pointer;
-						padding: 1em;
-						background: $secondary;
-
-						.extend_arrow {
-							margin-left: 1em;
-							font-size: 0.8em;
-						}
-					}
-
-					.division_body {
-						position: relative;
-						padding: 1em;
-						background: shade($secondary, 10%);
-						
-						&:before {
-							content: '';
-							position: absolute;
-							top: 0;
-							left: 0;
-							width: 100%;
-							height: 3px;
-							background: linear-gradient(to bottom, shade($secondary, 40%) 0%, rgba( shade($secondary, 10%), 0%) 100%);
-						}
-					}
-				}
 			}
 		}
 	}
@@ -277,8 +243,11 @@
 
 				.name {
 					font-size: 1.5em;
-					font-weight: 500em;
-					margin-right: 1em;
+					font-weight: 500;
+				}
+
+				.buttons {
+					margin-left: 2em;
 				}
 			}
 
@@ -389,6 +358,51 @@
 
 	.tab {
 
+	}
+}
+
+.extendable {
+
+	.extendable_trigger {
+		cursor: pointer;
+
+		.extend_arrow {
+			margin-left: 1em;
+			font-size: 0.8em;
+		}
+	}
+
+	.extendable_body {
+
+	}
+}
+
+.division {
+	margin: 1em;
+
+	.division_head {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		cursor: pointer;
+		padding: 1em;
+		background: $secondary;
+	}
+
+	.division_body {
+		position: relative;
+		padding: 1em;
+		background: shade($secondary, 10%);
+		
+		&:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 3px;
+			background: linear-gradient(to bottom, shade($secondary, 40%) 0%, rgba( shade($secondary, 10%), 0%) 100%);
+		}
 	}
 }
 

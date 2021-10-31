@@ -167,30 +167,6 @@ let gameCommandMixin = {
 	}
 }
 
-
-registerVueComponent('division', {
-	data: function (){
-		return {
-			isExtended: false
-		}
-	},
-	props: ['name', 'startExtended'],
-	template: `<div class="division">
-		<div class="division_head" v-if="name" v-on:click="isExtended = !isExtended">
-			<h3>{{name}}</h3>
-			<span class="extend_arrow im im-angle-up" v-if="isExtended"></span>
-			<span class="extend_arrow im im-angle-down" v-else></span>
-		</div>
-		<div v-if="isExtended" class="division_body">
-			<slot>
-			</slot>
-		</div>
-	</div>`,
-	mounted: function (){
-		this.isExtended = this.$props.name ? this.$props.startExtended === true : true
-	}
-})
-
 registerVueComponent('spacer-horizontal', {
 	props: {
 		height: {
@@ -338,6 +314,134 @@ registerVueComponent('tabs', {
 	}
 })
 
+registerVueComponent('extendable', {
+	data: function (){
+		return {
+			isExtended: false,
+			isAnExtendableComponent: true //just a flag so triggers can find it
+		}
+	},
+	props: {
+		startExtended: {
+			type: Boolean,
+			default: false,
+			required: false
+		}
+	},
+	template: `<div class="extendable">
+		<slot :isExtended="isExtended"/>
+	</div>`,
+	created: function (){
+		this.isExtended = this.startExtended
+	},
+	methods: {
+		toggleExtend (){
+			this.isExtended = !this.isExtended
+		}
+	},
+	mixins: [loggingMixin]
+})
+
+registerVueComponent('extendable-body', {
+	data: function (){
+		return {
+			extendable: undefined
+		}
+	},
+	computed: {
+		isExtended (){
+			return this.extendable && this.extendable.isExtended
+		}
+	},
+	template: `<div class="extendable_body" v-if="isExtended">
+		<slot :isExtended="isExtended"/>
+	</div>`,
+	mounted: function (){
+		searchForExtendableParentRecursively(this, this.$parent)
+
+		function searchForExtendableParentRecursively(me, node){
+			if(node && node.isAnExtendableComponent === true){
+				me.extendable = node
+				me.log('found an extendable', node)
+			} else if (node) {
+				searchForExtendableParentRecursively(me, node.$parent)
+			}
+		}
+	},
+	mixins: [loggingMixin]
+})
+
+registerVueComponent('extendable-trigger', {
+	data: function (){
+		return {
+			extendable: undefined
+		}
+	},
+	props: {
+		useDefaultArrows: {
+			type: Boolean,
+			default: false,
+			required: false
+		}
+	},
+	computed: {
+		isExtended (){
+			return this.extendable && this.extendable.isExtended
+		}
+	},
+	template: `<div class="extendable_trigger" @click.stop="triggerExtendToggle">
+		<slot :isExtended="isExtended"/>
+		<span class="extend_arrow im im-angle-up" v-if="useDefaultArrows && isExtended"></span>
+		<span class="extend_arrow im im-angle-down" v-if="useDefaultArrows && !isExtended"></span>
+	</div>`,
+	mounted: function (){
+		searchForExtendableParentRecursively(this, this.$parent)
+
+		function searchForExtendableParentRecursively(me, node){
+			if(node && node.isAnExtendableComponent === true){
+				me.extendable = node
+				me.log('found an extendable', node)
+			} else if (node) {
+				searchForExtendableParentRecursively(me, node.$parent)
+			}
+		}
+	},
+	methods: {
+		triggerExtendToggle (){
+			if(this.extendable && typeof this.extendable.toggleExtend){
+				this.extendable.toggleExtend()
+			}
+		},
+		registerExtendable (extendable){
+			this.log('bound to extendable', extendable)
+			this.extendable = extendable
+		}
+	},
+	mixins: [loggingMixin]
+})
+
+registerVueComponent('division', {
+	data: function (){
+		return {
+			isExtended: false
+		}
+	},
+	props: ['name', 'startExtended'],
+	template: `<extendable class="division" v-slot="extendableProps" :startExtended="startExtended">
+		<div class="division_head" v-if="name" v-on:click="isExtended = !isExtended">
+			<h3>{{name}}</h3>
+			<extendable-trigger :useDefaultArrows="true"/>
+		</div>
+		<extendable-body class="division_body">
+			<slot>
+			</slot>
+		</extendable-body>
+	</extendable>`,
+	mounted: function (){
+		this.isExtended = this.$props.name ? this.$props.startExtended === true : true
+	}
+})
+
 /*
 
 ---- COMPONENTS ----
@@ -448,13 +552,7 @@ registerVueComponent('player-state', {
 	</div>`
 })
 
-
 registerVueComponent('player', {
-	data: function (){
-		return {
-			isExtended: false
-		}
-	},
 	computed: {
 		isBanned (){
 			return !!this.banned[this.steamid]
@@ -462,30 +560,28 @@ registerVueComponent('player', {
 	},
 	inject: ['banned'],
 	props: ['player', 'steamid'],
-	template: `<div class="player" key="{{player.id}}" v-bind:class="[{is_banned: isBanned}]">
-		<div class="head" v-on:click="isExtended = !isExtended">
-			
+	template: `<extendable v-slot="extendableProps" class="player" key="{{player.id}}" v-bind:class="[{is_banned: isBanned}]">
+		<div class="head">
 			<player-state :player="player" :steamid="steamid"/>
 
-			<div class="name_container">
+			<extendable-trigger class="name_container">
 				<div class="name">{{player.name}}
-					<span class="im im-angle-up extend_arrow" v-if="isExtended"></span>
+					<span class="im im-angle-up extend_arrow" v-if="extendableProps.isExtended"></span>
 					<span class="im im-angle-down extend_arrow" v-else></span>
 				</div>
 				<steamid :steamid="steamid"/>
-			</div>
+			</extendable-trigger>
 
 			<div class="gap"/>
 
 			<div class="buttons">
-				<button v-if="!isBanned" v-on:click="kick">Kick</button>
-				<button v-if="!isBanned" v-on:click="ban">Ban</button>
-				<button v-else v-on:click="unban">Unban</button>
+				<button v-if="!isBanned" v-on:click.stop="kick">Kick</button>
+				<button v-if="!isBanned" v-on:click.stop="ban">Ban</button>
+				<button v-else v-on:click.stop="unban">Unban</button>
 			</div>
 		</div>
 
-		<div class="body" v-if="isExtended">
-
+		<extendable-body class="body">
 			<p v-if="player.banned">Player was banned by <steamid :steamid="banned[steamid]"/>.</p>
 
 			<spacer-horizontal/>
@@ -495,8 +591,8 @@ registerVueComponent('player', {
 					<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" :steamid="steamid" v-bind:key="roleName"/>
 				</tab>
 			</tabs>
-		</div>
-	</div>`,
+		</extendable-body>
+	</extendable>`,
 	methods: {
 		kick (){
 			alert('not implemented')//TODO: requires new command			
@@ -625,9 +721,11 @@ registerVueComponent('role', {
 			return ret
 		}
 	},
-	template: `<div class="role">
+	template: `<extendable class="role">
 		<div class="role_top_container">
-			<span class="name">{{roleName}}</span>
+			<extendable-trigger :useDefaultArrows="true">
+				<span class="name">{{roleName}}</span>
+			</extendable-trigger>
 
 			<div class="buttons">
 				<button v-on:click="remove">Delete</button>
@@ -636,25 +734,27 @@ registerVueComponent('role', {
 
 		<spacer-horizontal/>
 
-		<tabs>
-			<tab :title="'Requirements'">
-				
-				<spacer-horizontal/>
+		<extendable-body>
+			<tabs>
+				<tab :title="'Requirements'">
+					
+					<spacer-horizontal/>
 
-				<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
-				
-				<spacer-horizontal/>
+					<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
+					
+					<spacer-horizontal/>
 
-				<requirement-list v-bind:role="role" :roleName="roleName"/>
-			</tab>
-			<tab :title="'Commands'">
-				<command-list v-bind:commands="allCommands" :roleName="roleName"/>
-			</tab>
-			<tab :title="'Members'">
-				<member-list v-bind:members="role.members" :roleName="roleName"/>
-			</tab>
-		</tabs>
-	</div>`,
+					<requirement-list v-bind:role="role" :roleName="roleName"/>
+				</tab>
+				<tab :title="'Commands'">
+					<command-list v-bind:commands="allCommands" :roleName="roleName"/>
+				</tab>
+				<tab :title="'Members'">
+					<member-list v-bind:members="role.members" :roleName="roleName"/>
+				</tab>
+			</tabs>
+		</extendable-body>
+	</extendable>`,
 	methods: {
 		remove (){
 			alert('not implemented')
