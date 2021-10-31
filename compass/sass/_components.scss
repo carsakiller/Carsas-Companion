@@ -494,3 +494,19 @@
 		font-size: 0.8em;
 	}
 }
+
+.status_bar {
+	width: 100%;
+	padding: 1em 2em;
+	color: $text-color;
+	text-align: center;
+	font-size: 2em;
+
+	&.success {
+		background: $enabled;
+	}
+
+	&.error {
+		background: $disabled;
+	}
+}

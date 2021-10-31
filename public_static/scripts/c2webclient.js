@@ -2,8 +2,6 @@ let C2WebClient = (()=>{
 	
 	let ws = new WebSock('ws://' + window.location.host + '/ws', 'XYZ')
 
-	let vueData
-
 	/*
 		loglevels: 1 = error, 2 = warn, 3 = info, 4 = log
 	*/
@@ -11,6 +9,10 @@ let C2WebClient = (()=>{
 
 	ws.on('open', ()=>{
 		log('is now open')
+		setStatus('Server Connected', 'success')
+		setTimeout(()=>{
+			setStatus(undefined, undefined)
+		}, 2000)
 
 		if(false){
 			setTimeout(()=>{
@@ -39,6 +41,7 @@ let C2WebClient = (()=>{
 
 	ws.on('close', ()=>{
 		log('is now closed')
+		setStatus('Server Connection Lost', 'error')
 	})
 
 	ws.on('message', (message)=>{
@@ -119,8 +122,11 @@ let C2WebClient = (()=>{
 		})
 	}
 
-	function setVueData(_vueData){
-		vueData = _vueData
+	function setStatus(message, clazz){
+		store.dispatch('setStatus', {
+			message: message,
+			clazz: clazz
+		})
 	}
 
 	function error(...args){
@@ -154,7 +160,6 @@ let C2WebClient = (()=>{
 	
 
 	return {
-		sendCommand: sendCommand,
-		setVueData: setVueData
+		sendCommand: sendCommand
 	}
 })()

@@ -35,6 +35,11 @@
 
 	const store = Vuex.createStore({
 		state: {
+			status: {
+				message: undefined,
+				clazz:undefined
+			},
+
 			players: {
 				'x32' /* steam_id */ : {
 					name: 'Pony',
@@ -166,6 +171,9 @@
 			},
 			test (state){
 				state.roles.Owner.auth = false
+			},
+			setStatus(state, status){
+				state.status = status
 			}
 			/*,
 			addTab (state, tab){
@@ -178,6 +186,9 @@
 			},
 			test ({commit}){
 				commit('test')
+			},
+			setStatus({commit}, status){
+				commit('setStatus', status)
 			}
 			/*,
 			switchTab ({commit}, tab){

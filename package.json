@@ -14,6 +14,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "nodemonConfig": {
+    "ext": "js,css,scss,handlebars"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

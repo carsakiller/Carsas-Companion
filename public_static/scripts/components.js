@@ -344,6 +344,17 @@ registerVueComponent('tabs', {
 
 */
 
+registerVueComponent('status-bar', {
+	computed: {
+		status (){
+			return this.$store.state.status
+		}
+	},
+	template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
+		{{status.message}}
+	</div>`
+})
+
 
 registerVueComponent('page', {
 	data: function (){
@@ -362,6 +373,7 @@ registerVueComponent('page', {
 		}
 	},
 	template: `<div class="page" v-show="isSelected">
+		<status-bar/>
 		<div class="page_head">
 			<h2>{{title}}</h2>
 		</div>

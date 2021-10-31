@@ -49,14 +49,15 @@ class WebSock {
 	constructor(url, token){
 		console.log('new WebSock', url)
 
+		this.url = url
+		this.token = token
+
 		this.LOGLEVEL = 3
 
 		this.listeners = {}
 
 		this.messageIdCounter = 0
 		this.pendingMessages = []
-
-		this.token = token
 
 		this.PENDIMG_MESSAGES_TIMEOUT = 1000 * 20
 		setInterval(()=>{
@@ -68,93 +69,117 @@ class WebSock {
 			}
 		}, 500)
 
-		this.websocket = new WebSocket(url)
+		this.preventReconnect = false
 
-		this.websocket.onopen = (evt)=>{this._dispatch('open', evt)}
+		this.createWebSocket()
+	}
 
-		this.websocket.onmessage = (evt)=>{
-			try{
-				let parsed = JSON.parse(evt.data)
+	createWebSocket(){
+		this.websocket = new WebSocket(this.url)
 
-				if(typeof parsed.clientId === 'number'){
-					this.info('received response to client message', parsed.clientId)
-					this.log(parsed.data)
+		this.websocket.onopen = (evt)=>this.handleWesocketOpen(evt)
 
-					for(let i in this.pendingMessages){
-						let pm = this.pendingMessages[i]
+		this.websocket.onmessage = (evt)=>this.handleWesocketMessage(evt)
 
-						if(pm && pm.id === parsed.clientId){
-							if(parsed.success === true){
-								pm.fulfill(parsed.data)
-							} else {
-								pm.reject(parsed.data)
-							}
-							delete this.pendingMessages[i]
-							return
+		this.websocket.onclose = (evt)=>this.handleWesocketClose(evt)
+
+		this.websocket.onerror = (evt)=>this.handleWebsocketError(evt)
+	}
+
+	handleWesocketOpen(evt){
+		this._dispatch('open', evt)
+	}
+
+	handleWesocketMessage(evt){
+		if(evt.data === '*RELOAD_PAGE*'){
+			this.preventReconnect = true
+			this.websocket.close()
+			document.location.reload()
+			return
+		}
+
+		try{
+			let parsed = JSON.parse(evt.data)
+
+			if(typeof parsed.clientId === 'number'){
+				this.info('received response to client message', parsed.clientId)
+				this.log(parsed.data)
+
+				for(let i in this.pendingMessages){
+					let pm = this.pendingMessages[i]
+
+					if(pm && pm.id === parsed.clientId){
+						if(parsed.success === true){
+							pm.fulfill(parsed.data)
+						} else {
+							pm.reject(parsed.data)
 						}
-					}
-
-					//not found
-					this.error('did not find message with id', parsed.clientId, 'in pendingMessages!')
-
-				} else if (typeof parsed.serverId === 'number'){
-					this.info('received new message from the server', parsed.serverId)
-
-					let that = this
-
-					let promise
-
-					try {
-						let parsedInternalData = JSON.parse(parsed.data)
-						promise = this._dispatch('message', parsedInternalData)
-					} catch (ex){
-						answer(false, ex.toString())
+						delete this.pendingMessages[i]
 						return
 					}
+				}
 
-					if(promise instanceof Promise){
-						promise.then((result)=>{
-							answer(true, result)
-						}).catch((err)=>{
-							this.error('Error in message callback promise:', err)
-							anser(false, 'Error: check browser logs')
-						})
-					} else {
-						answer(true, undefined)
-					}
+				//not found
+				this.error('did not find message with id', parsed.clientId, 'in pendingMessages!')
 
-					function answer(success, data){
-						that.websocket.send(JSON.stringify({
-							serverId: parsed.serverId,
-							token: that.token,
-							success: success,
-							data: JSON.stringify(data)
-						}))
-					}
+			} else if (typeof parsed.serverId === 'number'){
+				this.info('received new message from the server', parsed.serverId)
 
+				let that = this
+
+				let promise
+
+				try {
+					let parsedInternalData = JSON.parse(parsed.data)
+					promise = this._dispatch('message', parsedInternalData)
+				} catch (ex){
+					answer(false, ex.toString())
+					return
+				}
+
+				if(promise instanceof Promise){
+					promise.then((result)=>{
+						answer(true, result)
+					}).catch((err)=>{
+						this.error('Error in message callback promise:', err)
+						anser(false, 'Error: check browser logs')
+					})
 				} else {
-					return this.error('server message did not contain an id')
+					answer(true, undefined)
 				}
-			} catch (ex){
-				this.error('Error parsing websocket message', ex)
-			}
-		}
 
-		this.websocket.onclose = (evt)=>{
-			for(let pm of this.pendingMessages){
-				if(pm){
-					pm.reject('WebSocket Connection closed')
+				function answer(success, data){
+					that.websocket.send(JSON.stringify({
+						serverId: parsed.serverId,
+						token: that.token,
+						success: success,
+						data: JSON.stringify(data)
+					}))
 				}
+
+			} else {
+				return this.error('server message did not contain an id')
 			}
-			this.pendingMessages = []
-
-			this._dispatch('close', evt)
+		} catch (ex){
+			this.error('Error parsing websocket message', ex)
 		}
+	}
 
-		this.websocket.onerror = (evt)=>{
-			this.error(evt)
-			this._dispatch('error', evt)
+	handleWesocketClose(evt){
+		this._dispatch('close', evt)
+
+		this.on('open', ()=>{
+			this.websocket.send('*RELOAD_PAGE?*')
+		})
+
+		if(! this.preventReconnect){
+			this.createWebSocket()
 		}
+	}
+
+	handleWebsocketError(evt){
+		this.error(evt)
+		this._dispatch('error', evt)
 	}
 
 	/* events:
@@ -191,11 +216,13 @@ class WebSock {
 	}
 
 	_dispatch(eventname, data){
+		let ret
 		if(this.listeners[eventname]){
 			for(let l of this.listeners[eventname]){
-				return l(data)
+				ret = l(data)
 			}
 		}
+		return ret
 	}
 
 	/* promise will be fulfilled when the server returns success=true, and rejected if server returns success=false or the pending message runs into connection close */
@@ -225,6 +252,9 @@ class WebSock {
 		})
 	}
 
+	close(){
+		this.websocket.close()
+	}
 	
 	error(...args){
 		if( this.LOGLEVEL < 1){

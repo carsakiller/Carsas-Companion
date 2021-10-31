@@ -18,6 +18,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	constructor(loglevel){
 		super(loglevel)
 
+		this.instantiatedTime = Date.now()
+
 		this.clientIdCounter = 0
 		this.clients = []
 
@@ -61,7 +63,18 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		this.clients.push(client)
 
 
-		ws.on('message', (msg)=>{this.handleMessage(client, msg)})
+		ws.on('message', (msg)=>{
+			if(msg === '*RELOAD_PAGE?*'){
+				if( (process.env.NODE_ENV || 'development') === 'development'){
+					// if we restarted and a client is reconnecting, tell him to reload the page
+					if(Date.now() - this.instantiatedTime < 2000){
+						ws.send('*RELOAD_PAGE*')
+					}
+				}
+			} else {
+				this.handleMessage(client, msg)
+			}
+		})
 
 		ws.on('error', (err)=>{this.handleError(client, err)})
 
