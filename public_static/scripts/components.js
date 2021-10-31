@@ -249,7 +249,7 @@ registerVueComponent('toggleable-element', {
 		</div>
 	</div>`,
 	created: function (){
-		this.skipNextWatch = true
+		this.skipNextWatch = this.initialValue //vue will only call update() if the initialValue is true
 		this.val = this.initialValue
 		this.oldVal = this.val
 		this.oldInitialValue = this.initialValue
@@ -275,7 +275,8 @@ registerVueComponent('toggleable-element', {
 			this.val = this.initialValue
 			this.oldVal = this.initialValue
 		}
-	}
+	},
+	mixins: [loggingMixin]
 })
 
 registerVueComponent('tab', {
@@ -570,6 +571,25 @@ registerVueComponent('role-list', {
 
 registerVueComponent('role', {
 	props: ['role', 'roleName'],
+	computed: {
+		allCommands (){
+			let ret = {}
+
+			// the commands the role has access to
+			for(let commandName of Object.keys(this.role.commands)){
+				ret[commandName] = this.role.commands[commandName]
+			}
+
+			//the commands the role has NO access to
+			for(let commandName of Object.keys(this.$store.state.allCommands)){
+				if(!ret[commandName]){
+					ret[commandName] = false
+				}
+			}
+
+			return ret
+		}
+	},
 	template: `<div class="role">
 		<div class="role_top_container">
 			<span class="name">{{roleName}}</span>
@@ -593,7 +613,7 @@ registerVueComponent('role', {
 				<requirement-list v-bind:role="role" :roleName="roleName"/>
 			</tab>
 			<tab :title="'Commands'">
-				<command-list v-bind:commands="role.commands"/>
+				<command-list v-bind:commands="allCommands" :roleName="roleName"/>
 			</tab>
 			<tab :title="'Members'">
 				<member-list v-bind:members="role.members"/>
@@ -635,12 +655,17 @@ registerVueComponent('requirement-list', {
 
 
 registerVueComponent('command-list', {
-	props: ['commands'],
+	props: ['roleName', 'commands'],
 	template: `<div class="list command_list">
-		<span v-for="(isCommand, commandName, index) of commands" v-bind:key="commandName">{{commandName}}
-			<span v-if="index != Object.keys(commands).length - 1">, </span>
-		</span>
-	</div>`
+		<toggleable-element v-for="(isCommand, commandName, index) of commands" v-bind:key="commandName" :initial-value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+		<spacer-horizontal/>
+	</div>`,
+	methods: {
+		onCommandChange (name, value){
+			this.callGameCommandAndWaitForSync('roleAccess', [this.roleName, name, value])
+		}
+	},
+	mixins: [gameCommandMixin]
 })
 
 registerVueComponent('member-list', {

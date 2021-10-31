@@ -141,7 +141,19 @@
 					time: new Date().getTime(),
 					message: 'loading lasers'
 				}
-			]
+			],
+
+			allCommands: {
+				ban: {
+
+				},
+				unban : {
+
+				},
+				orderFood: {
+					
+				}
+			}
 		},
 		computed: {
 			userPeerId () {
@@ -178,7 +190,7 @@
 
 	})
 
-	let app = Vue.createApp({
+	let app = Vue.createApp({//TODO: what the fuck am i doing here? We probably should move this into the components, so they use provide/inject, or directly access the vuex store (that's why we have it don't we?)
 		computed: {
 			tabs (){
 				return store.state.tabs
@@ -224,7 +236,9 @@
 				preferences: this.preferences,
 				gamesettings: this.gamesettings,
 				banned: this.banned,
-				logs: this.logs
+				logs: this.logs,
+
+				allCommands: this.allCommands
 			}
 		}
 		/*,
