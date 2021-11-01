@@ -1,7 +1,7 @@
 {{{{vue-js}}}}
 
 <div id="app">
-	<pages v-bind:selectedindex="2">
+	<pages v-bind:selectedindex="5">
 		<page :title="'Players'" :icon="'users'">
 			<players-management v-bind:players="players"></players-management>
 		</page>
@@ -133,8 +133,10 @@
 				}
 			},
 
-			gameSettings: {
-				npc_damage: true /* right now only supports booleans but will have numbers in the future */
+			gamesettings: {
+				npc_damage: true, /* right now only supports booleans but will have numbers in the future */
+				auto_save: false,
+				test_number: 5
 			},
 
 			banned: {

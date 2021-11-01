@@ -56,6 +56,10 @@
 				font-weight: 600;
 				padding: 0.8em 2em;
 				background: $secondary;
+
+				h2 {
+					font-family: $font-secondary;
+				}
 			}
 
 			.page_body {
@@ -265,6 +269,17 @@
 						font-size: 1.2em;
 					}
 				}
+			}
+
+			.command_list {
+
+				.command {
+
+				}
+			}
+
+			.requirements {
+				
 			}
 		}
 	}

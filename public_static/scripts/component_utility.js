@@ -93,27 +93,46 @@ let lockableComponentMixin = {
 		return {
 			isComponentLocked: false,
 			isUnlockComponentOnNextSync: false,
-			timeSetOnNextSync: 0
+			timeSetOnNextSync: 0,
+			lockableParents: []
 		}
 	},
 	methods: {
 		lockComponent (){
-			this.log('lockComponent')
-			this.isComponentLocked = true
+			this.log('lockComponent', this.lockableParents)
+			this.isComponentLocked = true			
+			for(let lp of this.lockableParents){
+				lp.addLockedChild()
+			}
 		},
 		lockComponentUntilSync (){
 			this.log('lockComponentUntilSync')
-			this.isComponentLocked = true
+			this.lockComponent()
 			this.unlockComponentOnNextSync()
 		},
 		unlockComponent (){
-			this.log('unlockComponent')
+			this.log('unlockComponent', this.lockableParents)
 			this.isComponentLocked = false
+			for(let lp of this.lockableParents){
+				lp.removeLockedChild()
+			}
 		},
 		unlockComponentOnNextSync (){
 			this.log('unlockComponentOnNextSync')
 			this.isUnlockComponentOnNextSync = true
 			this.timeSetOnNextSync = Date.now()
+		}
+	},
+	created: function (){
+		searchForLockableByChildsParentRecursively(this, this.$parent)
+
+		function searchForLockableByChildsParentRecursively(me, node){
+			if(node && ('isLockableByChilds' in node)){
+				me.lockableParents.push(node)
+				me.log('found a lockable by childs parent', node)
+			} else if (node) {
+				searchForLockableByChildsParentRecursively(me, node.$parent)
+			}
 		}
 	},
 	updated (){
@@ -131,11 +150,6 @@ registerVueComponent('lockable', {
 	template: `<div class="lockable" v-on:click.stop>
 		<div v-if="parentIsComponentLocked" class="lock_overlay"/>
 	</div>`,
-	methods: {
-		lockParent (){
-			this.$parent.isComponentLocked = true
-		}
-	},
 	computed: {
 		parentIsComponentLocked (){
 			return this.$parent.isComponentLocked
@@ -143,6 +157,37 @@ registerVueComponent('lockable', {
 	},
 	mounted (){
 		this.$parent.$el.style = 'position: relative;'
+	}
+})
+
+registerVueComponent('lockable-by-childs', {
+	data: function (){
+		return {
+			childComponentLocked: 0,
+			isLockableByChilds: true//just a flag for childs to detect this component
+		}
+	},
+	computed: {
+		childComponentIsLocked (){
+			return this.childComponentLocked > 0
+		}
+	},
+	template: `<div class="lockable" v-on:click.stop>
+		<div v-if="childComponentIsLocked" class="lock_overlay"/>
+		<slot/>
+	</div>`,
+	mounted (){
+		this.$parent.$el.style = 'position: relative;'
+	},
+	methods: {
+		addLockedChild (){
+			this.log('locked by child')
+			this.childComponentLocked++
+		},
+		removeLockedChild (){
+			this.log('unlocked by child')
+			this.childComponentLocked--
+		}
 	}
 })
 
@@ -424,7 +469,7 @@ registerVueComponent('division', {
 	props: {
 		name: {
 			type: String,
-			default: false,
+			default: '',
 			required: false
 		},
 		startExtended: {

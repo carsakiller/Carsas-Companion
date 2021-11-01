@@ -288,7 +288,13 @@ registerVueComponent('role', {
 
 		<extendable-body>
 			<tabs>
-				<tab :title="'Requirements'">
+				<tab :title="'Members'">
+					<member-list v-bind:members="role.members" :roleName="roleName"/>
+				</tab>
+				<tab :title="'Commands'">
+					<command-list v-bind:commands="allCommands" :roleName="roleName"/>
+				</tab>
+				<tab :title="'Permissions'">
 					
 					<spacer-horizontal/>
 
@@ -296,13 +302,7 @@ registerVueComponent('role', {
 					
 					<spacer-horizontal/>
 
-					<requirement-list v-bind:role="role" :roleName="roleName"/>
-				</tab>
-				<tab :title="'Commands'">
-					<command-list v-bind:commands="allCommands" :roleName="roleName"/>
-				</tab>
-				<tab :title="'Members'">
-					<member-list v-bind:members="role.members" :roleName="roleName"/>
+					<requirements v-bind:role="role" :roleName="roleName"/>
 				</tab>
 			</tabs>
 		</extendable-body>
@@ -314,7 +314,7 @@ registerVueComponent('role', {
 	}
 })
 
-registerVueComponent('requirement-list', {
+registerVueComponent('requirements', {
 	props: ['role', 'roleName'],
 	template: `<div class="requirements">
 
@@ -344,12 +344,20 @@ registerVueComponent('requirement-list', {
 registerVueComponent('command-list', {
 	props: ['roleName', 'commands'],
 	template: `<div class="list command_list">
-		<toggleable-element v-for="(isCommand, commandName, index) of commands" v-bind:key="commandName" :initial-value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+		<command v-for="(isCommand, commandName, index) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
 		<spacer-horizontal/>
+	</div>`
+})
+
+registerVueComponent('command', {
+	props: ['roleName', 'isCommand', 'commandName'],
+	template: `<div class="command">
+		<lockable/>
+		<toggleable-element :initial-value="isCommand" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
 	</div>`,
 	methods: {
 		onCommandChange (name, value){
-			this.callGameCommandAndWaitForSync('roleAccess', [this.roleName, name, value])
+			this.callGameCommandAndWaitForSync('roleAccess', [this.roleName, this.commandName, value])
 		}
 	},
 	mixins: [gameCommandMixin]
@@ -357,22 +365,29 @@ registerVueComponent('command-list', {
 
 registerVueComponent('member-list', {
 	props: ['members', 'roleName'],
-	inject: ['players'],
 	template: `<div class="list member_list">
-		<div class="member" v-for="(steamid, index) of members" v-bind:key="steamid">
-			<player-state :player="getPlayer(steamid)" :steamid="steamid"/>
-			<spacer-vertical/>
-			<span class="name">{{getPlayer(steamid).name}}</span>
-			<spacer-vertical/>
-			<span class="small_button im im-minus" @click="removeMember(steamid)"></span>
+		<member v-for="(steamid, index) of members" :key="steamid" :steamid="steamid" :roleName="roleName">
 		</div>
+	</div>`
+})
+
+registerVueComponent('member', {
+	props: ['steamid', 'roleName'],
+	inject: ['players'],
+	template: `<div class="member">
+		<lockable/>
+		<player-state :player="getPlayer" :steamid="steamid"/>
+		<spacer-vertical/>
+		<span class="name">{{getPlayer() ? getPlayer().name : 'Unknown'}}</span>
+		<spacer-vertical/>
+		<span class="small_button im im-minus" @click="removeMember(steamid)"></span>
 	</div>`,
 	methods: {
-		getPlayer (steamid){
-			return this.players[steamid]
+		getPlayer (){
+			return this.players[this.steamid]
 		},
-		removeMember (steamid){
-			this.callGameCommandAndWaitForSync('revokeRole ', [steamid, this.roleName])
+		removeMember (){
+			this.callGameCommandAndWaitForSync('revokeRole ', [this.steamid, this.roleName])
 		}
 	},
 	mixins: [gameCommandMixin]
@@ -414,6 +429,7 @@ registerVueComponent('rule-list', {
 registerVueComponent('rule', {
 	props: ['rule', 'index'],
 	template: `<div class="rule">
+		<lockable/>
 		<p class="text">{{rule}}</p>
 		<span class="small_button im im-minus" v-on:click="remove"/>
 	</div>`,
@@ -452,7 +468,7 @@ registerVueComponent('preference', {
 				case 'string': return 'preference-string';
 				case 'table': return 'preference-table';
 				default: {
-					this.error('unvalid preference type', this.preference.type)
+					this.error('invalid preference type', this.preference.type)
 					return
 				}
 			}
@@ -460,8 +476,10 @@ registerVueComponent('preference', {
 	},
 	props: ['preference', 'preferenceName'],
 	template: `<division class="preference" :name="preferenceName" :alwaysExtended="true">
-		<component :is="preferenceComponent" :preference="preference" :preferenceName="preferenceName"/>
-	</div>`
+		<lockable-by-childs>
+			<component :is="preferenceComponent" :preference="preference" :preferenceName="preferenceName"/>
+		</lockable-by-childs>
+	</division>`
 })
 
 registerVueComponent('preference-bool', {
@@ -548,10 +566,73 @@ registerVueComponent('preference-table', {
 registerVueComponent('gamesettings-management', {
 	props: ['gamesettings'],
 	template: `<div class="gamesettings_management">
-		TODO
+		<gamesetting-list :gamesettings="gamesettings"/>
 	</div>`
 })
 
+
+registerVueComponent('gamesetting-list', {
+	props: ['gamesettings'],
+	template: `<div class="list gamesetting_list">
+		<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
+		<spacer-horizontal/>
+	</div>`
+})
+
+registerVueComponent('gamesetting', {
+	computed: {
+		gamesettingComponent (){
+			switch(typeof this.gamesetting){
+				case 'boolean': return 'gamesetting-bool';
+				case 'number': return 'gamesetting-number';
+				default: {
+					this.error('invalid gamesetting type', typeof this.gamesetting)
+					return
+				}
+			}
+		}
+	},
+	props: ['gamesetting', 'gamesettingName'],
+	template: `<division class="gamesetting" :name="gamesettingName" :alwaysExtended="true">
+		<lockable-by-childs>
+			<component :is="gamesettingComponent" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
+		</lockable-by-childs>
+	</division>`
+})
+
+registerVueComponent('gamesetting-bool', {
+	props: ['gamesetting', 'gamesettingName'],
+	template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged"/>`,
+	methods: {
+		gamesettingChanged (name, value){
+			this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, value])
+		}
+	},
+	mixins: [gameCommandMixin]
+})
+
+registerVueComponent('gamesetting-number', {
+	data: function (){
+		return {
+			val: 0
+		}
+	},
+	props: ['gamesetting', 'gamesettingName'],
+	template: `<div class="gamesetting_number">
+		<input type="number" v-model="val"/>
+		<spacer-vertical/>
+		<button @click="update">Update</button>
+	</div>`,
+	created: function (){
+		this.val = this.gamesetting
+	},
+	methods: {
+		update (){
+			this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, this.val])
+		}
+	},
+	mixins: [gameCommandMixin]
+})
 
 registerVueComponent('logs-management', {
 	props: ['logs'],

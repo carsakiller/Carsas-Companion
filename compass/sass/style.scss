@@ -6,7 +6,7 @@
 
 body {
 	color: $text-color;
-	font-family: 'IBM Plex Mono';
+	font-family: $font-primary;
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
@@ -64,7 +64,7 @@ textarea, input {
 	border-radius: 3px;
 	color: $text-edit-foreground;
 	background: $text-edit-background;
-	font-family: 'IBM Plex Mono';
+	font-family: $font-primary;
 	font-style: inherit;
 	font-size: inherit;
 }

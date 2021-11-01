@@ -1583,82 +1583,170 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   content: '\e12c';
 }
 
+/*
+
+IBM Plex Mono
+
+
+*/
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 100;
-  src: url("/static/fonts/IBMPlexMono-Thin.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Thin.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 100;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-ThinItalic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-ThinItalic.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 200;
-  src: url("/static/fonts/IBMPlexMono-ExtraLight.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-ExtraLight.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 200;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-ExtraLightItalic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-ExtraLightItalic.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 300;
-  src: url("/static/fonts/IBMPlexMono-Light.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Light.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 300;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-LightItalic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-LightItalic.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 400;
-  src: url("/static/fonts/IBMPlexMono-Regular.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Regular.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 400;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-Italic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Italic.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 500;
-  src: url("/static/fonts/IBMPlexMono-Medium.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 500;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-MediumItalic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-MediumItalic.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 600;
-  src: url("/static/fonts/IBMPlexMono-SemiBold.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 600;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-SemiBoldItalic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-SemiBoldItalic.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 700;
-  src: url("/static/fonts/IBMPlexMono-Bold.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Bold.ttf") format("truetype");
 }
 @font-face {
   font-family: "IBM Plex Mono";
   font-weight: 700;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono-BoldItalic.ttf") format("truetype");
+  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-BoldItalic.ttf") format("truetype");
+}
+/*
+
+POPPINS
+
+*/
+@font-face {
+  font-family: "Poppins";
+  font-weight: 100;
+  src: url("/static/fonts/Poppins/Poppins-Thin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 100;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-ThinItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 200;
+  src: url("/static/fonts/Poppins/Poppins-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 200;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-ExtraLightItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 300;
+  src: url("/static/fonts/Poppins/Poppins-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 300;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-LightItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 400;
+  src: url("/static/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 400;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-Italic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 500;
+  src: url("/static/fonts/Poppins/Poppins-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 500;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 600;
+  src: url("/static/fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 600;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 700;
+  src: url("/static/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 700;
+  font-style: italic;
+  src: url("/static/fonts/Poppins/Poppins-BoldItalic.ttf") format("truetype");
 }
 /* Colour of the header */
 /* Colour of the sidenav */
@@ -1670,7 +1758,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* For alerting users. Used for ban button */
 /* Used for highlighting something like a selection. Used for highlighted the selected tab within player cards */
 /* For less important text, easier on the eyes. Used for steamIDs and stat text in player cards */
-/* line 3, ../../compass/sass/_component_utility.scss */
+/* line 4, ../../compass/sass/_component_utility.scss */
 .lockable .lock_overlay {
   position: absolute;
   z-index: 9999;
@@ -1681,7 +1769,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   background: #000a;
 }
 
-/* line 16, ../../compass/sass/_component_utility.scss */
+/* line 17, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector {
   display: flex;
   flex-direction: row;
@@ -1689,7 +1777,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   max-width: 100%;
   border-bottom: 3px solid #1a3b5c;
 }
-/* line 23, ../../compass/sass/_component_utility.scss */
+/* line 24, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry {
   position: relative;
   padding: 1em 0.5em;
@@ -1698,15 +1786,15 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   cursor: pointer;
   transition: all 0.2s ease 0s;
 }
-/* line 31, ../../compass/sass/_component_utility.scss */
+/* line 32, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:first-child {
   margin-left: 0;
 }
-/* line 35, ../../compass/sass/_component_utility.scss */
+/* line 36, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:last-child {
   margin-right: 0;
 }
-/* line 39, ../../compass/sass/_component_utility.scss */
+/* line 40, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:after {
   content: '';
   position: absolute;
@@ -1717,30 +1805,30 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   background: transparent;
   transition: all 0.2s ease 0s;
 }
-/* line 50, ../../compass/sass/_component_utility.scss */
+/* line 51, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:hover, .tabs .tabs_selector .entry.selected {
   color: #f3f3f3;
 }
-/* line 53, ../../compass/sass/_component_utility.scss */
+/* line 54, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:hover:after, .tabs .tabs_selector .entry.selected:after {
   background: #e66200;
 }
 
-/* line 67, ../../compass/sass/_component_utility.scss */
+/* line 68, ../../compass/sass/_component_utility.scss */
 .extendable .extendable_trigger {
   cursor: pointer;
 }
-/* line 70, ../../compass/sass/_component_utility.scss */
+/* line 71, ../../compass/sass/_component_utility.scss */
 .extendable .extendable_trigger .extend_arrow {
   margin-left: 1em;
   font-size: 0.8em;
 }
 
-/* line 81, ../../compass/sass/_component_utility.scss */
+/* line 82, ../../compass/sass/_component_utility.scss */
 .division {
   margin: 1em;
 }
-/* line 84, ../../compass/sass/_component_utility.scss */
+/* line 85, ../../compass/sass/_component_utility.scss */
 .division .division_head {
   display: flex;
   flex-direction: row;
@@ -1748,13 +1836,13 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   padding: 1em;
   background: #00446c;
 }
-/* line 92, ../../compass/sass/_component_utility.scss */
+/* line 93, ../../compass/sass/_component_utility.scss */
 .division .division_body {
   position: relative;
   padding: 1em;
   background: #003d61;
 }
-/* line 97, ../../compass/sass/_component_utility.scss */
+/* line 98, ../../compass/sass/_component_utility.scss */
 .division .division_body:before {
   content: '';
   position: absolute;
@@ -1765,18 +1853,18 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   background: linear-gradient(to bottom, #002941 0%, rgba(0, 61, 97, 0) 100%);
 }
 
-/* line 109, ../../compass/sass/_component_utility.scss */
+/* line 110, ../../compass/sass/_component_utility.scss */
 .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 115, ../../compass/sass/_component_utility.scss */
+/* line 116, ../../compass/sass/_component_utility.scss */
 .steamid:hover {
   color: #ddd;
 }
-/* line 119, ../../compass/sass/_component_utility.scss */
+/* line 120, ../../compass/sass/_component_utility.scss */
 .steamid .icon {
   font-size: 0.8em;
   position: relative;
@@ -1784,36 +1872,36 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   margin-right: 0.5em;
 }
 
-/* line 127, ../../compass/sass/_component_utility.scss */
+/* line 128, ../../compass/sass/_component_utility.scss */
 .toggleable_element {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
 }
-/* line 132, ../../compass/sass/_component_utility.scss */
+/* line 133, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front {
   position: relative;
   margin-right: 0.5em;
 }
-/* line 136, ../../compass/sass/_component_utility.scss */
+/* line 137, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"] {
   position: absolute;
   left: -10000000000000px;
 }
-/* line 140, ../../compass/sass/_component_utility.scss */
+/* line 141, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:before {
   background: #379249;
   border: 1px solid #379249;
 }
-/* line 145, ../../compass/sass/_component_utility.scss */
+/* line 146, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:after {
   transform: translateX(0.7em);
 }
-/* line 149, ../../compass/sass/_component_utility.scss */
+/* line 150, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"]:focus + span:before {
   border: 1px solid blue !important;
 }
-/* line 154, ../../compass/sass/_component_utility.scss */
+/* line 155, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front .checkbox_slider {
   display: inline-block;
   height: 1em;
@@ -1821,7 +1909,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   margin-right: 1.5em;
   cursor: pointer;
 }
-/* line 161, ../../compass/sass/_component_utility.scss */
+/* line 162, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front .checkbox_slider:before {
   content: '';
   position: absolute;
@@ -1834,7 +1922,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   border-radius: 100000px;
   transition: all 0.2s ease;
 }
-/* line 174, ../../compass/sass/_component_utility.scss */
+/* line 175, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front .checkbox_slider:after {
   content: '';
   position: absolute;
@@ -1847,31 +1935,31 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   transition: all 0.2s ease;
   transform: translateX(0);
 }
-/* line 189, ../../compass/sass/_component_utility.scss */
+/* line 190, ../../compass/sass/_component_utility.scss */
 .toggleable_element .rear {
   max-width: 100%;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-/* line 196, ../../compass/sass/_component_utility.scss */
+/* line 197, ../../compass/sass/_component_utility.scss */
 .player_state {
   font-size: 1.5em;
   min-width: 2.5em;
   text-align: center;
 }
-/* line 201, ../../compass/sass/_component_utility.scss */
+/* line 202, ../../compass/sass/_component_utility.scss */
 .player_state .id {
   color: #379249;
   font-weight: 500;
 }
-/* line 206, ../../compass/sass/_component_utility.scss */
+/* line 207, ../../compass/sass/_component_utility.scss */
 .player_state .offline {
   color: #c92f2f;
   font-size: 0.8em;
 }
 
-/* line 212, ../../compass/sass/_component_utility.scss */
+/* line 213, ../../compass/sass/_component_utility.scss */
 .status_bar {
   width: 100%;
   padding: 0.7em 2em;
@@ -1879,11 +1967,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   text-align: center;
   font-size: 2em;
 }
-/* line 219, ../../compass/sass/_component_utility.scss */
+/* line 220, ../../compass/sass/_component_utility.scss */
 .status_bar.success {
   background: #379249;
 }
-/* line 223, ../../compass/sass/_component_utility.scss */
+/* line 224, ../../compass/sass/_component_utility.scss */
 .status_bar.error {
   background: #c92f2f;
 }
@@ -1951,50 +2039,54 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   padding: 0.8em 2em;
   background: #00446c;
 }
-/* line 61, ../../compass/sass/_components.scss */
+/* line 60, ../../compass/sass/_components.scss */
+#app .pages .page .page_head h2 {
+  font-family: "Poppins";
+}
+/* line 65, ../../compass/sass/_components.scss */
 #app .pages .page .page_body {
   max-height: 100%;
   overflow-y: auto;
 }
 
-/* line 73, ../../compass/sass/_components.scss */
+/* line 77, ../../compass/sass/_components.scss */
 .players_management .player_list .player {
   background: #07192B;
 }
-/* line 76, ../../compass/sass/_components.scss */
+/* line 80, ../../compass/sass/_components.scss */
 .players_management .player_list .player.is_banned .name {
   color: #c92f2f;
 }
-/* line 80, ../../compass/sass/_components.scss */
+/* line 84, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0.5em 1em;
 }
-/* line 86, ../../compass/sass/_components.scss */
+/* line 90, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .state {
   font-size: 1.5em;
   min-width: 2.5em;
   text-align: center;
 }
-/* line 91, ../../compass/sass/_components.scss */
+/* line 95, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .state .id {
   color: #379249;
   font-weight: 500;
 }
-/* line 96, ../../compass/sass/_components.scss */
+/* line 100, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .state .offline {
   color: #c92f2f;
   font-size: 0.8em;
 }
-/* line 102, ../../compass/sass/_components.scss */
+/* line 106, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .name_container {
   display: flex;
   flex-direction: column;
   margin-left: 1em;
 }
-/* line 107, ../../compass/sass/_components.scss */
+/* line 111, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .name_container .name {
   font-size: 1.3em;
   font-weight: 500;
@@ -2003,77 +2095,77 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   cursor: pointer;
   margin-bottom: 0.2em;
 }
-/* line 115, ../../compass/sass/_components.scss */
+/* line 119, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .name_container .name .extend_arrow {
   font-size: 0.8em;
   margin-left: 0.5em;
   line-height: 1.2em;
 }
-/* line 122, ../../compass/sass/_components.scss */
+/* line 126, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .name_container .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 128, ../../compass/sass/_components.scss */
+/* line 132, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .name_container .steamid:hover {
   color: #ddd;
 }
-/* line 132, ../../compass/sass/_components.scss */
+/* line 136, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .name_container .steamid .icon {
   font-size: 0.8em;
   position: relative;
   top: 0.1em;
   margin-right: 0.5em;
 }
-/* line 141, ../../compass/sass/_components.scss */
+/* line 145, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .gap {
   width: 100%;
 }
-/* line 145, ../../compass/sass/_components.scss */
+/* line 149, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .buttons {
   display: flex;
   flex-direction: row;
   margin-left: 1em;
 }
-/* line 150, ../../compass/sass/_components.scss */
+/* line 154, ../../compass/sass/_components.scss */
 .players_management .player_list .player .head .buttons button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 156, ../../compass/sass/_components.scss */
+/* line 160, ../../compass/sass/_components.scss */
 .players_management .player_list .player .body {
   display: flex;
   flex-direction: column;
   padding: 1em;
   background: #061422;
 }
-/* line 162, ../../compass/sass/_components.scss */
+/* line 166, ../../compass/sass/_components.scss */
 .players_management .player_list .player .body .player_role {
   padding: 0.3em 0.6em;
   font-size: 1.2em;
 }
-/* line 166, ../../compass/sass/_components.scss */
+/* line 170, ../../compass/sass/_components.scss */
 .players_management .player_list .player .body .player_role .name {
   color: #f3f3f3;
   margin-right: 0.5em;
 }
-/* line 171, ../../compass/sass/_components.scss */
+/* line 175, ../../compass/sass/_components.scss */
 .players_management .player_list .player .body .player_role.enabled {
   background: #379249;
 }
-/* line 175, ../../compass/sass/_components.scss */
+/* line 179, ../../compass/sass/_components.scss */
 .players_management .player_list .player .body .player_role.disabled {
   background: #c92f2f;
 }
 
-/* line 186, ../../compass/sass/_components.scss */
+/* line 190, ../../compass/sass/_components.scss */
 .vehicles_management .vehicle_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 191, ../../compass/sass/_components.scss */
+/* line 195, ../../compass/sass/_components.scss */
 .vehicles_management .vehicle_list .vehicle {
   display: flex;
   flex-direction: row;
@@ -2081,7 +2173,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   padding: 0.5em 1em;
   background: #07192B;
 }
-/* line 198, ../../compass/sass/_components.scss */
+/* line 202, ../../compass/sass/_components.scss */
 .vehicles_management .vehicle_list .vehicle .id {
   font-size: 1.5em;
   min-width: 2.5em;
@@ -2089,47 +2181,47 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   color: #f3f3f3;
   font-weight: 500;
 }
-/* line 206, ../../compass/sass/_components.scss */
+/* line 210, ../../compass/sass/_components.scss */
 .vehicles_management .vehicle_list .vehicle .name {
   font-size: 1.3em;
   font-weight: 500;
   margin-right: 1em;
 }
-/* line 212, ../../compass/sass/_components.scss */
+/* line 216, ../../compass/sass/_components.scss */
 .vehicles_management .vehicle_list .vehicle .gap {
   width: 100%;
 }
 
-/* line 227, ../../compass/sass/_components.scss */
+/* line 231, ../../compass/sass/_components.scss */
 .roles_management .new_role_container input {
   width: 10em;
   margin-right: 1em;
 }
-/* line 235, ../../compass/sass/_components.scss */
+/* line 239, ../../compass/sass/_components.scss */
 .roles_management .role_list .role {
   padding: 1em;
   background: #07192B;
   color: #f3f3f3;
 }
-/* line 240, ../../compass/sass/_components.scss */
+/* line 244, ../../compass/sass/_components.scss */
 .roles_management .role_list .role .role_top_container {
   display: flex;
   flex-direction: row;
 }
-/* line 244, ../../compass/sass/_components.scss */
+/* line 248, ../../compass/sass/_components.scss */
 .roles_management .role_list .role .role_top_container .name {
   font-size: 1.5em;
   font-weight: 500;
 }
-/* line 249, ../../compass/sass/_components.scss */
+/* line 253, ../../compass/sass/_components.scss */
 .roles_management .role_list .role .role_top_container .buttons {
   margin-left: 2em;
 }
-/* line 254, ../../compass/sass/_components.scss */
+/* line 258, ../../compass/sass/_components.scss */
 .roles_management .role_list .role .member_list {
   margin: 1em 0;
 }
-/* line 257, ../../compass/sass/_components.scss */
+/* line 261, ../../compass/sass/_components.scss */
 .roles_management .role_list .role .member_list .member {
   display: flex;
   flex-direction: row;
@@ -2137,12 +2229,12 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   padding: 0.5em 1em;
   background: #000c12;
 }
-/* line 264, ../../compass/sass/_components.scss */
+/* line 268, ../../compass/sass/_components.scss */
 .roles_management .role_list .role .member_list .member .name {
   font-size: 1.2em;
 }
 
-/* line 277, ../../compass/sass/_components.scss */
+/* line 292, ../../compass/sass/_components.scss */
 .rules_management .new_rule_container textarea {
   width: 100%;
   min-height: 2em;
@@ -2150,7 +2242,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   max-width: 100%;
   margin-bottom: 1em;
 }
-/* line 288, ../../compass/sass/_components.scss */
+/* line 303, ../../compass/sass/_components.scss */
 .rules_management .rule_list .rule {
   display: flex;
   flex-direction: row;
@@ -2158,34 +2250,34 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   background: #07192B;
   padding: 0.5em 1em;
 }
-/* line 295, ../../compass/sass/_components.scss */
+/* line 310, ../../compass/sass/_components.scss */
 .rules_management .rule_list .rule:not(:last-child) {
   margin-bottom: 1em;
 }
-/* line 299, ../../compass/sass/_components.scss */
+/* line 314, ../../compass/sass/_components.scss */
 .rules_management .rule_list .rule .text {
   margin-right: 1em;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-/* line 335, ../../compass/sass/_components.scss */
+/* line 350, ../../compass/sass/_components.scss */
 .logs_management .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 340, ../../compass/sass/_components.scss */
+/* line 355, ../../compass/sass/_components.scss */
 .logs_management .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 345, ../../compass/sass/_components.scss */
+/* line 360, ../../compass/sass/_components.scss */
 .logs_management .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 349, ../../compass/sass/_components.scss */
+/* line 364, ../../compass/sass/_components.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
 }
@@ -2193,7 +2285,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* line 7, ../../compass/sass/style.scss */
 body {
   color: #f3f3f3;
-  font-family: 'IBM Plex Mono';
+  font-family: "IBM Plex Mono";
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -2251,7 +2343,7 @@ textarea, input {
   border-radius: 3px;
   color: #f3f3f3;
   background: #333;
-  font-family: 'IBM Plex Mono';
+  font-family: "IBM Plex Mono";
   font-style: inherit;
   font-size: inherit;
 }
