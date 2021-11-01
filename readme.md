@@ -51,10 +51,8 @@ The method then sends that command to the game, if game responds with success, w
 
 ## All
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
-* Module based approach: core features and then modules can register data, tabs, messages, commands, ... (e.g. the live module)
 
 ## Browser
-* implement auto reloading or at least websocket reconnecting for the browser
 * when we lock a component, we need to disable the input, otherwise one can just use the accessibility features (press tab to select eh input and space to change it, e.g. a checkbox)
 
 ## WebServer
@@ -76,7 +74,6 @@ The method then sends that command to the game, if game responds with success, w
 ## Modules
 * live module (map with players and vehicles)
 * gameserver management module (start/stop game, manage saves)
-* a test module (test functionality and performance of web<->game transmission, can be controlled from the browser)
 * Statistics: how do we do the database? Is handling it in a simple object to RAM intensive    
 
 ## Other
