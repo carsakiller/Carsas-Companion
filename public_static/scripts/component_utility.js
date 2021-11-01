@@ -301,27 +301,68 @@ registerVueComponent('loading-spinner', {
 	template: `<span class="loading_spinner im im-spinner"/>`
 })
 
+/*
+
+	Usage:
+	<loading-spinner-or :is-loading-code="'return true == false'">
+		Show this when eval('return true == false') returns false
+	</loading-spinner-or>
+
+	Special case: burried inside multiple other components:
+
+	<extendable>
+		<loading-spinner-or :is-loading-code="'return true == false'" :parents-depth="1">
+			Show this when eval('return true == false') returns false
+		</loading-spinner-or>
+	</extendable>
+
+	*/
 registerVueComponent('loading-spinner-or', {
+	data: function (){
+		return {
+			isLoading: true
+		}
+	},
 	props: {
 		'is-loading-code': {
 			type: String,
 			required: true
-		}
-	},
-	computed: {
-		isLoading (){
-			let ret = new Function(this.isLoadingCode).apply(this.$parent)
-			if(!ret){
-				this.log('computed stopped isLoading', ret)
-			}
-			return ret === true
+		},
+		'parents-depth': {
+			type: Number,
+			default: 0
 		}
 	},
 	template: `<div class="loading_spinner_or">
 		<loading-spinner v-if="isLoading"/>
-		{{isLoading}}
 		<slot v-else/>
-	</div>`
+	</div>`,
+	mounted: function (){
+		setInterval(()=>{
+			this.checkIsLoading()
+		}, 100)
+	},
+	methods: {
+		checkIsLoading (){
+			this.log('checkIsLoading()', this.$parent.version)
+			try {
+				let node = this
+
+				for(let i=this.parentsDepth; i >= 0; i--){
+					node = node.$parent
+				}
+
+				let ret = new Function(this.isLoadingCode).apply(node)
+				if(ret !== true){
+					this.log('stopped loading')
+					this.isLoading = false
+				}
+			} catch (ex){
+				this.error(ex)
+				return true
+			}
+		}
+	}
 })
 
 registerVueComponent('spacer-horizontal', {

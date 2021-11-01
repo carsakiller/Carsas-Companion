@@ -84,7 +84,6 @@ registerVueComponent('pages', {
 registerVueComponent('info', {
 	computed: {
 		version (){
-			console.log(this.$store.getters.C2_VERSION)
 			return this.$store.getters.C2_VERSION
 		},
 		commit (){
@@ -96,10 +95,17 @@ registerVueComponent('info', {
 	},
 	template: `<div class="info">
 		<division :name="'General'" :startExtended="true">
-			<loading-spinner :is-loading="!!version"/>
-			<p>Version: <loading-spinner-or :is-loading-code="'return !this.version'">{{version}}</loading-spinner-or></p>
+			<p>Version:
+				<loading-spinner-or :is-loading-code="'return !this.version'" :parents-depth="3">
+					{{version}}
+				</loading-spinner-or>
+			</p>
 			<spacer-horizontal/>
-			<p>Commit: <loading-spinner-or :is-loading-code="'return !this.commit'"><span :title="commit">{{commitShort}}</span></loading-spinner-or></p>
+			<p>Commit:
+				<loading-spinner-or :is-loading-code="'return !this.commit'" :parents-depth="3">
+					<span :title="commit">{{commitShort}}</span>
+				</loading-spinner-or>
+			</p>
 		</division>
 		<division :name="'Help'" :startExtended="false">
 			You can find a manual <a href="#">here (TODO)</a>

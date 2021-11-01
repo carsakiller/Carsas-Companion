@@ -252,14 +252,13 @@
 
 		setTimeout(()=>{
 			$.get('/static/version.txt', (data)=>{
-				console.log('got version', data, store)
 				store.dispatch('setC2Version', data)
 			})
 
 			$.get('/static/commit.txt', (data)=>{
 				store.dispatch('setC2Commit', data)
 			})
-		}, 5000)
+		}, 1000)
 	})
 
 

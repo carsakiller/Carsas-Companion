@@ -1,5 +1,19 @@
 .loading_spinner {
+	font-size: 1em;
+	animation-name: 'loading-spinner';
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
 
+@keyframes loading-spinner {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 .loading_spinner_or {
