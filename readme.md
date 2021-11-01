@@ -16,6 +16,9 @@ You can also trigger it manually by doing a checkout on the current select branc
 * command line tool 1 : `cd compass & compass watch`
 * command line tool 2 : `nodemon`
 
+### Upgrading the version
+Just edit the file `public_static/version.txt`
+
 ## Creating executables
 ### install pkg
 `npm i pkg -g`
