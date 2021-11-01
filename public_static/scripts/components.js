@@ -1,5 +1,3 @@
-
-
 registerVueComponent('status-bar', {
 	computed: {
 		status (){
@@ -81,6 +79,22 @@ registerVueComponent('pages', {
 	mounted: function (){
 		this.selectPage(this.selectedIndex)
 	}
+})
+
+registerVueComponent('info', {
+	computed: {
+		version (){
+			return C2_VERSION
+		}
+	},
+	template: `<div class="info">
+		<division :name="'General'" :startExtended="true">
+			<span>Version: {{version}}</span>
+		</division>
+		<division :name="'Help'" :startExtended="false">
+			You can find a manual <a href="#">here (TODO)</a>
+		</division>
+	</div>`
 })
 
 registerVueComponent('players-management', {
@@ -249,7 +263,7 @@ registerVueComponent('vehicle-list', {
 		}
 	},
 	template: `<div class="list vehicle_list">
-		<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="vehicleId" :key="vehicleId"/>
+		<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)" :key="vehicleId"/>
 	</div>`
 })
 
@@ -554,7 +568,7 @@ registerVueComponent('rule-list', {
 registerVueComponent('rule', {
 	props: {
 		rule: {
-			type: Object,
+			type: String,
 			required: true
 		},
 		index: {

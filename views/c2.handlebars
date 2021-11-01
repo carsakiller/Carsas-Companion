@@ -3,6 +3,9 @@
 <div id="app">
 	<status-bar></status-bar>
 	<pages :initial-index="0">
+		<page :title="'Home'" :icon="'home'">
+			<info></info>
+		</page>
 		<page :title="'Players'" :icon="'users'">
 			<players-management></players-management>
 		</page>
@@ -33,6 +36,7 @@
 <p>test</p>
 
 <script type="text/javascript">
+	const C2_VERSION = "v1.0"
 
 	const store = Vuex.createStore({
 		state: {

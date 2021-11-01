@@ -76,3 +76,16 @@ textarea, input {
 p {
 	line-height: 1.2em;
 }
+
+a {
+	color: $highlight;
+	text-decoration: underline;
+
+	&:hover, &:visited:hover {
+		color: tint($highlight, 40%);
+	}
+
+	&:visited {
+		color: adjust-hue($highlight, -10deg);
+	}
+}

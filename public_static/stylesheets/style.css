@@ -2413,3 +2413,17 @@ textarea, input {
 p {
   line-height: 1.2em;
 }
+
+/* line 80, ../../compass/sass/style.scss */
+a {
+  color: #e66200;
+  text-decoration: underline;
+}
+/* line 84, ../../compass/sass/style.scss */
+a:hover, a:visited:hover {
+  color: #f0a166;
+}
+/* line 88, ../../compass/sass/style.scss */
+a:visited {
+  color: #e63c00;
+}

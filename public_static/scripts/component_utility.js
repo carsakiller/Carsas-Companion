@@ -564,15 +564,14 @@ registerVueComponent('division', {
 		}
 	},
 	template: `<extendable class="division" v-slot="extendableProps" :startExtended="startExtended || alwaysExtended">
-		<div  class="division_head" v-if="name && alwaysExtended">
+		<div class="division_head" v-if="name && alwaysExtended">
 			<h3>{{name}}</h3>
 		</div>
 		<extendable-trigger class="division_head" v-if="name && !alwaysExtended" :useDefaultArrows="true">
 			<h3>{{name}}</h3>
 		</extendable-trigger>
 		<extendable-body class="division_body">
-			<slot>
-			</slot>
+			<slot/>
 		</extendable-body>
 	</extendable>`,
 	created: function(){
