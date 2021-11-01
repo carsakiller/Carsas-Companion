@@ -41,7 +41,11 @@ button, .small_button {
 	&.small_button {
 		font-size: 80%;
 		font-weight: 400;
-		padding: 0.2em 0.4em;	
+		padding: 0.2em 0.4em;
+
+		&.confirm_button:hover .im {
+			padding-left: 1.5em;
+		}
 	}
 }
 

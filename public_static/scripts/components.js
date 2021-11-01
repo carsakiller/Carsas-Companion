@@ -269,7 +269,7 @@ registerVueComponent('vehicle', {
 		<div class="gap"/>
 
 		<div class="buttons">
-			<button @click="despawn">Despawn</button>
+			<confirm-button @click="despawn">Despawn</confirm-button>
 		</div>
 	</div>`,
 	methods: {
@@ -363,7 +363,7 @@ registerVueComponent('role', {
 			</extendable-trigger>
 
 			<div class="buttons">
-				<button @click="remove">Delete</button>
+				<confirm-button @click="remove">Delete</confirm-button>
 			</div>
 		</div>
 
@@ -493,7 +493,7 @@ registerVueComponent('member', {
 		<spacer-vertical/>
 		<span class="name">{{getPlayer() ? getPlayer().name : 'Unknown'}}</span>
 		<spacer-vertical/>
-		<span class="small_button im im-minus" @click="removeMember()"></span>
+		<button class="small_button im im-minus" @click="removeMember()"></button>
 	</div>`,
 	methods: {
 		getPlayer (){
@@ -562,7 +562,9 @@ registerVueComponent('rule', {
 	template: `<div class="rule">
 		<lockable/>
 		<p class="text">{{rule}}</p>
-		<span class="small_button im im-minus" @click="remove"/>
+		<confirm-button class="small_button" @click="remove">
+			<span class="im im-minus"/>
+		</confirm-button>
 	</div>`,
 	methods: {
 		remove (){
