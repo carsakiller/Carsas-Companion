@@ -211,6 +211,78 @@ let gameCommandMixin = {
 	}
 }
 
+registerVueComponent('confirm-button', {
+	data: function (){
+		return {
+			mouseIsHovering: false,
+			timeHoverStarted: 0,
+			fillPercentage: 0,
+			intervalId: undefined
+		}
+	},
+	computed: {
+		isClickable (){
+			return this.fillPercentage == 100
+		},
+		style (){
+			return 'background: linear-gradient(to right, red 0%, red ' + (this.fillPercentage - 0.1) + '%, transparent ' + this.fillPercentage + '%, transparent 100%)'
+		}
+	},
+	props: {
+		time: {
+			type: Number,
+			default: 2,
+			required: false
+		}
+	},
+	template: `<button :class="['confirm_button', {confirmed: isClickable}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
+		<slot/>
+	</button>`,
+	methods: {
+		handleMouseEnter (){
+			this.mouseIsHovering = true
+			this.timeHoverStarted = Date.now()
+
+			if(window.requestAnimationFrame){
+				let that = this
+				let func = function(){
+					that.updateFillPercentage()
+					window.requestAnimationFrame(func)
+				}
+				this.intervalId = requestAnimationFrame(func)
+			} else {
+				let that = this
+				this.intervalId = setInterval(()=>{
+					that.updateFillPercentage()
+				}, 16)
+			}			
+		},
+		handleMouseLeave (){
+			this.mouseIsHovering = false
+			this.timeHoverStarted = 0
+
+			if(this.intervalId){
+				if(window.requestAnimationFrame){
+					window.cancelAnimationFrame(this.intervalId)
+				} else {
+					clearInterval(this.intervalId)
+				}
+			}
+			this.intervalId = undefined
+		},
+		handleClick (evt){
+			if(!this.isClickable){
+				evt.preventDefault()
+				evt.stopImmediatePropagation()
+			}
+		},
+		updateFillPercentage (){
+			this.fillPercentage = this.timeHoverStarted > 0 ? Math.min(1, (Date.now() - this.timeHoverStarted) / (this.time * 1000) ) * 100 : 0
+		}
+	},
+
+})
+
 registerVueComponent('spacer-horizontal', {
 	props: {
 		height: {

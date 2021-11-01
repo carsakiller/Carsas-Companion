@@ -126,9 +126,9 @@ registerVueComponent('player', {
 			<div class="gap"/>
 
 			<div class="buttons">
-				<button v-if="!isBanned" v-on:click.stop="kick">Kick</button>
-				<button v-if="!isBanned" v-on:click.stop="ban">Ban</button>
-				<button v-else v-on:click.stop="unban">Unban</button>
+				<confirm-button v-if="!isBanned" v-on:click.stop="kick">Kick</confirm-button>
+				<confirm-button v-if="!isBanned" v-on:click.stop="ban">Ban</confirm-button>
+				<confirm-button v-else v-on:click.stop="unban">Unban</confirm-button>
 			</div>
 		</div>
 

@@ -228,3 +228,49 @@
 		background: linear-gradient(45deg, shade($disabled, 15%), tint($disabled, 15%));
 	}
 }
+
+.confirm_button {
+	position: relative;
+	padding-left: 1em;
+	transition: all 0.2s ease 0s;
+
+	&:hover {
+		padding-left: 2.2em;
+
+		&:before, &:after {
+			position: absolute;
+			left: 0.5em;
+			top: 50%;
+			transform: translateY(-50%);
+			font-family: 'iconmonstr-iconic-font';
+			transition: all 0.2s ease 0s;
+		}
+
+		&:before {
+			content: '\e061';
+			opacity: 1;
+		}
+
+		&:after {
+			content: '\e062';
+			opacity: 0;
+		}
+
+		&.confirmed {
+			background: $enabled !important;
+
+			&:before {
+				opacity: 0;
+			}
+
+			&:after {
+				opacity: 1;
+			}
+		}
+
+		&:not(.confirmed) {		
+			color: shade($text-color, 60%);
+			border-color: shade($text-color, 60%);
+		}
+	}
+}
