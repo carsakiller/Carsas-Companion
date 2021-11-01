@@ -18,21 +18,41 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		max-width: 100%;
-		border-bottom: 2px solid shade($text-color, 20%);
+		border-bottom: 3px solid tint($primary, 10%);
 
 		.entry {
-			padding: 0.5em 1em;
-			border: 1px solid $text-color;
-			border-bottom: none;
+			position: relative;
+			padding: 1em 0.5em;
+			margin: 0 0.5em;
+			color: shade($text-color, 40%);
 			cursor: pointer;
 			transition: all 0.2s ease 0s;
 
-			&:hover {
-				background: $primary;
+			&:first-child {
+				margin-left: 0;
 			}
 
-			&.selected {
-				background: $primary;
+			&:last-child {
+				margin-right: 0;
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				bottom: -3px;
+				left: 0;
+				height: 3px;
+				width: 100%;
+				background: transparent;
+				transition: all 0.2s ease 0s;
+			}
+
+			&:hover, &.selected {
+				color: $text-color;
+
+				&:after {
+					background: $highlight;
+				}
 			}
 		}
 	}
