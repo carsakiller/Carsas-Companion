@@ -1,3 +1,12 @@
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('info', {
 	computed: {
 		version (){
@@ -30,6 +39,15 @@ C2.registerVueComponent('info', {
 	</div>`
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('players-management', {
 	computed: {
 		players (){
@@ -40,6 +58,15 @@ C2.registerVueComponent('players-management', {
 		<player-list v-bind:players="players"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('player-list', {
 	props: {
@@ -52,6 +79,15 @@ C2.registerVueComponent('player-list', {
 		<player v-for="(player, steamid) in players" :player="player" :steamid="steamid" :key="steamid"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('player', {
 	computed: {
@@ -128,6 +164,15 @@ C2.registerVueComponent('player', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('player-state', {
 	props: {
 		player: {
@@ -140,6 +185,15 @@ C2.registerVueComponent('player-state', {
 		<span class="offline im im-power" v-else></span>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('player-role', {
 	data: function (){
@@ -177,6 +231,15 @@ C2.registerVueComponent('player-role', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('vehicles-management', {
 	computed: {
 		vehicles (){
@@ -187,6 +250,15 @@ C2.registerVueComponent('vehicles-management', {
 		<vehicle-list :vehicles="vehicles"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('vehicle-list', {
 	props: {
@@ -199,6 +271,15 @@ C2.registerVueComponent('vehicle-list', {
 		<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)" :key="vehicleId"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('vehicle', {
 	props: {
@@ -228,6 +309,15 @@ C2.registerVueComponent('vehicle', {
 		}
 	}
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('roles-management', {
 	data: function (){
@@ -259,6 +349,15 @@ C2.registerVueComponent('roles-management', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('role-list', {
 	props: {
 		roles: {
@@ -270,6 +369,15 @@ C2.registerVueComponent('role-list', {
 		<role v-for="(role, roleName) of roles" :role="role" :roleName="roleName" :key="roleName"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('role', {
 	props: {
@@ -347,6 +455,15 @@ C2.registerVueComponent('role', {
 	}
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('requirements', {
 	props: {
 		role: {
@@ -380,6 +497,15 @@ C2.registerVueComponent('requirements', {
 })
 
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('command-list', {
 	props: {
 		commands: {
@@ -392,6 +518,15 @@ C2.registerVueComponent('command-list', {
 		<spacer-horizontal/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('command', {
 	props: {
@@ -417,6 +552,15 @@ C2.registerVueComponent('command', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('member-list', {
 	props: {
 		members: {
@@ -428,6 +572,15 @@ C2.registerVueComponent('member-list', {
 		<member v-for="(steamid, index) of members" :key="steamid" :steamid="steamid"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('member', {
 	props: {
@@ -455,6 +608,15 @@ C2.registerVueComponent('member', {
 	},
 	mixins: [gameCommandMixin]
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('rules-management', {
 	data: function (){
@@ -486,6 +648,15 @@ C2.registerVueComponent('rules-management', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('rule-list', {
 	props: {
 		rules: {
@@ -497,6 +668,15 @@ C2.registerVueComponent('rule-list', {
 		<rule v-for="(rule, index) of rules" :rule="rule" :index="index"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('rule', {
 	props: {
@@ -527,6 +707,15 @@ C2.registerVueComponent('rule', {
 
 
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('preferences-management', {
 	computed: {
 		preferences (){
@@ -537,6 +726,15 @@ C2.registerVueComponent('preferences-management', {
 		<preference-list :preferences="preferences"/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('preference-list', {
 	props: {
@@ -550,6 +748,15 @@ C2.registerVueComponent('preference-list', {
 		<spacer-horizontal/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('preference', {
 	computed: {
@@ -589,6 +796,15 @@ C2.registerVueComponent('preference', {
 	</division>`
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('preference-bool', {
 	inject: ['preference', 'preferenceName'],
 	template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :on-value-change="preferenceChanged"/>`,
@@ -599,6 +815,15 @@ C2.registerVueComponent('preference-bool', {
 	},
 	mixins: [gameCommandMixin]
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('preference-string', {
 	data: function (){
@@ -623,6 +848,15 @@ C2.registerVueComponent('preference-string', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('preference-number', {
 	data: function (){
 		return {
@@ -645,6 +879,15 @@ C2.registerVueComponent('preference-number', {
 	},
 	mixins: [gameCommandMixin]
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('preference-table', {
 	data: function (){
@@ -670,6 +913,15 @@ C2.registerVueComponent('preference-table', {
 })
 
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('gamesettings-management', {
 	computed: {
 		gamesettings (){
@@ -681,6 +933,15 @@ C2.registerVueComponent('gamesettings-management', {
 	</div>`
 })
 
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('gamesetting-list', {
 	props: {
@@ -694,6 +955,15 @@ C2.registerVueComponent('gamesetting-list', {
 		<spacer-horizontal/>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('gamesetting', {
 	computed: {
@@ -730,6 +1000,15 @@ C2.registerVueComponent('gamesetting', {
 	</division>`
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('gamesetting-bool', {
 	inject: ['gamesetting', 'gamesettingName'],
 	template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged"/>`,
@@ -740,6 +1019,15 @@ C2.registerVueComponent('gamesetting-bool', {
 	},
 	mixins: [gameCommandMixin]
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('gamesetting-number', {
 	data: function (){
@@ -764,6 +1052,15 @@ C2.registerVueComponent('gamesetting-number', {
 	mixins: [gameCommandMixin]
 })
 
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
+
 C2.registerVueComponent('logs-management', {
 	computed: {
 		logs (){
@@ -774,6 +1071,15 @@ C2.registerVueComponent('logs-management', {
 		<log-list v-bind:logs="logs"></log-list>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('log-list', {
 	props: {
@@ -786,6 +1092,15 @@ C2.registerVueComponent('log-list', {
 		<log-entry v-for="(entry, entry_index) of logs" :entry="entry" :key="entry_index"></log-entry>
 	</div>`
 })
+
+C2.registerPage('Home', 'home', 'info')
+C2.registerPage('Players', 'users', 'players-management')
+C2.registerPage('Vehicles', 'car', 'vehicles-management')
+C2.registerPage('Roles', 'crown', 'roles-management')
+C2.registerPage('Rules', 'task-o', 'rules-management')
+C2.registerPage('Preferences', 'control-panel', 'preferences-management')
+C2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
+C2.registerPage('Logs', 'note-o', 'logs-management')
 
 C2.registerVueComponent('log-entry', {
 	props: {

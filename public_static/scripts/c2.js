@@ -16,6 +16,8 @@ class C2 {
 
 		this.store = Vuex.createStore({
 			state: {
+				pages: [],
+
 				status: {
 					message: undefined,
 					clazz:undefined
@@ -164,11 +166,10 @@ class C2 {
 				},
 				setC2Commit(state, _commit){
 					state.C2_COMMIT = _commit
+				},
+				addPage (state, page){
+					state.pages.push(page)
 				}
-				/*,
-				addTab (state, tab){
-					state.tabs.push(tab)
-				}*/
 			},
 			actions: {
 				setPlayers ({ commit }, players){
@@ -185,14 +186,10 @@ class C2 {
 				},
 				setC2Commit({commit}, _commit){
 					commit('setC2Commit', _commit)
-				}
-				/*,
-				switchTab ({commit}, tab){
-					commit('switchTab', tab)
 				},
-				addTab ({ commit }, tab){
-					commit('addTab', tab)
-				}*/
+				addPage ({ commit }, page){
+					commit('addPage', page)
+				}
 			},
 
 			getters: {//TODO do this for EVERY state.xyz and make replace every components use of `this.$store.state.xyz` with `this.$store.getters.xyz`
@@ -202,6 +199,9 @@ class C2 {
 				C2_COMMIT: state =>{
 					return state.C2_COMMIT
 				},
+				pages: state => {
+					return state.pages
+				},
 				players: state => {
 					return state.players
 				}
@@ -209,32 +209,16 @@ class C2 {
 		})
 
 		this.app = Vue.createApp({
+			computed: {
+				pages: function (){
+					return this.$store.getters.pages
+				}
+			},
 			template: `<div class="c2">
 				<status-bar></status-bar>
 				<pages :initial-index="0">
-					<page :title="'Home'" :icon="'home'">
-						<info></info>
-					</page>
-					<page :title="'Players'" :icon="'users'">
-						<players-management></players-management>
-					</page>
-					<page :title="'Vehicles'" :icon="'car'">
-						<vehicles-management></vehicles-management>
-					</page>
-					<page :title="'Roles'" :icon="'crown'">
-						<roles-management></roles-management>
-					</page>
-					<page :title="'Rules'" :icon="'task-o'">
-						<rules-management></rules-management>
-					</page>
-					<page :title="'Preferences'" :icon="'control-panel'">
-						<preferences-management></preferences-management>
-					</page>
-					<page :title="'Game Settings'" :icon="'wrench'">
-						<gamesettings-management></gamesettings-management>
-					</page>
-					<page :title="'Logs'" :icon="'note-o'">
-						<logs-management></logs-management>
+					<page v-for="(page, index) of pages" :title="page.title" :icon="page.iconClass">
+						<component :is="page.componentName"/>
 					</page>
 				</pages>
 			</div>`
@@ -244,6 +228,10 @@ class C2 {
 
 		for(let name of Object.keys(C2.registeredComponents)){
 			this.registerComponent(name, C2.registeredComponents[name])
+		}
+
+		for(let name of Object.keys(C2.registeredPages)){
+			this.registerPage(C2.registeredPages[name])
 		}
 
 		this.vm = this.app.mount(el)
@@ -273,20 +261,25 @@ class C2 {
 		this.app.component(name, options)
 	}
 
-	/* TODO
-	function registerTab(id, name, iconClass){
-		store.dispatch('addTab', {
-			id: id,
-			name: name,
-			iconClass: iconClass
-		})
-	}*/
+	registerPage(page){
+		this.store.dispatch('addPage', page)
+	}
 }
 
 C2.registeredComponents = {}
 
 C2.registerVueComponent = function (name, options){
 	C2.registeredComponents[name] = options
+}
+
+C2.registeredPages = {}
+
+C2.registerPage = function (title, iconClass, componentName){
+	C2.registeredPages[title] = {
+		title: title,
+		componentName: componentName,
+		iconClass: iconClass
+	}
 }
 
 C2.uuid = function (){
