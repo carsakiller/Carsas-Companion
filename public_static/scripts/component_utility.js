@@ -297,6 +297,33 @@ registerVueComponent('confirm-button', {
 
 })
 
+registerVueComponent('loading-spinner', {
+	template: `<span class="loading_spinner im im-spinner"/>`
+})
+
+registerVueComponent('loading-spinner-or', {
+	props: {
+		'is-loading-code': {
+			type: String,
+			required: true
+		}
+	},
+	computed: {
+		isLoading (){
+			let ret = new Function(this.isLoadingCode).apply(this.$parent)
+			if(!ret){
+				this.log('computed stopped isLoading', ret)
+			}
+			return ret === true
+		}
+	},
+	template: `<div class="loading_spinner_or">
+		<loading-spinner v-if="isLoading"/>
+		{{isLoading}}
+		<slot v-else/>
+	</div>`
+})
+
 registerVueComponent('spacer-horizontal', {
 	props: {
 		height: {

@@ -1759,7 +1759,12 @@ POPPINS
 /* For alerting users. Used for ban button */
 /* Used for highlighting something like a selection. Used for highlighted the selected tab within player cards */
 /* For less important text, easier on the eyes. Used for steamIDs and stat text in player cards */
-/* line 4, ../../compass/sass/_component_utility.scss */
+/* line 5, ../../compass/sass/_component_utility.scss */
+.loading_spinner_or {
+  display: inline-block;
+}
+
+/* line 12, ../../compass/sass/_component_utility.scss */
 .lockable .lock_overlay {
   position: absolute;
   z-index: 9999;
@@ -1770,7 +1775,7 @@ POPPINS
   background: #000a;
 }
 
-/* line 17, ../../compass/sass/_component_utility.scss */
+/* line 25, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector {
   display: flex;
   flex-direction: row;
@@ -1778,7 +1783,7 @@ POPPINS
   max-width: 100%;
   border-bottom: 3px solid #1a3b5c;
 }
-/* line 24, ../../compass/sass/_component_utility.scss */
+/* line 32, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry {
   position: relative;
   padding: 1em 0.5em;
@@ -1787,15 +1792,15 @@ POPPINS
   cursor: pointer;
   transition: all 0.2s ease 0s;
 }
-/* line 32, ../../compass/sass/_component_utility.scss */
+/* line 40, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:first-child {
   margin-left: 0;
 }
-/* line 36, ../../compass/sass/_component_utility.scss */
+/* line 44, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:last-child {
   margin-right: 0;
 }
-/* line 40, ../../compass/sass/_component_utility.scss */
+/* line 48, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:after {
   content: '';
   position: absolute;
@@ -1806,30 +1811,30 @@ POPPINS
   background: transparent;
   transition: all 0.2s ease 0s;
 }
-/* line 51, ../../compass/sass/_component_utility.scss */
+/* line 59, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:hover, .tabs .tabs_selector .entry.selected {
   color: #f3f3f3;
 }
-/* line 54, ../../compass/sass/_component_utility.scss */
+/* line 62, ../../compass/sass/_component_utility.scss */
 .tabs .tabs_selector .entry:hover:after, .tabs .tabs_selector .entry.selected:after {
   background: #e66200;
 }
 
-/* line 68, ../../compass/sass/_component_utility.scss */
+/* line 76, ../../compass/sass/_component_utility.scss */
 .extendable .extendable_trigger {
   cursor: pointer;
 }
-/* line 71, ../../compass/sass/_component_utility.scss */
+/* line 79, ../../compass/sass/_component_utility.scss */
 .extendable .extendable_trigger .extend_arrow {
   margin-left: 1em;
   font-size: 0.8em;
 }
 
-/* line 82, ../../compass/sass/_component_utility.scss */
+/* line 90, ../../compass/sass/_component_utility.scss */
 .division {
   margin: 1em;
 }
-/* line 85, ../../compass/sass/_component_utility.scss */
+/* line 93, ../../compass/sass/_component_utility.scss */
 .division .division_head {
   display: flex;
   flex-direction: row;
@@ -1837,13 +1842,13 @@ POPPINS
   padding: 1em;
   background: #00446c;
 }
-/* line 93, ../../compass/sass/_component_utility.scss */
+/* line 101, ../../compass/sass/_component_utility.scss */
 .division .division_body {
   position: relative;
   padding: 1em;
   background: #003d61;
 }
-/* line 98, ../../compass/sass/_component_utility.scss */
+/* line 106, ../../compass/sass/_component_utility.scss */
 .division .division_body:before {
   content: '';
   position: absolute;
@@ -1854,18 +1859,18 @@ POPPINS
   background: linear-gradient(to bottom, #002941 0%, rgba(0, 61, 97, 0) 100%);
 }
 
-/* line 110, ../../compass/sass/_component_utility.scss */
+/* line 118, ../../compass/sass/_component_utility.scss */
 .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 116, ../../compass/sass/_component_utility.scss */
+/* line 124, ../../compass/sass/_component_utility.scss */
 .steamid:hover {
   color: #ddd;
 }
-/* line 120, ../../compass/sass/_component_utility.scss */
+/* line 128, ../../compass/sass/_component_utility.scss */
 .steamid .icon {
   font-size: 0.8em;
   position: relative;
@@ -1873,36 +1878,36 @@ POPPINS
   margin-right: 0.5em;
 }
 
-/* line 128, ../../compass/sass/_component_utility.scss */
+/* line 136, ../../compass/sass/_component_utility.scss */
 .toggleable_element {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
 }
-/* line 133, ../../compass/sass/_component_utility.scss */
+/* line 141, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front {
   position: relative;
   margin-right: 0.5em;
 }
-/* line 137, ../../compass/sass/_component_utility.scss */
+/* line 145, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"] {
   position: absolute;
   left: -10000000000000px;
 }
-/* line 141, ../../compass/sass/_component_utility.scss */
+/* line 149, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:before {
   background: #379249;
   border: 1px solid #379249;
 }
-/* line 146, ../../compass/sass/_component_utility.scss */
+/* line 154, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:after {
   transform: translateX(0.7em);
 }
-/* line 150, ../../compass/sass/_component_utility.scss */
+/* line 158, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front input[type="checkbox"]:focus + span:before {
   border: 1px solid blue !important;
 }
-/* line 155, ../../compass/sass/_component_utility.scss */
+/* line 163, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front .checkbox_slider {
   display: inline-block;
   height: 1em;
@@ -1910,7 +1915,7 @@ POPPINS
   margin-right: 1.5em;
   cursor: pointer;
 }
-/* line 162, ../../compass/sass/_component_utility.scss */
+/* line 170, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front .checkbox_slider:before {
   content: '';
   position: absolute;
@@ -1923,7 +1928,7 @@ POPPINS
   border-radius: 100000px;
   transition: all 0.2s ease;
 }
-/* line 175, ../../compass/sass/_component_utility.scss */
+/* line 183, ../../compass/sass/_component_utility.scss */
 .toggleable_element .front .checkbox_slider:after {
   content: '';
   position: absolute;
@@ -1936,31 +1941,31 @@ POPPINS
   transition: all 0.2s ease;
   transform: translateX(0);
 }
-/* line 190, ../../compass/sass/_component_utility.scss */
+/* line 198, ../../compass/sass/_component_utility.scss */
 .toggleable_element .rear {
   max-width: 100%;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-/* line 197, ../../compass/sass/_component_utility.scss */
+/* line 205, ../../compass/sass/_component_utility.scss */
 .player_state {
   font-size: 1.5em;
   min-width: 2.5em;
   text-align: center;
 }
-/* line 202, ../../compass/sass/_component_utility.scss */
+/* line 210, ../../compass/sass/_component_utility.scss */
 .player_state .id {
   color: #379249;
   font-weight: 500;
 }
-/* line 207, ../../compass/sass/_component_utility.scss */
+/* line 215, ../../compass/sass/_component_utility.scss */
 .player_state .offline {
   color: #c92f2f;
   font-size: 0.8em;
 }
 
-/* line 213, ../../compass/sass/_component_utility.scss */
+/* line 221, ../../compass/sass/_component_utility.scss */
 .status_bar {
   position: fixed;
   top: 0;
@@ -1971,26 +1976,26 @@ POPPINS
   text-align: center;
   font-size: 2em;
 }
-/* line 223, ../../compass/sass/_component_utility.scss */
+/* line 231, ../../compass/sass/_component_utility.scss */
 .status_bar.success {
   background: linear-gradient(45deg, #2f7c3e, #55a264);
 }
-/* line 227, ../../compass/sass/_component_utility.scss */
+/* line 235, ../../compass/sass/_component_utility.scss */
 .status_bar.error {
   background: linear-gradient(45deg, #ab2828, #d14e4e);
 }
 
-/* line 232, ../../compass/sass/_component_utility.scss */
+/* line 240, ../../compass/sass/_component_utility.scss */
 .confirm_button {
   position: relative;
   padding-left: 1em;
   transition: all 0.2s ease 0s;
 }
-/* line 237, ../../compass/sass/_component_utility.scss */
+/* line 245, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover {
   padding-left: 2.2em;
 }
-/* line 240, ../../compass/sass/_component_utility.scss */
+/* line 248, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover:before {
   content: '\e061';
   position: absolute;
@@ -2002,7 +2007,7 @@ POPPINS
   transition: all 0.2s ease 0s;
   z-index: 2;
 }
-/* line 252, ../../compass/sass/_component_utility.scss */
+/* line 260, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover:after {
   content: '';
   position: absolute;
@@ -2014,19 +2019,19 @@ POPPINS
   border-radius: 3px;
   z-index: 1;
 }
-/* line 264, ../../compass/sass/_component_utility.scss */
+/* line 272, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover.confirmed {
   background: #379249 !important;
 }
-/* line 267, ../../compass/sass/_component_utility.scss */
+/* line 275, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover.confirmed:before {
   content: "";
 }
-/* line 271, ../../compass/sass/_component_utility.scss */
+/* line 279, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover.confirmed:after {
   z-index: -1;
 }
-/* line 276, ../../compass/sass/_component_utility.scss */
+/* line 284, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover:not(.confirmed) {
   color: #616161;
 }

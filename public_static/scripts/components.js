@@ -84,20 +84,22 @@ registerVueComponent('pages', {
 registerVueComponent('info', {
 	computed: {
 		version (){
-			return this.$store.state.C2_VERSION
+			console.log(this.$store.getters.C2_VERSION)
+			return this.$store.getters.C2_VERSION
 		},
 		commit (){
-			return this.$store.state.C2_COMMIT
+			return this.$store.getters.C2_COMMIT
 		},
 		commitShort (){
-			return this.commit.substring(0,8)
+			return this.commit ? this.commit.substring(0,8) : undefined
 		}
 	},
 	template: `<div class="info">
 		<division :name="'General'" :startExtended="true">
-			<span>Version: {{version}}</span>
+			<loading-spinner :is-loading="!!version"/>
+			<p>Version: <loading-spinner-or :is-loading-code="'return !this.version'">{{version}}</loading-spinner-or></p>
 			<spacer-horizontal/>
-			<span>Commit: <span :title="commit">{{commitShort}}</span>
+			<p>Commit: <loading-spinner-or :is-loading-code="'return !this.commit'"><span :title="commit">{{commitShort}}</span></loading-spinner-or></p>
 		</division>
 		<division :name="'Help'" :startExtended="false">
 			You can find a manual <a href="#">here (TODO)</a>
