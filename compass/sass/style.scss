@@ -1,6 +1,7 @@
 @import "compass/reset";
 @import "_fonts.scss";
 @import "_variables.scss";
+@import "_component_utility.scss";
 @import "_components.scss";
 
 body {
@@ -63,7 +64,7 @@ textarea, input {
 	border-radius: 3px;
 	color: $text-edit-foreground;
 	background: $text-edit-background;
-	font-family: inherit;
+	font-family: 'IBM Plex Mono';
 	font-style: inherit;
 	font-size: inherit;
 }

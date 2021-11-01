@@ -1,0 +1,206 @@
+
+.lockable {
+	.lock_overlay {
+		position: absolute;
+		z-index: 9999;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background: #000a;
+	}
+}
+
+.tabs {
+
+	.tabs_selector {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		max-width: 100%;
+		border-bottom: 2px solid shade($text-color, 20%);
+
+		.entry {
+			padding: 0.5em 1em;
+			border: 1px solid $text-color;
+			border-bottom: none;
+			cursor: pointer;
+			transition: all 0.2s ease 0s;
+
+			&:hover {
+				background: $primary;
+			}
+
+			&.selected {
+				background: $primary;
+			}
+		}
+	}
+
+	.tab {
+
+	}
+}
+
+.extendable {
+
+	.extendable_trigger {
+		cursor: pointer;
+
+		.extend_arrow {
+			margin-left: 1em;
+			font-size: 0.8em;
+		}
+	}
+
+	.extendable_body {
+
+	}
+}
+
+.division {
+	margin: 1em;
+
+	.division_head {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		padding: 1em;
+		background: $secondary;
+	}
+
+	.division_body {
+		position: relative;
+		padding: 1em;
+		background: shade($secondary, 10%);
+		
+		&:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 3px;
+			background: linear-gradient(to bottom, shade($secondary, 40%) 0%, rgba( shade($secondary, 10%), 0%) 100%);
+		}
+	}
+}
+
+.steamid {
+	font-size: 0.9em;
+	font-style: italic;
+	color: #aaa;
+	transition: all 0.2s ease 0s;
+
+	&:hover {
+		color: #ddd;
+	}
+
+	.icon {
+		font-size: 0.8em;
+		position: relative;
+		top: 0.1em;
+		margin-right: 0.5em;
+	}
+}
+
+.toggleable_element {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+
+	.front {
+		position: relative;
+		margin-right: 0.5em;
+
+		input[type="checkbox"] {
+			position: absolute;
+			left: -10000000000000px;			
+
+			&:checked + span:before {
+				background: $enabled;
+				border: 1px solid $enabled;
+			}
+
+			&:checked + span:after {
+				transform: translateX(0.7em);
+			}
+
+			&:focus + span:before {
+				border: 1px solid blue !important;
+			}
+		}
+
+		.checkbox_slider {
+			display: inline-block;
+			height: 1em;
+			line-height: 0;
+			margin-right: 1.5em;
+			cursor: pointer;
+
+			&:before {
+				content: '';
+				position: absolute;
+				top: 0em;
+				left: 0;
+				width: 1.7em;
+				height: 1em;
+				background: $disabled;
+				border: 1px solid $disabled;
+				border-radius: 100000px;
+				transition: all 0.2s ease;
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				top: 0em;
+				left: 0em;
+				width: 1em;
+				height: 1em;
+				background: $text-color;				
+				border-radius: 10000px;
+				transition: all 0.2s ease;
+				transform: translateX(0);
+			}
+		}
+	}
+
+	.rear {
+		max-width: 100%;
+		word-break: break-all;
+		word-wrap: break-word;
+	}
+}
+
+.player_state {
+	font-size: 1.5em;
+	min-width: 2.5em;
+	text-align: center;
+
+	.id {
+		color: $enabled;
+		font-weight: 500;
+	}
+
+	.offline {
+		color: $disabled;
+		font-size: 0.8em;
+	}
+}
+
+.status_bar {
+	width: 100%;
+	padding: 0.7em 2em;
+	color: $text-color;
+	text-align: center;
+	font-size: 2em;
+
+	&.success {
+		background: $enabled;
+	}
+
+	&.error {
+		background: $disabled;
+	}
+}
