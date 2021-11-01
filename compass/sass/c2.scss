@@ -19,16 +19,18 @@ button, .small_button {
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
-	padding: 0.4em 1em;
+	padding: 0.4em 0.7em;
 	background: transparent;
 	color: $text-color;
+	font-family: $font-primary;
 	font-weight: 600;
 	border: 1px solid $text-color;
 	border-radius: 3px;
 	transition: all 0.2s ease 0s;
 	cursor: pointer;
 
-	.im {
+	&.im, .im {
+		font-family: $font-icon;
 		font-size: 1em;
 	}
 

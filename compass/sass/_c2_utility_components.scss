@@ -43,6 +43,7 @@
 		overflow-y: auto;
 
 		.page_head {
+			position: relative;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -50,9 +51,25 @@
 			font-size: 2em;
 			font-weight: 600;
 			padding: 0.8em 2em;
-			background: linear-gradient(45deg, shade($secondary, 15%), tint($secondary, 15%));
+			background-image: url('/static/images/headerBanner.jpg');
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+
+			&:after {
+			    content: '';
+			    position: absolute;
+			    top: 0;
+			    left: 50%;
+			    height: 100%;
+			    width: 100%;
+			    background: radial-gradient(ellipse at center, $primary 0%, $primary 15%, rgba(0,0,0,0) 90%);
+			    z-index: 1;
+			    transform: translateX(-50%);
+			}
 
 			h2 {
+				z-index: 2;
 				font-family: $font-secondary;
 			}
 		}
@@ -113,6 +130,7 @@
 			position: relative;
 			padding: 1em 0.5em;
 			margin: 0 0.5em;
+			font-family: $font-tertiary;
 			color: shade($text-color, 40%);
 			cursor: pointer;
 			transition: all 0.2s ease 0s;
@@ -288,8 +306,9 @@
 	text-align: center;
 
 	.id {
-		color: $enabled;
+		font-family: $font-secondary;
 		font-weight: 500;
+		color: $enabled;
 	}
 
 	.offline {
@@ -307,6 +326,7 @@
 	color: $text-color;
 	text-align: center;
 	font-size: 2em;
+	z-index: 99999;
 
 	&.success {
 		background: linear-gradient(45deg, shade($enabled, 15%), tint($enabled, 15%));
@@ -317,13 +337,65 @@
 	}
 }
 
+.error_popup {
+	position: fixed;
+	z-index: 999999;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	background: #000a;
+
+	.inner {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		height: 80vh;
+		width: 80vw;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		transform: translateX(-50%) translateY(-50%);
+		background: $disabled;
+		padding: 2em 3em;
+		color: $text-color;
+		text-align: center;
+		font-size: 1.3em;
+
+		.title {
+			font-size: 2.5em;
+		}
+
+		.message {
+			height: 100%;
+			width: 100%;
+			resize: none;
+			background: #c28d8d;
+			color: #222;
+			margin: 2em 0;
+		}
+
+		button {
+			font-size: inherit;
+		}
+	}
+}
+
 .confirm_button {
 	position: relative;
-	padding-left: 1em;
 	transition: all 0.2s ease 0s;
 
+	&.serious {
+		font-family: $font-secondary;
+		text-transform: uppercase;
+		letter-spacing: 0.15em;
+	}
+
+	&:not(.small_button):hover {
+		padding-left: 2.2em
+	}
+
 	&:hover {
-		padding-left: 2.2em;
 
 		&:before {
 			content: '\e061';
@@ -332,7 +404,7 @@
 			top: 50%;
 			color: $text-color;
 			transform: translateY(-50%);
-			font-family: 'iconmonstr-iconic-font';
+			font-family: $font-icon;
 			transition: all 0.2s ease 0s;
 			z-index: 2;
 		}
@@ -362,8 +434,7 @@
 		}
 
 		&:not(.confirmed) {		
-			color: shade($text-color, 60%);
-			//border-color: shade($text-color, 60%);
+			color: shade($text-color, 30%);
 		}
 	}
 }

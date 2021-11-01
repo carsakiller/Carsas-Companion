@@ -23,6 +23,11 @@ class C2 {
 					clazz:undefined
 				},
 
+				error: {
+					title: undefined,
+					message: undefined
+				},
+
 				players: {
 					'x32' /* steam_id */ : {
 						name: 'Pony',
@@ -161,6 +166,9 @@ class C2 {
 				setStatus(state, status){
 					state.status = status
 				},
+				setError(state, error){
+					state.error = error
+				},
 				setC2Version(state, version){
 					state.C2_VERSION = version
 				},
@@ -180,6 +188,9 @@ class C2 {
 				},
 				setStatus({commit}, status){
 					commit('setStatus', status)
+				},
+				setError({commit}, error){
+					commit('setError', error)
 				},
 				setC2Version({commit}, version){
 					commit('setC2Version', version)
@@ -215,7 +226,8 @@ class C2 {
 				}
 			},
 			template: `<div class="c2">
-				<status-bar></status-bar>
+				<status-bar/>
+				<error-popup/>
 				<pages :initial-index="0">
 					<page v-for="(page, index) of pages" :title="page.title" :icon="page.iconClass">
 						<component :is="page.componentName"/>
@@ -234,6 +246,9 @@ class C2 {
 			this.registerPage(C2.registeredPages[name])
 		}
 
+		this.app.config.errorHandler = (...args)=>{this.handleVueError.apply(this, args)}
+		this.app.config.warnHandler = (...args)=>{this.handleVueWarning.apply(this, args)}
+
 		this.vm = this.app.mount(el)
 
 		this.webclient = new C2WebClient(this)
@@ -247,6 +262,23 @@ class C2 {
 				this.store.dispatch('setC2Commit', data)
 			})
 		}, 1000)
+	}
+
+	setError(title, message){
+		this.store.dispatch('setError', {
+			title: title,
+			message: message
+		})
+	}
+
+	handleVueError(err, vm, info){
+		console.error('[C2]', err, vm, info)
+		this.setError('An Error has occured (Please contact an admin)', '' + err + '\n\n' + info)
+	}
+
+	handleVueWarning(msg, vm, trace){
+		console.warn('[C2]', msg, vm, trace)
+		this.setError('An Error has occured (Please contact an admin)', '' + msg + '\n\n' + trace)
 	}
 
 	registerComponent (name, options){

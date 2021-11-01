@@ -92,6 +92,9 @@ class C2WebSock {
 
 	handleWesocketMessage(evt){
 		if(evt.data === '*RELOAD_PAGE*'){
+			if(window.NO_MAGIC_PAGE_RELOAD){
+				return//ignore
+			}
 			this.preventReconnect = true
 			this.websocket.close()
 			setTimeout(()=>{// give the server some time to finish building resources (e.g. compass)
@@ -262,7 +265,7 @@ class C2WebSock {
 		if( this.LOGLEVEL < 1){
 			return
 		}
-		console.error.apply(null, ['WebSock Wrror:'].concat(args))
+		console.error.apply(null, ['WebSock Error:'].concat(args))
 	}
 
 	warn(...args){

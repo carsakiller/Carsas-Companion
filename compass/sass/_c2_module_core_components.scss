@@ -16,19 +16,7 @@
 				padding: 0.5em 1em;
 
 				.state {
-					font-size: 1.5em;
-					min-width: 2.5em;
-					text-align: center;
 
-					.id {
-						color: $enabled;
-						font-weight: 500;
-					}
-
-					.offline {
-						color: $disabled;
-						font-size: 0.8em;
-					}
 				}
 
 				.name_container {
@@ -37,6 +25,7 @@
 					margin-left: 1em;
 
 					.name {
+						font-family: $font-secondary;
 						font-size: 1.3em;
 						font-weight: 500;
 						display: flex;
@@ -174,6 +163,7 @@
 				flex-direction: row;
 
 				.name {
+					font-family: $font-tertiary;
 					font-size: 1.5em;
 					font-weight: 500;
 				}
@@ -194,6 +184,7 @@
 					background: $quarternary;
 
 					.name {
+						font-family: $font-secondary;
 						font-size: 1.2em;
 					}
 				}

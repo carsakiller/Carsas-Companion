@@ -218,10 +218,14 @@ C2.registerVueComponent('confirm-button', {
 	props: {
 		time: {
 			type: Number,
-			default: 2
+			default: 1
+		},
+		serious: {
+			type: Boolean,
+			default: false
 		}
 	},
-	template: `<button :class="['confirm_button', {confirmed: isClickable}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
+	template: `<button :class="['confirm_button', {confirmed: isClickable, serious: serious}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
 		<slot/>
 	</button>`,
 	methods: {
@@ -488,6 +492,21 @@ C2.registerVueComponent('status-bar', {
 	},
 	template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
 		{{status.message}}
+	</div>`
+})
+
+C2.registerVueComponent('error-popup', {
+	computed: {
+		theError (){
+			return this.$store.state.error
+		}
+	},
+	template: `<div class="error_popup" v-show="theError.message">
+		<div class="inner">
+			<p class="title">{{theError.title}}</p>
+			<textarea class="message" cols="30" rows="5" readonly="true" wrap="hard">{{theError.message}}</textarea>
+			<button onclick="document.location.reload()">Reload Page</button>
+		</div>
 	</div>`
 })
 
