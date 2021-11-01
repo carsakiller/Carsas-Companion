@@ -21,11 +21,13 @@ registerVueComponent('page', {
 	props: {
 		title: {
 			type: String,
-			default: 'Page'
+			default: 'Page',
+			required: false
 		},
 		icon: {
 			type: String,
-			default: ''
+			default: '',
+			required: false
 		}
 	},
 	template: `<div class="page" v-show="isSelected">
@@ -49,9 +51,10 @@ registerVueComponent('pages', {
 		}
 	},
 	props: {
-		'selectedindex': {
+		'initial-index': {
 			type: Number,
-			default: 0
+			default: 0,
+			required: false
 		}
 	},
 	template: `<div class="pages">
@@ -73,7 +76,7 @@ registerVueComponent('pages', {
 		}
 	},
 	created: function (){
-		this.selectedIndex = this.selectedindex
+		this.selectedIndex = this.initialIndex
 	},
 	mounted: function (){
 		this.selectPage(this.selectedIndex)
@@ -81,39 +84,56 @@ registerVueComponent('pages', {
 })
 
 registerVueComponent('players-management', {
-	props: ['players'],
+	computed: {
+		players (){
+			return this.$store.state.players
+		}
+	},
 	template: `<div class="players_management">
 		<player-list v-bind:players="players"/>
 	</div>`
 })
 
 registerVueComponent('player-list', {
-	props: ['players'],
+	props: {
+		players: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="list player_list">
-		<player v-for="(player, steamid) in players" v-bind:player="player" v-bind:steamid="steamid" v-bind:key="steamid"/>
-	</div>`
-})
-
-
-registerVueComponent('player-state', {
-	props: ['player', 'steamid'],
-	template: `<div class="player_state">
-		<span class="id" v-if="player.peer_id">{{player.peer_id}}</span>
-		<span class="offline im im-power" v-else></span>
+		<player v-for="(player, steamid) in players" :player="player" :steamid="steamid" :key="steamid"/>
 	</div>`
 })
 
 registerVueComponent('player', {
 	computed: {
 		isBanned (){
-			return !!this.banned[this.steamid]
+			return !!this.bannedPlayers[this.steamid]
+		},
+		bannedPlayers (){
+			return this.$store.state.bannedplayers
 		}
 	},
-	inject: ['banned'],
-	props: ['player', 'steamid'],
-	template: `<extendable v-slot="extendableProps" class="player" key="{{player.id}}" v-bind:class="[{is_banned: isBanned}]">
+	props: {
+		player: {
+			type: Object,
+			required: true
+		},
+		steamid: {
+			type: String,
+			required: true
+		}
+	},
+	provide: function (){
+		return {
+			player: this.player,
+			steamid: this.steamid
+		}
+	},
+	template: `<extendable v-slot="extendableProps" class="player" key="{{player.id}}" :class="[{is_banned: isBanned}]">
 		<div class="head">
-			<player-state :player="player" :steamid="steamid"/>
+			<player-state :player="player"/>
 
 			<extendable-trigger class="name_container">
 				<div class="name">{{player.name}}
@@ -139,7 +159,7 @@ registerVueComponent('player', {
 
 			<tabs>
 				<tab :title="'Roles'">
-					<player-role v-for="(hasRole, roleName) in player.roles" v-bind:hasRole="hasRole" v-bind:roleName="roleName" v-bind:player="player" :steamid="steamid" v-bind:key="roleName"/>
+					<player-role v-for="(hasRole, roleName) in player.roles" :hasRole="hasRole" :roleName="roleName" :key="roleName"/>
 				</tab>
 			</tabs>
 		</extendable-body>
@@ -158,6 +178,19 @@ registerVueComponent('player', {
 	mixins: [gameCommandMixin]
 })
 
+registerVueComponent('player-state', {
+	props: {
+		player: {
+			type: Object,
+			required: true
+		}
+	},
+	template: `<div class="player_state">
+		<span class="id" v-if="player.peer_id">{{player.peer_id}}</span>
+		<span class="offline im im-power" v-else></span>
+	</div>`
+})
+
 registerVueComponent('player-role', {
 	data: function (){
 		return {
@@ -165,8 +198,18 @@ registerVueComponent('player-role', {
 			disabledClass: 'disabled'
 		}
 	},
-	props: ['hasRole', 'roleName', 'player', 'steamid'],
-	template: `<div class="player_role" v-bind:class="hasRole ? enabledClass : disabledClass">
+	props: {
+		hasRole: {
+			type: Boolean,
+			required: true
+		},
+		roleName: {
+			type: String,
+			required: true
+		}
+	},
+	inject: ['player', 'steamid'],
+	template: `<div class="player_role" :class="hasRole ? enabledClass : disabledClass">
 		<lockable/>
 		<span class="name">{{roleName}}</span>
 
@@ -185,21 +228,39 @@ registerVueComponent('player-role', {
 })
 
 registerVueComponent('vehicles-management', {
-	props: ['vehicles'],
+	computed: {
+		vehicles (){
+			return this.$store.state.vehicles
+		}
+	},
 	template: `<div class="vehicles_management">
-		<vehicle-list v-bind:vehicles="vehicles"/>
+		<vehicle-list :vehicles="vehicles"/>
 	</div>`
 })
 
 registerVueComponent('vehicle-list', {
-	props: ['vehicles'],
+	props: {
+		vehicles: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="list vehicle_list">
-		<vehicle v-for="(vehicle, vehicleId) of vehicles" v-bind:vehicle="vehicle" v-bind:vehicleId="vehicleId" v-bind:key="vehicleId"/>
+		<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="vehicleId" :key="vehicleId"/>
 	</div>`
 })
 
 registerVueComponent('vehicle', {
-	props: ['vehicle', 'vehicleId'],
+	props: {
+		vehicle: {
+			type: Object,
+			required: true
+		},
+		vehicleId: {
+			type: Number,
+			required: true
+		}
+	},
 	template: `<div class="vehicle">
 		<span class="id">{{vehicleId}}</span>
 		<span class="name">{{vehicle.name}}</span>
@@ -208,7 +269,7 @@ registerVueComponent('vehicle', {
 		<div class="gap"/>
 
 		<div class="buttons">
-			<button v-on:click="despawn">Despawn</button>
+			<button @click="despawn">Despawn</button>
 		</div>
 	</div>`,
 	methods: {
@@ -224,13 +285,17 @@ registerVueComponent('roles-management', {
 			newRoleText: ''
 		}
 	},
-	props: ['roles'],
+	computed: {
+		roles (){
+			return this.$store.state.roles
+		}
+	},
 	template: `<div class="roles_management">
-		<division class="new_role_container" v-bind:startExtended="true">
+		<division class="new_role_container" :startExtended="true">
 			<input v-model="newRoleText" placeholder="New Role Name"/>
-			<button v-on:click="addNewRole">Add new Role</button>
+			<button @click="addNewRole">Add new Role</button>
 		</division>
-		<role-list v-bind:roles="roles"/>
+		<role-list :roles="roles"/>
 	</div>`,
 	methods: {
 		addNewRole (){
@@ -245,14 +310,33 @@ registerVueComponent('roles-management', {
 })
 
 registerVueComponent('role-list', {
-	props: ['roles'],
+	props: {
+		roles: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="list role_list">
-		<role v-for="(role, roleName) of roles" v-bind:role="role" v-bind:roleName="roleName" v-bind:key="roleName"/>
+		<role v-for="(role, roleName) of roles" :role="role" :roleName="roleName" :key="roleName"/>
 	</div>`
 })
 
 registerVueComponent('role', {
-	props: ['role', 'roleName'],
+	props: {
+		role: {
+			type: Object,
+			required: true
+		},
+		roleName: {
+			type: String,
+			required: true
+		}
+	},
+	provide: function (){
+		return {
+			roleName: this.roleName
+		}
+	},
 	computed: {
 		allCommands (){
 			let ret = {}
@@ -279,7 +363,7 @@ registerVueComponent('role', {
 			</extendable-trigger>
 
 			<div class="buttons">
-				<button v-on:click="remove">Delete</button>
+				<button @click="remove">Delete</button>
 			</div>
 		</div>
 
@@ -288,10 +372,10 @@ registerVueComponent('role', {
 		<extendable-body>
 			<tabs>
 				<tab :title="'Members'">
-					<member-list v-bind:members="role.members" :roleName="roleName"/>
+					<member-list :members="role.members"/>
 				</tab>
 				<tab :title="'Commands'">
-					<command-list v-bind:commands="allCommands" :roleName="roleName"/>
+					<command-list :commands="allCommands"/>
 				</tab>
 				<tab :title="'Permissions'">
 					
@@ -301,7 +385,7 @@ registerVueComponent('role', {
 					
 					<spacer-horizontal/>
 
-					<requirements v-bind:role="role" :roleName="roleName"/>
+					<requirements :role="role"/>
 				</tab>
 			</tabs>
 		</extendable-body>
@@ -314,7 +398,13 @@ registerVueComponent('role', {
 })
 
 registerVueComponent('requirements', {
-	props: ['role', 'roleName'],
+	props: {
+		role: {
+			type: Object,
+			required: true
+		}
+	},
+	inject: ['roleName'],
 	template: `<div class="requirements">
 
 		<lockable/>
@@ -341,7 +431,12 @@ registerVueComponent('requirements', {
 
 
 registerVueComponent('command-list', {
-	props: ['roleName', 'commands'],
+	props: {
+		commands: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="list command_list">
 		<command v-for="(isCommand, commandName, index) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
 		<spacer-horizontal/>
@@ -349,7 +444,17 @@ registerVueComponent('command-list', {
 })
 
 registerVueComponent('command', {
-	props: ['roleName', 'isCommand', 'commandName'],
+	props: {
+		isCommand: {
+			type: Boolean,
+			required: true
+		},
+		commandName: {
+			type: String,
+			required: true
+		}
+	},
+	inject: ['roleName'],
 	template: `<div class="command">
 		<lockable/>
 		<toggleable-element :initial-value="isCommand" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
@@ -363,27 +468,36 @@ registerVueComponent('command', {
 })
 
 registerVueComponent('member-list', {
-	props: ['members', 'roleName'],
+	props: {
+		members: {
+			type: Array,
+			required: true
+		}
+	},
 	template: `<div class="list member_list">
-		<member v-for="(steamid, index) of members" :key="steamid" :steamid="steamid" :roleName="roleName">
-		</div>
+		<member v-for="(steamid, index) of members" :key="steamid" :steamid="steamid"/>
 	</div>`
 })
 
 registerVueComponent('member', {
-	props: ['steamid', 'roleName'],
-	inject: ['players'],
+	props: {
+		steamid: {
+			type: String,
+			required: true
+		}
+	},
+	inject: ['roleName'],
 	template: `<div class="member">
 		<lockable/>
-		<player-state :player="getPlayer" :steamid="steamid"/>
+		<player-state :player="getPlayer()"/>
 		<spacer-vertical/>
 		<span class="name">{{getPlayer() ? getPlayer().name : 'Unknown'}}</span>
 		<spacer-vertical/>
-		<span class="small_button im im-minus" @click="removeMember(steamid)"></span>
+		<span class="small_button im im-minus" @click="removeMember()"></span>
 	</div>`,
 	methods: {
 		getPlayer (){
-			return this.players[this.steamid]
+			return this.$store.state.players[this.steamid]
 		},
 		removeMember (){
 			this.callGameCommandAndWaitForSync('revokeRole ', [this.steamid, this.roleName])
@@ -398,13 +512,17 @@ registerVueComponent('rules-management', {
 			newRuleText: ''
 		}
 	},
-	props: ['rules'],
+	computed: {
+		rules (){
+			return this.$store.state.rules
+		}
+	},
 	template: `<div class="rules_management">
-		<division class="new_rule_container" v-bind:startExtended="true">
-			<textarea v-model="newRuleText" placeholder="New rule text" cols="30" roles="5"/>
-			<button v-on:click="addNewRule">Add new Rule</button>
+		<division class="new_rule_container" :startExtended="true">
+			<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5"/>
+			<button @click="addNewRule">Add new Rule</button>
 		</division>
-		<rule-list v-bind:rules="rules"/>
+		<rule-list :rules="rules"/>
 	</div>`,
 	methods: {
 		addNewRule (){
@@ -419,18 +537,32 @@ registerVueComponent('rules-management', {
 })
 
 registerVueComponent('rule-list', {
-	props: ['rules'],
+	props: {
+		rules: {
+			type: Array,
+			required: true
+		}
+	},
 	template: `<div class="list rule_list">
-		<rule v-for="(rule, index) of rules" v-bind:rule="rule" v-bind:index="index"/>
+		<rule v-for="(rule, index) of rules" :rule="rule" :index="index"/>
 	</div>`
 })
 
 registerVueComponent('rule', {
-	props: ['rule', 'index'],
+	props: {
+		rule: {
+			type: Object,
+			required: true
+		},
+		index: {
+			type: Number,
+			required: true
+		}
+	},
 	template: `<div class="rule">
 		<lockable/>
 		<p class="text">{{rule}}</p>
-		<span class="small_button im im-minus" v-on:click="remove"/>
+		<span class="small_button im im-minus" @click="remove"/>
 	</div>`,
 	methods: {
 		remove (){
@@ -444,14 +576,23 @@ registerVueComponent('rule', {
 
 
 registerVueComponent('preferences-management', {
-	props: ['preferences'],
+	computed: {
+		preferences (){
+			return this.$store.state.preferences
+		}
+	},
 	template: `<div class="preferences_management">
 		<preference-list :preferences="preferences"/>
 	</div>`
 })
 
 registerVueComponent('preference-list', {
-	props: ['preferences'],
+	props: {
+		preferences: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="list preference_list">
 		<preference v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
 		<spacer-horizontal/>
@@ -473,7 +614,22 @@ registerVueComponent('preference', {
 			}
 		}
 	},
-	props: ['preference', 'preferenceName'],
+	props: {
+		preference: {
+			type: Object,
+			required: true
+		},
+		preferenceName: {
+			type: String,
+			required: true
+		}
+	},
+	provide: function (){
+		return {
+			preference: this.preference,
+			preferenceName: this.preferenceName
+		}
+	},
 	template: `<division class="preference" :name="preferenceName" :alwaysExtended="true">
 		<lockable-by-childs>
 			<component :is="preferenceComponent" :preference="preference" :preferenceName="preferenceName"/>
@@ -482,7 +638,7 @@ registerVueComponent('preference', {
 })
 
 registerVueComponent('preference-bool', {
-	props: ['preference', 'preferenceName'],
+	inject: ['preference', 'preferenceName'],
 	template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :on-value-change="preferenceChanged"/>`,
 	methods: {
 		preferenceChanged (name, value){
@@ -498,7 +654,7 @@ registerVueComponent('preference-string', {
 			val: ''
 		}
 	},
-	props: ['preference', 'preferenceName'],
+	inject: ['preference', 'preferenceName'],
 	template: `<div class="preference_string">
 		<textarea v-model="val" cols="30" rows="5"/>
 		<spacer-vertical/>
@@ -521,7 +677,7 @@ registerVueComponent('preference-number', {
 			val: 0
 		}
 	},
-	props: ['preference', 'preferenceName'],
+	inject: ['preference', 'preferenceName'],
 	template: `<div class="preference_number">
 		<input type="number" v-model="val"/>
 		<spacer-vertical/>
@@ -544,7 +700,7 @@ registerVueComponent('preference-table', {
 			val: ''
 		}
 	},
-	props: ['preference', 'preferenceName'],
+	inject: ['preference', 'preferenceName'],
 	template: `<div class="preference_table">
 		<textarea type="number" v-model="val" cols="30" rows="5"/>
 		<spacer-vertical/>
@@ -563,7 +719,11 @@ registerVueComponent('preference-table', {
 
 
 registerVueComponent('gamesettings-management', {
-	props: ['gamesettings'],
+	computed: {
+		gamesettings (){
+			return this.$store.state.gamesettings
+		}
+	},
 	template: `<div class="gamesettings_management">
 		<gamesetting-list :gamesettings="gamesettings"/>
 	</div>`
@@ -571,7 +731,12 @@ registerVueComponent('gamesettings-management', {
 
 
 registerVueComponent('gamesetting-list', {
-	props: ['gamesettings'],
+	props: {
+		gamesettings: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="list gamesetting_list">
 		<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
 		<spacer-horizontal/>
@@ -591,16 +756,30 @@ registerVueComponent('gamesetting', {
 			}
 		}
 	},
-	props: ['gamesetting', 'gamesettingName'],
+	props: {
+		gamesetting: {
+			required: true
+		},
+		gamesettingName: {
+			type: String,
+			required: true
+		}
+	},
+	provide: function (){
+		return {
+			gamesetting: this.gamesetting,
+			gamesettingName: this.gamesettingName
+		}
+	},
 	template: `<division class="gamesetting" :name="gamesettingName" :alwaysExtended="true">
 		<lockable-by-childs>
-			<component :is="gamesettingComponent" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
+			<component :is="gamesettingComponent"/>
 		</lockable-by-childs>
 	</division>`
 })
 
 registerVueComponent('gamesetting-bool', {
-	props: ['gamesetting', 'gamesettingName'],
+	inject: ['gamesetting', 'gamesettingName'],
 	template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged"/>`,
 	methods: {
 		gamesettingChanged (name, value){
@@ -616,7 +795,7 @@ registerVueComponent('gamesetting-number', {
 			val: 0
 		}
 	},
-	props: ['gamesetting', 'gamesettingName'],
+	inject: ['gamesetting', 'gamesettingName'],
 	template: `<div class="gamesetting_number">
 		<input type="number" v-model="val"/>
 		<spacer-vertical/>
@@ -634,21 +813,35 @@ registerVueComponent('gamesetting-number', {
 })
 
 registerVueComponent('logs-management', {
-	props: ['logs'],
+	computed: {
+		logs (){
+			return this.$store.state.logs
+		}
+	},
 	template: `<div class="logs_management">
 		<log-list v-bind:logs="logs"></log-list>
 	</div>`
 })
 
 registerVueComponent('log-list', {
-	props: ['logs'],
+	props: {
+		logs: {
+			type: Array,
+			required: true
+		}
+	},
 	template: `<div class="log_list">
-		<log-entry v-for="(entry, entry_index) of logs" v-bind:entry="entry" v-bind:key="entry_index"></log-entry>
+		<log-entry v-for="(entry, entry_index) of logs" :entry="entry" :key="entry_index"></log-entry>
 	</div>`
 })
 
 registerVueComponent('log-entry', {
-	props: ['entry'],
+	props: {
+		entry: {
+			type: Object,
+			required: true
+		}
+	},
 	template: `<div class="log_entry">
 		<div class="time">{{new Date(entry.time).toLocaleString()}}</div>
 		<div class="message">{{entry.message}}</div>

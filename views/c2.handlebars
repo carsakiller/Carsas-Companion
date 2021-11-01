@@ -2,27 +2,27 @@
 
 <div id="app">
 	<status-bar></status-bar>
-	<pages v-bind:selectedindex="0">
+	<pages :initial-index="0">
 		<page :title="'Players'" :icon="'users'">
-			<players-management v-bind:players="players"></players-management>
+			<players-management></players-management>
 		</page>
 		<page :title="'Vehicles'" :icon="'car'">
-			<vehicles-management v-bind:vehicles="vehicles"></vehicles-management>
+			<vehicles-management></vehicles-management>
 		</page>
 		<page :title="'Roles'" :icon="'crown'">
-			<roles-management v-bind:roles="roles"></roles-management>
+			<roles-management></roles-management>
 		</page>
 		<page :title="'Rules'" :icon="'task-o'">
-			<rules-management v-bind:rules="rules"></rules-management>
+			<rules-management></rules-management>
 		</page>
 		<page :title="'Preferences'" :icon="'control-panel'">
-			<preferences-management v-bind:preferences="preferences"></preferences-management>
+			<preferences-management></preferences-management>
 		</page>
 		<page :title="'Game Settings'" :icon="'wrench'">
-			<gamesettings-management v-bind:gamesettings="gamesettings"></gamesettings-management>
+			<gamesettings-management></gamesettings-management>
 		</page>
 		<page :title="'Logs'" :icon="'note-o'">
-			<logs-management v-bind:logs="logs"></logs-management>
+			<logs-management></logs-management>
 		</page>
 	</pages>
 
@@ -140,7 +140,7 @@
 				test_number: 5
 			},
 
-			banned: {
+			bannedplayers: {
 				"x99": "x64"
 			},
 

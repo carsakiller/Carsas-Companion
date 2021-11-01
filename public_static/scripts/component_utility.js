@@ -147,7 +147,7 @@ let lockableComponentMixin = {
 }
 
 registerVueComponent('lockable', {
-	template: `<div class="lockable" v-on:click.stop>
+	template: `<div class="lockable" @click.stop>
 		<div v-if="parentIsComponentLocked" class="lock_overlay"/>
 	</div>`,
 	computed: {
@@ -172,7 +172,7 @@ registerVueComponent('lockable-by-childs', {
 			return this.childComponentLocked > 0
 		}
 	},
-	template: `<div class="lockable" v-on:click.stop>
+	template: `<div class="lockable" @click.stop>
 		<div v-if="childComponentIsLocked" class="lock_overlay"/>
 		<slot/>
 	</div>`,
@@ -231,8 +231,7 @@ registerVueComponent('confirm-button', {
 	props: {
 		time: {
 			type: Number,
-			default: 2,
-			required: false
+			default: 2
 		}
 	},
 	template: `<button :class="['confirm_button', {confirmed: isClickable}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
@@ -311,7 +310,7 @@ registerVueComponent('steamid', {
 		}
 	},
 	template: `
-		<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" v-bind:href="'https://steamcommunity.com/profiles/' + this.steamid"><span class="icon im im-external-link"></span>{{steamid}}</a>
+		<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid"><span class="icon im im-external-link"></span>{{steamid}}</a>
 		<span v-else class="steamid">"Invalid SteamId"</span>`
 })
 
@@ -332,7 +331,6 @@ registerVueComponent('toggleable-element', {
 		},
 		'value-name': {
 			type: String,
-			required: false
 		},
 		'on-value-change': {
 			type: Function,
@@ -441,8 +439,7 @@ registerVueComponent('extendable', {
 	props: {
 		startExtended: {
 			type: Boolean,
-			default: false,
-			required: false
+			default: false
 		}
 	},
 	template: `<div class="extendable">
@@ -497,8 +494,7 @@ registerVueComponent('extendable-trigger', {
 	props: {
 		useDefaultArrows: {
 			type: Boolean,
-			default: false,
-			required: false
+			default: false
 		}
 	},
 	computed: {
@@ -541,18 +537,15 @@ registerVueComponent('division', {
 	props: {
 		name: {
 			type: String,
-			default: '',
-			required: false
+			default: ''
 		},
 		startExtended: {
 			type: Boolean,
-			default: false,
-			required: false,			
+			default: false			
 		},
 		alwaysExtended: {
 			type: Boolean,
-			default: false,
-			required: false
+			default: false
 		}
 	},
 	template: `<extendable class="division" v-slot="extendableProps" :startExtended="startExtended || alwaysExtended">
