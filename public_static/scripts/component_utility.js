@@ -225,7 +225,7 @@ registerVueComponent('confirm-button', {
 			return this.fillPercentage == 100
 		},
 		style (){
-			return 'background: linear-gradient(to right, red 0%, red ' + (this.fillPercentage - 0.1) + '%, transparent ' + this.fillPercentage + '%, transparent 100%)'
+			return '--confirm-button-width: ' + this.fillPercentage + '%;'
 		}
 	},
 	props: {

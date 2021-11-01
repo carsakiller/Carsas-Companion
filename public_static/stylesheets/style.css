@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* line 5, ../../../../../../../Ruby27-x64/lib/ruby/gems/2.7.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -1990,40 +1991,44 @@ POPPINS
   padding-left: 2.2em;
 }
 /* line 240, ../../compass/sass/_component_utility.scss */
-.confirm_button:hover:before, .confirm_button:hover:after {
+.confirm_button:hover:before {
+  content: '\e061';
   position: absolute;
   left: 0.5em;
   top: 50%;
+  color: #f3f3f3;
   transform: translateY(-50%);
   font-family: 'iconmonstr-iconic-font';
   transition: all 0.2s ease 0s;
+  z-index: 2;
 }
-/* line 249, ../../compass/sass/_component_utility.scss */
-.confirm_button:hover:before {
-  content: '\e061';
-  opacity: 1;
-}
-/* line 254, ../../compass/sass/_component_utility.scss */
+/* line 252, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover:after {
-  content: '\e062';
-  opacity: 0;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--confirm-button-width);
+  background: #c92f2f;
+  border-radius: 3px;
+  z-index: 1;
 }
-/* line 259, ../../compass/sass/_component_utility.scss */
+/* line 264, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover.confirmed {
   background: #379249 !important;
 }
-/* line 262, ../../compass/sass/_component_utility.scss */
+/* line 267, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover.confirmed:before {
-  opacity: 0;
-}
-/* line 266, ../../compass/sass/_component_utility.scss */
-.confirm_button:hover.confirmed:after {
-  opacity: 1;
+  content: "";
 }
 /* line 271, ../../compass/sass/_component_utility.scss */
+.confirm_button:hover.confirmed:after {
+  z-index: -1;
+}
+/* line 276, ../../compass/sass/_component_utility.scss */
 .confirm_button:hover:not(.confirmed) {
   color: #616161;
-  border-color: #616161;
 }
 
 /* line 1, ../../compass/sass/_components.scss */
