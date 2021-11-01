@@ -22,12 +22,14 @@ button, .small_button {
 	padding: 0.4em 0.7em;
 	background: transparent;
 	color: $text-color;
+	font-size: 1em;
 	font-family: $font-primary;
 	font-weight: 600;
-	border: 1px solid $text-color;
-	border-radius: 3px;
+	border: 0.1em solid $text-color;
+	border-radius: 0.15em;
 	transition: all 0.2s ease 0s;
 	cursor: pointer;
+	outline: none;
 
 	&.im, .im {
 		font-family: $font-icon;
@@ -42,6 +44,10 @@ button, .small_button {
 		font-size: 80%;
 		font-weight: 400;
 		padding: 0.2em 0.4em;
+	}
+
+	&:focus {
+		border-color: $highlight;
 	}
 }
 
@@ -59,14 +65,20 @@ button, .small_button {
 }
 
 textarea, input {
+	position: relative;
 	padding: 0.3em 0.5em;
-	border: 1px solid shade($text-edit-background, 30%);
-	border-radius: 3px;
+	border-radius: 0.15em;
 	color: $text-edit-foreground;
-	background: $text-edit-background;
+	background-color: $text-edit-background;
+	border: 0.1em solid shade($text-edit-background, 40%);
+	outline: none;
 	font-family: $font-primary;
 	font-style: inherit;
 	font-size: inherit;
+
+	&:focus {
+		border-color: $highlight;
+	}
 }
 
 p {

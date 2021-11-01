@@ -125,7 +125,7 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		max-width: 100%;
-		border-bottom: 3px solid tint($primary, 10%);
+		border-bottom: 0.15em solid tint($primary, 10%);
 
 		.entry {
 			position: relative;
@@ -147,9 +147,9 @@
 			&:after {
 				content: '';
 				position: absolute;
-				bottom: -3px;
+				bottom: -0.15em;
 				left: 0;
-				height: 3px;
+				height: 0.15em;
 				width: 100%;
 				background: transparent;
 				transition: all 0.2s ease 0s;
@@ -209,7 +209,7 @@
 			top: 0;
 			left: 0;
 			width: 100%;
-			height: 3px;
+			height: 0.15em;
 			background: linear-gradient(to bottom, shade($secondary, 40%) 0%, rgba( shade($secondary, 10%), 0) 100%);
 		}
 	}
@@ -247,8 +247,7 @@
 			left: -10000000000000px;			
 
 			&:checked + span:before {
-				background: $enabled;
-				border: 1px solid $enabled;
+				background-color: $enabled;
 			}
 
 			&:checked + span:after {
@@ -256,7 +255,7 @@
 			}
 
 			&:focus + span:before {
-				border: 1px solid blue !important;
+				border-color: $highlight !important;
 			}
 		}
 
@@ -266,16 +265,18 @@
 			line-height: 0;
 			margin-right: 1.5em;
 			cursor: pointer;
+			margin-left: 1em;
 
 			&:before {
 				content: '';
 				position: absolute;
-				top: 0em;
+				top: 0;
 				left: 0;
 				width: 1.7em;
 				height: 1em;
-				background: $disabled;
-				border: 1px solid $disabled;
+				background-color: $disabled;
+				background-clip: content-box;
+				border: 0.2em solid transparent;
 				border-radius: 100000px;
 				transition: all 0.2s ease;
 			}
@@ -283,8 +284,8 @@
 			&:after {
 				content: '';
 				position: absolute;
-				top: 0em;
-				left: 0em;
+				top: 0.2em;
+				left: 0.2em;
 				width: 1em;
 				height: 1em;
 				background: $text-color;				
@@ -467,7 +468,7 @@
 		height: 100%;
 		width: var(--confirm-button-width);
 		background: $disabled;
-		border-radius: 3px;
+		border-radius: 0.15em;
 		z-index: 1;
 	}
 }

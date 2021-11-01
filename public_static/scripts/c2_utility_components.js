@@ -178,6 +178,68 @@ C2.registerVueComponent('lockable-by-parent', {
 	}
 })
 
+/*
+	Usage:
+
+	<disabled-when-any-parent-locked v-slot="disabledProps">
+		<input :disable="disabledProps.isDisabled">
+	</disabled-when-any-parent-locked>
+
+*/
+C2.registerVueComponent('disabled-when-any-parent-locked', {
+	data: function (){
+		return {
+			oldValue: false,
+			disabledCount: 0
+		}
+	},
+	computed: {
+		isDisabled (){
+			return this.disabledCount > 0
+		}
+	},
+	template: `<slot :is-disabled="isDisabled"/>`,
+	methods: {
+		checkIfAnyParentIsLocked (){//TODO: fix that we are unable to detect when component has unlocked again
+			return searchForLockedParentRecursively(this, this.$parent)
+
+			function searchForLockedParentRecursively(me, node){
+				if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
+					return true
+				} else if (node) {
+					return searchForLockedParentRecursively(me, node.$parent)
+				}
+				return false
+			}
+		},
+		disable (){
+			this.disabledCount++
+		},
+		enable (){
+			this.disabledCount--
+		}
+	},
+	watch: {
+		isDisabled (){
+			this.log('isDisabled changed to', this.isDisabled)
+			//this.$refs.slot
+		}
+	},
+	mounted (){
+		setInterval(()=>{
+			let newValue = this.checkIfAnyParentIsLocked()
+			if(newValue !== this.oldValue){
+				if(newValue){
+					this.disable()
+				} else {
+					this.disable()
+				}
+				this.oldValue = newValue
+			}
+		}, 100)
+	}
+})
+
 let gameCommandMixin = {
 	mixins: [lockableComponentMixin],
 	methods: {
@@ -185,7 +247,7 @@ let gameCommandMixin = {
 			return new Promise((fulfill, reject)=>{
 				this.lockComponentUntilSync()
 
-				C2WebClient.sendCommand(command, args).then((res)=>{
+				c2.webclient.sendCommand(command, args).then((res)=>{
 					this.info('executing command', command,'was successful')
 					this.log('args', args, 'result', res)
 				}).catch((err)=>{
@@ -395,8 +457,9 @@ C2.registerVueComponent('toggleable-element', {
 	template: `<div class="toggleable_element">
 		<div class="front">
 			<label :for="uiid">
-				<input type="checkbox" :id="uiid" v-model="val">
-				<spacer-vertical/>
+				<disabled-when-any-parent-locked v-slot="disabledProps">
+					<input type="checkbox" :id="uiid" v-model="val" :disabled="disabledProps.isDisabled">
+				</disabled-when-any-parent-locked>
 				<span class="checkbox_slider"/>
 			</label>
 		</div>
