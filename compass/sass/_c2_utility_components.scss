@@ -383,6 +383,7 @@
 }
 
 .confirm_button {
+	color: $text-color;
 	position: relative;
 	transition: all 0.2s ease 0s;
 
@@ -392,50 +393,80 @@
 		letter-spacing: 0.15em;
 	}
 
-	&:not(.small_button):hover {
-		padding-left: 2.2em
+	&.small_button {
+
+		&:hover {
+
+			&.confirmed {
+
+				&:before {
+					opacity: 0;
+				}
+			}
+
+			&:not(.confirmed) {
+				color: transparent;
+
+				&:before {
+					color: $text-color;
+				}
+			}
+		}
+	}
+
+	&:not(.small_button) {
+
+		&:hover {
+			padding-left: 2.2em;
+		}
 	}
 
 	&:hover {
 
-		&:before {
-			content: '\e061';
-			position: absolute;
-			left: 0.5em;
-			top: 50%;
-			color: $text-color;
-			transform: translateY(-50%);
-			font-family: $font-icon;
-			transition: all 0.2s ease 0s;
-			z-index: 2;
-		}
-
-		&:after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			height: 100%;
-			width: var(--confirm-button-width);
-			background: $disabled;
-			border-radius: 3px;
-			z-index: 1;
+		&:before, &:after {
+			opacity: 1;
 		}
 
 		&.confirmed {
 			background: $enabled !important;
 
 			&:before {
-				content: '\e062'
+				content: '\e062';
 			}
 
 			&:after {
-				z-index: -1;
+				opacity: 0;
 			}
 		}
 
-		&:not(.confirmed) {		
+		&:not(.confirmed) {
 			color: shade($text-color, 30%);
 		}
+	}
+
+	&:before {
+		content: '\e061';
+		opacity: 0;
+		position: absolute;
+		left: 0.5em;
+		top: 50%;
+		color: $text-color;
+		transform: translateY(-50%);
+		font-family: $font-icon;
+		transition: all 0.2s ease 0s;
+		z-index: 2;
+	}
+
+	&:after {
+		content: '';
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: var(--confirm-button-width);
+		background: $disabled;
+		border-radius: 3px;
+		z-index: 1;
 	}
 }

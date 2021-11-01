@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* line 5, ../../../../../../../Ruby27-x64/lib/ruby/gems/2.7.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -1807,23 +1806,19 @@ button.small_button, .small_button.small_button {
   font-weight: 400;
   padding: 0.2em 0.4em;
 }
-/* line 46, ../../compass/sass/c2.scss */
-button.small_button.confirm_button:hover .im, .small_button.small_button.confirm_button:hover .im {
-  padding-left: 1.5em;
-}
 
-/* line 52, ../../compass/sass/c2.scss */
+/* line 48, ../../compass/sass/c2.scss */
 .list {
   display: flex;
   flex-direction: column;
   margin: 1em;
 }
-/* line 59, ../../compass/sass/c2.scss */
+/* line 55, ../../compass/sass/c2.scss */
 .list > *:not(:last-child) {
   margin-bottom: 1em;
 }
 
-/* line 65, ../../compass/sass/c2.scss */
+/* line 61, ../../compass/sass/c2.scss */
 textarea, input {
   padding: 0.3em 0.5em;
   border: 1px solid #242424;
@@ -1835,26 +1830,26 @@ textarea, input {
   font-size: inherit;
 }
 
-/* line 76, ../../compass/sass/c2.scss */
+/* line 72, ../../compass/sass/c2.scss */
 p {
   line-height: 1.2em;
 }
 
-/* line 80, ../../compass/sass/c2.scss */
+/* line 76, ../../compass/sass/c2.scss */
 a {
   color: #e66200;
   text-decoration: underline;
 }
-/* line 84, ../../compass/sass/c2.scss */
+/* line 80, ../../compass/sass/c2.scss */
 a:hover, a:visited:hover {
   color: #f0a166;
 }
-/* line 88, ../../compass/sass/c2.scss */
+/* line 84, ../../compass/sass/c2.scss */
 a:visited {
   color: #e63c00;
 }
 
-/* line 93, ../../compass/sass/c2.scss */
+/* line 89, ../../compass/sass/c2.scss */
 .c2 {
   display: flex;
   flex-direction: row;
@@ -2241,22 +2236,56 @@ a:visited {
 
 /* line 385, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button {
+  color: #f3f3f3;
   position: relative;
   transition: all 0.2s ease 0s;
 }
-/* line 389, ../../compass/sass/_c2_utility_components.scss */
+/* line 390, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button.serious {
   font-family: "Poppins";
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
-/* line 395, ../../compass/sass/_c2_utility_components.scss */
+/* line 402, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button.small_button:hover.confirmed:before {
+  opacity: 0;
+}
+/* line 407, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button.small_button:hover:not(.confirmed) {
+  color: transparent;
+}
+/* line 410, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button.small_button:hover:not(.confirmed):before {
+  color: #f3f3f3;
+}
+/* line 419, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:not(.small_button):hover {
   padding-left: 2.2em;
 }
-/* line 401, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover:before {
+/* line 426, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:hover:before, .confirm_button:hover:after {
+  opacity: 1;
+}
+/* line 430, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:hover.confirmed {
+  background: #379249 !important;
+}
+/* line 433, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:hover.confirmed:before {
+  content: '\e062';
+}
+/* line 437, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:hover.confirmed:after {
+  opacity: 0;
+}
+/* line 442, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:hover:not(.confirmed) {
+  color: #aaaaaa;
+}
+/* line 447, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:before {
   content: '\e061';
+  opacity: 0;
   position: absolute;
   left: 0.5em;
   top: 50%;
@@ -2266,9 +2295,10 @@ a:visited {
   transition: all 0.2s ease 0s;
   z-index: 2;
 }
-/* line 413, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover:after {
+/* line 460, ../../compass/sass/_c2_utility_components.scss */
+.confirm_button:after {
   content: '';
+  opacity: 0;
   position: absolute;
   top: 0;
   left: 0;
@@ -2277,22 +2307,6 @@ a:visited {
   background: #c92f2f;
   border-radius: 3px;
   z-index: 1;
-}
-/* line 425, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover.confirmed {
-  background: #379249 !important;
-}
-/* line 428, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover.confirmed:before {
-  content: "";
-}
-/* line 432, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover.confirmed:after {
-  z-index: -1;
-}
-/* line 437, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover:not(.confirmed) {
-  color: #aaaaaa;
 }
 
 /* line 5, ../../compass/sass/_c2_module_core_components.scss */
