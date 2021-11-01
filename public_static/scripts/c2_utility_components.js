@@ -628,6 +628,7 @@ C2.registerVueComponent('pages', {
 
 		<slot/>
 	</div>`,
+	emits: ['page-change'],
 	methods: {
 		selectPage (i){
 			this.selectedIndex = i
@@ -635,6 +636,8 @@ C2.registerVueComponent('pages', {
 			this.pages.forEach((page, index) => {
 		    	page.isSelected = (index === i)
 		    })
+
+		    this.$emit('page-change', this.selectedIndex)
 		}
 	},
 	created: function (){

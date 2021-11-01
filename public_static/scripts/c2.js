@@ -223,17 +223,28 @@ class C2 {
 			computed: {
 				pages: function (){
 					return this.$store.getters.pages
+				},
+				initialPage: function (){
+					let saved = parseInt(localStorage.getItem('lastPageIndex'))
+					return isNaN(saved) ? 0 : saved
 				}
 			},
 			template: `<div class="c2">
 				<status-bar/>
 				<error-popup/>
-				<pages :initial-index="0">
+				<pages :initial-index="initialPage" @page-change="onPageChange">
 					<page v-for="(page, index) of pages" :title="page.title" :icon="page.iconClass">
 						<component :is="page.componentName"/>
 					</page>
 				</pages>
-			</div>`
+			</div>`,
+			methods: {
+				onPageChange (index){
+					this.log('onPageChange', index)
+					localStorage.setItem('lastPageIndex', index)
+				}
+			},
+			mixins: [loggingMixin]
 		})
 
 		this.app.use(this.store)
