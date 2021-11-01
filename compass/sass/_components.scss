@@ -14,11 +14,11 @@
 		.sidebar {
 			display: flex;
 			flex-direction: column;
-			background: $primary;
 			width: 3em;
 			height: 100%;
 			overflow-x: hidden;
 			overflow-y: auto;
+			background: $primary;
 
 			.entry {
 				display: flex;
@@ -27,14 +27,16 @@
 				align-items: center;
 				cursor: pointer;
 				padding: 0.5em;
+				background: $primary;
 				transition: all 0.2s ease 0s;
 
 				&:not(:last-child) {
 					margin-bottom: 1em;
 				}
 
-				&:hover {
-					color: shade($text-color, 50%);
+				&:hover, &.selected {
+					color: $highlight;
+					background: shade($primary, 20%);
 				}
 			}
 		}
