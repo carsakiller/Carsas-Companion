@@ -154,13 +154,13 @@
 	.role_list {
 
 		.role {
-			padding: 1em;
 			background: $tertiary;
 			color: $text-color;
 
-			.role_top_container {
+			.role_head {
 				display: flex;
 				flex-direction: row;
+				padding: 1em;
 
 				.name {
 					font-family: $font-tertiary;
@@ -170,35 +170,40 @@
 
 				.buttons {
 					margin-left: 2em;
+					font-size: 0.7em;
 				}
 			}
 
-			.member_list  {
-				margin: 1em 0;
+			.role_body {
+				padding: 1em;
 
-				.member {
-					display: flex;
-					flex-direction: row;
-					align-items: center;
-					padding: 0.5em 1em;
-					background: $quarternary;
+				.member_list  {
+					margin: 1em 0;
 
-					.name {
-						font-family: $font-secondary;
-						font-size: 1.2em;
+					.member {
+						display: flex;
+						flex-direction: row;
+						align-items: center;
+						padding: 0.5em 1em;
+						background: $quarternary;
+
+						.name {
+							font-family: $font-secondary;
+							font-size: 1.2em;
+						}
 					}
 				}
-			}
 
-			.command_list {
+				.command_list {
 
-				.command {
+					.command {
+
+					}
+				}
+
+				.requirements {
 
 				}
-			}
-
-			.requirements {
-
 			}
 		}
 	}

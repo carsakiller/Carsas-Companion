@@ -181,8 +181,18 @@
 		}
 	}
 
-	.extendable_body {
+	.extendable_body.show_shadow {
+		position: relative;
 
+		&:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 0.15em;
+			background: linear-gradient(to bottom, rgba(0,0,0,255) 0%, rgba(0,0,0,0) 100%);
+		}
 	}
 }
 
@@ -199,19 +209,8 @@
 	}
 
 	.division_body {
-		position: relative;
 		padding: 1em;
 		background: shade($secondary, 10%);
-		
-		&:before {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 0.15em;
-			background: linear-gradient(to bottom, shade($secondary, 40%) 0%, rgba( shade($secondary, 10%), 0) 100%);
-		}
 	}
 }
 

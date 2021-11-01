@@ -118,7 +118,7 @@ C2.registerVueComponent('player', {
 			</div>
 		</div>
 
-		<extendable-body class="body">
+		<extendable-body class="body" :showShadow="true">
 			<p v-if="player.banned">Player was banned by <steamid :steamid="banned[steamid]"/>.</p>
 
 			<spacer-horizontal/>
@@ -339,7 +339,7 @@ C2.registerVueComponent('role', {
 		}
 	},
 	template: `<extendable class="role">
-		<div class="role_top_container">
+		<div class="role_head">
 			<extendable-trigger :useDefaultArrows="true">
 				<span class="name">{{roleName}}</span>
 			</extendable-trigger>
@@ -349,9 +349,7 @@ C2.registerVueComponent('role', {
 			</div>
 		</div>
 
-		<spacer-horizontal/>
-
-		<extendable-body>
+		<extendable-body class="role_body" :showShadow="true">
 			<tabs>
 				<tab :title="'Members'">
 					<member-list :members="role.members"/>

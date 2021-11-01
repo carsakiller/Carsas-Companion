@@ -684,7 +684,13 @@ C2.registerVueComponent('extendable-body', {
 			return this.extendable && this.extendable.isExtended
 		}
 	},
-	template: `<div class="extendable_body" v-if="isExtended">
+	props: {
+		showShadow: {
+			type: Boolean,
+			default: false
+		}
+	},
+	template: `<div :class="['extendable_body', {show_shadow: showShadow}]" v-if="isExtended">
 		<slot :isExtended="isExtended"/>
 	</div>`,
 	mounted: function (){
@@ -772,7 +778,7 @@ C2.registerVueComponent('division', {
 		<extendable-trigger class="division_head" v-if="name && !alwaysExtended" :useDefaultArrows="true">
 			<h3>{{name}}</h3>
 		</extendable-trigger>
-		<extendable-body class="division_body">
+		<extendable-body class="division_body" :showShadow="!!name">
 			<slot/>
 		</extendable-body>
 	</extendable>`,

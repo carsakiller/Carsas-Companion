@@ -53,7 +53,7 @@ The method then sends that command to the game, if game responds with success, w
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
 
 ## Browser
-* when we lock a component, we need to disable the input, otherwise one can just use the accessibility features (press tab to select eh input and space to change it, e.g. a checkbox)
+* save current selected page (maybe even more) and try to restore it on
 
 ## WebServer
 * version check with the script running in the game
