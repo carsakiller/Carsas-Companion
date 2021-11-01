@@ -132,6 +132,9 @@ registerVueComponent('player', {
 		}
 	},
 	template: `<extendable v-slot="extendableProps" class="player" key="{{player.id}}" :class="[{is_banned: isBanned}]">
+
+		<lockable-by-parent/>
+
 		<div class="head">
 			<player-state :player="player"/>
 

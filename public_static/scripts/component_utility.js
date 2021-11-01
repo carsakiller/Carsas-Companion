@@ -191,6 +191,21 @@ registerVueComponent('lockable-by-childs', {
 	}
 })
 
+registerVueComponent('lockable-by-parent', {
+	computed: {
+		parentComponentIsLocked (){
+			return this.$parent.$parent.isComponentLocked
+		}
+	},
+	template: `<div class="lockable" @click.stop>
+		<div v-if="parentComponentIsLocked" class="lock_overlay"/>
+		<slot/>
+	</div>`,
+	mounted (){
+		this.$parent.$el.style = 'position: relative;'
+	}
+})
+
 let gameCommandMixin = {
 	mixins: [lockableComponentMixin],
 	methods: {
