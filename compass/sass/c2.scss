@@ -97,3 +97,49 @@ a {
 @import "_c2_utility_components.scss";
 @import "_c2_module_core_components.scss";
 @import "_c2_module_test_components.scss";
+
+body {
+	font-size: 26px;
+}
+
+@media (min-width: 576px) {
+	body {
+		font-size: 24px;
+	}
+}
+
+@media (min-width: 768px) {
+	body {
+		font-size: 22px;
+	}
+}
+
+@media (min-width: 992px) {
+	body {
+		font-size: 20px;
+	}
+}
+
+@media (min-width: 1200px) {
+	body {
+		font-size: 22px;
+	}
+}
+
+@media (min-width: 1400px) {
+	body {
+		font-size: 24px;
+	}
+}
+
+@media (min-width: 1800px) {
+	body {
+		font-size: 27px;
+	}
+}
+
+@media (min-width: 2200px) {
+	body {
+		font-size: 32px;
+	}
+}
