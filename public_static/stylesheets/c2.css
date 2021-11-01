@@ -1586,86 +1586,85 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 
 /*
 
-IBM Plex Mono
-
+SourceCodePro
 
 */
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 100;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Thin.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-Thin.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 100;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-ThinItalic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-ThinItalic.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 200;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-ExtraLight.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-ExtraLight.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 200;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-ExtraLightItalic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-ExtraLightItalic.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 300;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Light.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-Light.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 300;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-LightItalic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-LightItalic.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 400;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Regular.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-Regular.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 400;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Italic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-Italic.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 500;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-Medium.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 500;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-MediumItalic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-MediumItalic.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 600;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-SemiBold.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 600;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-SemiBoldItalic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-SemiBoldItalic.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 700;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-Bold.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-Bold.ttf") format("truetype");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 700;
   font-style: italic;
-  src: url("/static/fonts/IBMPlexMono/IBMPlexMono-BoldItalic.ttf") format("truetype");
+  src: url("/static/fonts/SourceCodePro/SourceCodePro-BoldItalic.ttf") format("truetype");
 }
 /*
 
@@ -1767,7 +1766,7 @@ POPPINS
 /* line 5, ../../compass/sass/c2.scss */
 body {
   color: #f3f3f3;
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -1786,7 +1785,7 @@ button, .small_button {
   padding: 0.4em 0.7em;
   background: transparent;
   color: #f3f3f3;
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-weight: 600;
   border: 1px solid #f3f3f3;
   border-radius: 3px;
@@ -1831,7 +1830,7 @@ textarea, input {
   border-radius: 3px;
   color: #f3f3f3;
   background: #333;
-  font-family: "IBM Plex Mono";
+  font-family: "SourceCodePro";
   font-style: inherit;
   font-size: inherit;
 }
@@ -2048,14 +2047,15 @@ a:visited {
   align-items: center;
   padding: 1em;
   background: #00446c;
+  font-family: "VarelaRound";
 }
-/* line 199, ../../compass/sass/_c2_utility_components.scss */
+/* line 200, ../../compass/sass/_c2_utility_components.scss */
 .division .division_body {
   position: relative;
   padding: 1em;
   background: #003d61;
 }
-/* line 204, ../../compass/sass/_c2_utility_components.scss */
+/* line 205, ../../compass/sass/_c2_utility_components.scss */
 .division .division_body:before {
   content: '';
   position: absolute;
@@ -2066,18 +2066,18 @@ a:visited {
   background: linear-gradient(to bottom, #002941 0%, rgba(0, 61, 97, 0) 100%);
 }
 
-/* line 216, ../../compass/sass/_c2_utility_components.scss */
+/* line 217, ../../compass/sass/_c2_utility_components.scss */
 .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 222, ../../compass/sass/_c2_utility_components.scss */
+/* line 223, ../../compass/sass/_c2_utility_components.scss */
 .steamid:hover {
   color: #ddd;
 }
-/* line 226, ../../compass/sass/_c2_utility_components.scss */
+/* line 227, ../../compass/sass/_c2_utility_components.scss */
 .steamid .icon {
   font-size: 0.8em;
   position: relative;
@@ -2085,36 +2085,36 @@ a:visited {
   margin-right: 0.5em;
 }
 
-/* line 234, ../../compass/sass/_c2_utility_components.scss */
+/* line 235, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
 }
-/* line 239, ../../compass/sass/_c2_utility_components.scss */
+/* line 240, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front {
   position: relative;
   margin-right: 0.5em;
 }
-/* line 243, ../../compass/sass/_c2_utility_components.scss */
+/* line 244, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front input[type="checkbox"] {
   position: absolute;
   left: -10000000000000px;
 }
-/* line 247, ../../compass/sass/_c2_utility_components.scss */
+/* line 248, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:before {
   background: #379249;
   border: 1px solid #379249;
 }
-/* line 252, ../../compass/sass/_c2_utility_components.scss */
+/* line 253, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front input[type="checkbox"]:checked + span:after {
   transform: translateX(0.7em);
 }
-/* line 256, ../../compass/sass/_c2_utility_components.scss */
+/* line 257, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front input[type="checkbox"]:focus + span:before {
   border: 1px solid blue !important;
 }
-/* line 261, ../../compass/sass/_c2_utility_components.scss */
+/* line 262, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front .checkbox_slider {
   display: inline-block;
   height: 1em;
@@ -2122,7 +2122,7 @@ a:visited {
   margin-right: 1.5em;
   cursor: pointer;
 }
-/* line 268, ../../compass/sass/_c2_utility_components.scss */
+/* line 269, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front .checkbox_slider:before {
   content: '';
   position: absolute;
@@ -2135,7 +2135,7 @@ a:visited {
   border-radius: 100000px;
   transition: all 0.2s ease;
 }
-/* line 281, ../../compass/sass/_c2_utility_components.scss */
+/* line 282, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .front .checkbox_slider:after {
   content: '';
   position: absolute;
@@ -2148,32 +2148,32 @@ a:visited {
   transition: all 0.2s ease;
   transform: translateX(0);
 }
-/* line 296, ../../compass/sass/_c2_utility_components.scss */
+/* line 297, ../../compass/sass/_c2_utility_components.scss */
 .toggleable_element .rear {
   max-width: 100%;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-/* line 303, ../../compass/sass/_c2_utility_components.scss */
+/* line 304, ../../compass/sass/_c2_utility_components.scss */
 .player_state {
   font-size: 1.5em;
   min-width: 2.5em;
   text-align: center;
 }
-/* line 308, ../../compass/sass/_c2_utility_components.scss */
+/* line 309, ../../compass/sass/_c2_utility_components.scss */
 .player_state .id {
   font-family: "Poppins";
   font-weight: 500;
   color: #379249;
 }
-/* line 314, ../../compass/sass/_c2_utility_components.scss */
+/* line 315, ../../compass/sass/_c2_utility_components.scss */
 .player_state .offline {
   color: #c92f2f;
   font-size: 0.8em;
 }
 
-/* line 320, ../../compass/sass/_c2_utility_components.scss */
+/* line 321, ../../compass/sass/_c2_utility_components.scss */
 .status_bar {
   position: fixed;
   top: 0;
@@ -2185,16 +2185,16 @@ a:visited {
   font-size: 2em;
   z-index: 99999;
 }
-/* line 331, ../../compass/sass/_c2_utility_components.scss */
+/* line 332, ../../compass/sass/_c2_utility_components.scss */
 .status_bar.success {
   background: linear-gradient(45deg, #2f7c3e, #55a264);
 }
-/* line 335, ../../compass/sass/_c2_utility_components.scss */
+/* line 336, ../../compass/sass/_c2_utility_components.scss */
 .status_bar.error {
   background: linear-gradient(45deg, #ab2828, #d14e4e);
 }
 
-/* line 340, ../../compass/sass/_c2_utility_components.scss */
+/* line 341, ../../compass/sass/_c2_utility_components.scss */
 .error_popup {
   position: fixed;
   z-index: 999999;
@@ -2204,7 +2204,7 @@ a:visited {
   width: 100vw;
   background: #000a;
 }
-/* line 349, ../../compass/sass/_c2_utility_components.scss */
+/* line 350, ../../compass/sass/_c2_utility_components.scss */
 .error_popup .inner {
   position: absolute;
   top: 50%;
@@ -2221,11 +2221,11 @@ a:visited {
   text-align: center;
   font-size: 1.3em;
 }
-/* line 365, ../../compass/sass/_c2_utility_components.scss */
+/* line 366, ../../compass/sass/_c2_utility_components.scss */
 .error_popup .inner .title {
   font-size: 2.5em;
 }
-/* line 369, ../../compass/sass/_c2_utility_components.scss */
+/* line 370, ../../compass/sass/_c2_utility_components.scss */
 .error_popup .inner .message {
   height: 100%;
   width: 100%;
@@ -2234,27 +2234,27 @@ a:visited {
   color: #222;
   margin: 2em 0;
 }
-/* line 378, ../../compass/sass/_c2_utility_components.scss */
+/* line 379, ../../compass/sass/_c2_utility_components.scss */
 .error_popup .inner button {
   font-size: inherit;
 }
 
-/* line 384, ../../compass/sass/_c2_utility_components.scss */
+/* line 385, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button {
   position: relative;
   transition: all 0.2s ease 0s;
 }
-/* line 388, ../../compass/sass/_c2_utility_components.scss */
+/* line 389, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button.serious {
   font-family: "Poppins";
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
-/* line 394, ../../compass/sass/_c2_utility_components.scss */
+/* line 395, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:not(.small_button):hover {
   padding-left: 2.2em;
 }
-/* line 400, ../../compass/sass/_c2_utility_components.scss */
+/* line 401, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:hover:before {
   content: '\e061';
   position: absolute;
@@ -2266,7 +2266,7 @@ a:visited {
   transition: all 0.2s ease 0s;
   z-index: 2;
 }
-/* line 412, ../../compass/sass/_c2_utility_components.scss */
+/* line 413, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:hover:after {
   content: '';
   position: absolute;
@@ -2278,19 +2278,19 @@ a:visited {
   border-radius: 3px;
   z-index: 1;
 }
-/* line 424, ../../compass/sass/_c2_utility_components.scss */
+/* line 425, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:hover.confirmed {
   background: #379249 !important;
 }
-/* line 427, ../../compass/sass/_c2_utility_components.scss */
+/* line 428, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:hover.confirmed:before {
   content: "";
 }
-/* line 431, ../../compass/sass/_c2_utility_components.scss */
+/* line 432, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:hover.confirmed:after {
   z-index: -1;
 }
-/* line 436, ../../compass/sass/_c2_utility_components.scss */
+/* line 437, ../../compass/sass/_c2_utility_components.scss */
 .confirm_button:hover:not(.confirmed) {
   color: #aaaaaa;
 }
