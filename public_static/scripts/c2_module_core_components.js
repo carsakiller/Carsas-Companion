@@ -1,87 +1,4 @@
-registerVueComponent('status-bar', {
-	computed: {
-		status (){
-			return this.$store.state.status
-		}
-	},
-	template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
-		{{status.message}}
-	</div>`
-})
-
-
-registerVueComponent('page', {
-	data: function (){
-		return {
-			isSelected: false
-		}
-	},
-	props: {
-		title: {
-			type: String,
-			default: 'Page',
-			required: false
-		},
-		icon: {
-			type: String,
-			default: '',
-			required: false
-		}
-	},
-	template: `<div class="page" v-show="isSelected">
-		<div class="page_head">
-			<h2>{{title}}</h2>
-		</div>
-		<div class="page_body">
-			<slot/>
-		</div>
-	</div>`,
-	created: function(){
-		this.$parent.pages.push(this)
-	}
-})
-
-registerVueComponent('pages', {
-	data: function (){
-		return {
-			selectedIndex: 0,
-			pages: []
-		}
-	},
-	props: {
-		'initial-index': {
-			type: Number,
-			default: 0,
-			required: false
-		}
-	},
-	template: `<div class="pages">
-		<div class="sidebar">
-			<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :title="page.title">
-				<span :class="['im', 'im-' + page.icon]"/>
-			</div>
-		</div>
-
-		<slot/>
-	</div>`,
-	methods: {
-		selectPage (i){
-			this.selectedIndex = i
-
-			this.pages.forEach((page, index) => {
-		    	page.isSelected = (index === i)
-		    })
-		}
-	},
-	created: function (){
-		this.selectedIndex = this.initialIndex
-	},
-	mounted: function (){
-		this.selectPage(this.selectedIndex)
-	}
-})
-
-registerVueComponent('info', {
+C2.registerVueComponent('info', {
 	computed: {
 		version (){
 			return this.$store.getters.C2_VERSION
@@ -113,7 +30,7 @@ registerVueComponent('info', {
 	</div>`
 })
 
-registerVueComponent('players-management', {
+C2.registerVueComponent('players-management', {
 	computed: {
 		players (){
 			return this.$store.state.players
@@ -124,7 +41,7 @@ registerVueComponent('players-management', {
 	</div>`
 })
 
-registerVueComponent('player-list', {
+C2.registerVueComponent('player-list', {
 	props: {
 		players: {
 			type: Object,
@@ -136,7 +53,7 @@ registerVueComponent('player-list', {
 	</div>`
 })
 
-registerVueComponent('player', {
+C2.registerVueComponent('player', {
 	computed: {
 		isBanned (){
 			return !!this.bannedPlayers[this.steamid]
@@ -211,7 +128,7 @@ registerVueComponent('player', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('player-state', {
+C2.registerVueComponent('player-state', {
 	props: {
 		player: {
 			type: Object,
@@ -224,7 +141,7 @@ registerVueComponent('player-state', {
 	</div>`
 })
 
-registerVueComponent('player-role', {
+C2.registerVueComponent('player-role', {
 	data: function (){
 		return {
 			enabledClass: 'enabled',
@@ -260,7 +177,7 @@ registerVueComponent('player-role', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('vehicles-management', {
+C2.registerVueComponent('vehicles-management', {
 	computed: {
 		vehicles (){
 			return this.$store.state.vehicles
@@ -271,7 +188,7 @@ registerVueComponent('vehicles-management', {
 	</div>`
 })
 
-registerVueComponent('vehicle-list', {
+C2.registerVueComponent('vehicle-list', {
 	props: {
 		vehicles: {
 			type: Object,
@@ -283,7 +200,7 @@ registerVueComponent('vehicle-list', {
 	</div>`
 })
 
-registerVueComponent('vehicle', {
+C2.registerVueComponent('vehicle', {
 	props: {
 		vehicle: {
 			type: Object,
@@ -312,7 +229,7 @@ registerVueComponent('vehicle', {
 	}
 })
 
-registerVueComponent('roles-management', {
+C2.registerVueComponent('roles-management', {
 	data: function (){
 		return {
 			newRoleText: ''
@@ -342,7 +259,7 @@ registerVueComponent('roles-management', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('role-list', {
+C2.registerVueComponent('role-list', {
 	props: {
 		roles: {
 			type: Object,
@@ -354,7 +271,7 @@ registerVueComponent('role-list', {
 	</div>`
 })
 
-registerVueComponent('role', {
+C2.registerVueComponent('role', {
 	props: {
 		role: {
 			type: Object,
@@ -430,7 +347,7 @@ registerVueComponent('role', {
 	}
 })
 
-registerVueComponent('requirements', {
+C2.registerVueComponent('requirements', {
 	props: {
 		role: {
 			type: Object,
@@ -463,7 +380,7 @@ registerVueComponent('requirements', {
 })
 
 
-registerVueComponent('command-list', {
+C2.registerVueComponent('command-list', {
 	props: {
 		commands: {
 			type: Object,
@@ -476,7 +393,7 @@ registerVueComponent('command-list', {
 	</div>`
 })
 
-registerVueComponent('command', {
+C2.registerVueComponent('command', {
 	props: {
 		isCommand: {
 			type: Boolean,
@@ -500,7 +417,7 @@ registerVueComponent('command', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('member-list', {
+C2.registerVueComponent('member-list', {
 	props: {
 		members: {
 			type: Array,
@@ -512,7 +429,7 @@ registerVueComponent('member-list', {
 	</div>`
 })
 
-registerVueComponent('member', {
+C2.registerVueComponent('member', {
 	props: {
 		steamid: {
 			type: String,
@@ -539,7 +456,7 @@ registerVueComponent('member', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('rules-management', {
+C2.registerVueComponent('rules-management', {
 	data: function (){
 		return {
 			newRuleText: ''
@@ -569,7 +486,7 @@ registerVueComponent('rules-management', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('rule-list', {
+C2.registerVueComponent('rule-list', {
 	props: {
 		rules: {
 			type: Array,
@@ -581,7 +498,7 @@ registerVueComponent('rule-list', {
 	</div>`
 })
 
-registerVueComponent('rule', {
+C2.registerVueComponent('rule', {
 	props: {
 		rule: {
 			type: String,
@@ -610,7 +527,7 @@ registerVueComponent('rule', {
 
 
 
-registerVueComponent('preferences-management', {
+C2.registerVueComponent('preferences-management', {
 	computed: {
 		preferences (){
 			return this.$store.state.preferences
@@ -621,7 +538,7 @@ registerVueComponent('preferences-management', {
 	</div>`
 })
 
-registerVueComponent('preference-list', {
+C2.registerVueComponent('preference-list', {
 	props: {
 		preferences: {
 			type: Object,
@@ -634,7 +551,7 @@ registerVueComponent('preference-list', {
 	</div>`
 })
 
-registerVueComponent('preference', {
+C2.registerVueComponent('preference', {
 	computed: {
 		preferenceComponent (){
 			switch(this.preference.type){
@@ -672,7 +589,7 @@ registerVueComponent('preference', {
 	</division>`
 })
 
-registerVueComponent('preference-bool', {
+C2.registerVueComponent('preference-bool', {
 	inject: ['preference', 'preferenceName'],
 	template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :on-value-change="preferenceChanged"/>`,
 	methods: {
@@ -683,7 +600,7 @@ registerVueComponent('preference-bool', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('preference-string', {
+C2.registerVueComponent('preference-string', {
 	data: function (){
 		return {
 			val: ''
@@ -706,7 +623,7 @@ registerVueComponent('preference-string', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('preference-number', {
+C2.registerVueComponent('preference-number', {
 	data: function (){
 		return {
 			val: 0
@@ -729,7 +646,7 @@ registerVueComponent('preference-number', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('preference-table', {
+C2.registerVueComponent('preference-table', {
 	data: function (){
 		return {
 			val: ''
@@ -753,7 +670,7 @@ registerVueComponent('preference-table', {
 })
 
 
-registerVueComponent('gamesettings-management', {
+C2.registerVueComponent('gamesettings-management', {
 	computed: {
 		gamesettings (){
 			return this.$store.state.gamesettings
@@ -765,7 +682,7 @@ registerVueComponent('gamesettings-management', {
 })
 
 
-registerVueComponent('gamesetting-list', {
+C2.registerVueComponent('gamesetting-list', {
 	props: {
 		gamesettings: {
 			type: Object,
@@ -778,7 +695,7 @@ registerVueComponent('gamesetting-list', {
 	</div>`
 })
 
-registerVueComponent('gamesetting', {
+C2.registerVueComponent('gamesetting', {
 	computed: {
 		gamesettingComponent (){
 			switch(typeof this.gamesetting){
@@ -813,7 +730,7 @@ registerVueComponent('gamesetting', {
 	</division>`
 })
 
-registerVueComponent('gamesetting-bool', {
+C2.registerVueComponent('gamesetting-bool', {
 	inject: ['gamesetting', 'gamesettingName'],
 	template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged"/>`,
 	methods: {
@@ -824,7 +741,7 @@ registerVueComponent('gamesetting-bool', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('gamesetting-number', {
+C2.registerVueComponent('gamesetting-number', {
 	data: function (){
 		return {
 			val: 0
@@ -847,7 +764,7 @@ registerVueComponent('gamesetting-number', {
 	mixins: [gameCommandMixin]
 })
 
-registerVueComponent('logs-management', {
+C2.registerVueComponent('logs-management', {
 	computed: {
 		logs (){
 			return this.$store.state.logs
@@ -858,7 +775,7 @@ registerVueComponent('logs-management', {
 	</div>`
 })
 
-registerVueComponent('log-list', {
+C2.registerVueComponent('log-list', {
 	props: {
 		logs: {
 			type: Array,
@@ -870,7 +787,7 @@ registerVueComponent('log-list', {
 	</div>`
 })
 
-registerVueComponent('log-entry', {
+C2.registerVueComponent('log-entry', {
 	props: {
 		entry: {
 			type: Object,

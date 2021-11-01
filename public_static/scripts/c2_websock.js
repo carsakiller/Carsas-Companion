@@ -44,7 +44,7 @@
 
 */
 
-class WebSock {
+class C2WebSock {
 
 	constructor(url, token){
 		console.log('new WebSock', url)

@@ -1,31 +1,3 @@
-
-/*
-
----- UTILITY ----
-
-*/
-
-
-function registerVueComponent (name, options){
-	// set name if not happened (for logging)
-	if(!options.name){
-		options.name = name
-	}
-
-	// add base mixins
-	options.mixins = [loggingMixin].concat(options.mixins || [])
-
-	return app.component(name, options)
-}
-
-function uuid() {
-	return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-		(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-	);
-}
-
-
-
 /*
 
 ---- MIXINS and BASE COMPONENTS ----
@@ -146,7 +118,7 @@ let lockableComponentMixin = {
 	}
 }
 
-registerVueComponent('lockable', {
+C2.registerVueComponent('lockable', {
 	template: `<div class="lockable" @click.stop>
 		<div v-if="parentIsComponentLocked" class="lock_overlay"/>
 	</div>`,
@@ -160,7 +132,7 @@ registerVueComponent('lockable', {
 	}
 })
 
-registerVueComponent('lockable-by-childs', {
+C2.registerVueComponent('lockable-by-childs', {
 	data: function (){
 		return {
 			childComponentLocked: 0,
@@ -191,7 +163,7 @@ registerVueComponent('lockable-by-childs', {
 	}
 })
 
-registerVueComponent('lockable-by-parent', {
+C2.registerVueComponent('lockable-by-parent', {
 	computed: {
 		parentComponentIsLocked (){
 			return this.$parent.$parent.isComponentLocked
@@ -226,7 +198,7 @@ let gameCommandMixin = {
 	}
 }
 
-registerVueComponent('confirm-button', {
+C2.registerVueComponent('confirm-button', {
 	data: function (){
 		return {
 			mouseIsHovering: false,
@@ -297,7 +269,7 @@ registerVueComponent('confirm-button', {
 
 })
 
-registerVueComponent('loading-spinner', {
+C2.registerVueComponent('loading-spinner', {
 	template: `<span class="loading_spinner im im-spinner"/>`
 })
 
@@ -317,7 +289,7 @@ registerVueComponent('loading-spinner', {
 	</extendable>
 
 	*/
-registerVueComponent('loading-spinner-or', {
+C2.registerVueComponent('loading-spinner-or', {
 	data: function (){
 		return {
 			isLoading: true
@@ -344,28 +316,24 @@ registerVueComponent('loading-spinner-or', {
 	},
 	methods: {
 		checkIsLoading (){
-			this.log('checkIsLoading()', this.$parent.version)
-			try {
-				let node = this
+			let node = this
 
-				for(let i=this.parentsDepth; i >= 0; i--){
-					node = node.$parent
-				}
+			for(let i=this.parentsDepth; i >= 0; i--){
+				node = node.$parent
+			}
 
-				let ret = new Function(this.isLoadingCode).apply(node)
-				if(ret !== true){
+			let ret = new Function(this.isLoadingCode).apply(node)
+			if(ret !== true){
+				if(this.isLoading){
 					this.log('stopped loading')
-					this.isLoading = false
 				}
-			} catch (ex){
-				this.error(ex)
-				return true
+				this.isLoading = false
 			}
 		}
 	}
 })
 
-registerVueComponent('spacer-horizontal', {
+C2.registerVueComponent('spacer-horizontal', {
 	props: {
 		height: {
 			type: String,
@@ -375,7 +343,7 @@ registerVueComponent('spacer-horizontal', {
 	template: `<div :style="'clear: both; height: ' + height"/>`
 })
 
-registerVueComponent('spacer-vertical', {
+C2.registerVueComponent('spacer-vertical', {
 	props: {
 		width: {
 			type: String,
@@ -385,7 +353,7 @@ registerVueComponent('spacer-vertical', {
 	template: `<div :style="'display: inline-block; width: ' + width"/>`
 })
 
-registerVueComponent('steamid', {
+C2.registerVueComponent('steamid', {
 	props: {
 		steamid: {
 			type: String,
@@ -397,14 +365,14 @@ registerVueComponent('steamid', {
 		<span v-else class="steamid">"Invalid SteamId"</span>`
 })
 
-registerVueComponent('toggleable-element', {
+C2.registerVueComponent('toggleable-element', {
 	data: function (){
 		return {
 			skipNextWatch: false,
 			oldVal: false,
 			val: false,
 			oldInitialValue: false,
-			uiid: uuid()
+			uiid: C2.uuid()
 		}
 	},
 	props: {
@@ -462,7 +430,7 @@ registerVueComponent('toggleable-element', {
 	mixins: [loggingMixin]
 })
 
-registerVueComponent('tab', {
+C2.registerVueComponent('tab', {
 	data: function (){
 		return {
 			isSelected: false
@@ -482,7 +450,7 @@ registerVueComponent('tab', {
 	}
 })
 
-registerVueComponent('tabs', {
+C2.registerVueComponent('tabs', {
 	data: function (){
 		return {
 			selectedIndex: 0,
@@ -512,7 +480,91 @@ registerVueComponent('tabs', {
 	}
 })
 
-registerVueComponent('extendable', {
+C2.registerVueComponent('status-bar', {
+	computed: {
+		status (){
+			return this.$store.state.status
+		}
+	},
+	template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
+		{{status.message}}
+	</div>`
+})
+
+
+C2.registerVueComponent('page', {
+	data: function (){
+		return {
+			isSelected: false
+		}
+	},
+	props: {
+		title: {
+			type: String,
+			default: 'Page',
+			required: false
+		},
+		icon: {
+			type: String,
+			default: '',
+			required: false
+		}
+	},
+	template: `<div class="page" v-show="isSelected">
+		<div class="page_head">
+			<h2>{{title}}</h2>
+		</div>
+		<div class="page_body">
+			<slot/>
+		</div>
+	</div>`,
+	created: function(){
+		this.$parent.pages.push(this)
+	}
+})
+
+C2.registerVueComponent('pages', {
+	data: function (){
+		return {
+			selectedIndex: 0,
+			pages: []
+		}
+	},
+	props: {
+		'initial-index': {
+			type: Number,
+			default: 0,
+			required: false
+		}
+	},
+	template: `<div class="pages">
+		<div class="sidebar">
+			<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :title="page.title">
+				<span :class="['im', 'im-' + page.icon]"/>
+			</div>
+		</div>
+
+		<slot/>
+	</div>`,
+	methods: {
+		selectPage (i){
+			this.selectedIndex = i
+
+			this.pages.forEach((page, index) => {
+		    	page.isSelected = (index === i)
+		    })
+		}
+	},
+	created: function (){
+		this.selectedIndex = this.initialIndex
+	},
+	mounted: function (){
+		this.selectPage(this.selectedIndex)
+	}
+})
+
+
+C2.registerVueComponent('extendable', {
 	data: function (){
 		return {
 			isExtended: false,
@@ -539,7 +591,7 @@ registerVueComponent('extendable', {
 	mixins: [loggingMixin]
 })
 
-registerVueComponent('extendable-body', {
+C2.registerVueComponent('extendable-body', {
 	data: function (){
 		return {
 			extendable: undefined
@@ -568,7 +620,7 @@ registerVueComponent('extendable-body', {
 	mixins: [loggingMixin]
 })
 
-registerVueComponent('extendable-trigger', {
+C2.registerVueComponent('extendable-trigger', {
 	data: function (){
 		return {
 			extendable: undefined
@@ -616,7 +668,7 @@ registerVueComponent('extendable-trigger', {
 	mixins: [loggingMixin]
 })
 
-registerVueComponent('division', {
+C2.registerVueComponent('division', {
 	props: {
 		name: {
 			type: String,

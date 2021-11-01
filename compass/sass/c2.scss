@@ -1,8 +1,6 @@
 @import "compass/reset";
 @import "_fonts.scss";
 @import "_variables.scss";
-@import "_component_utility.scss";
-@import "_components.scss";
 
 body {
 	color: $text-color;
@@ -89,3 +87,15 @@ a {
 		color: adjust-hue($highlight, -10deg);
 	}
 }
+
+.c2 {
+	display: flex;
+	flex-direction: row;
+	background: $app-background;
+	width: 100%;
+	height: 100%;
+}
+
+@import "_c2_utility_components.scss";
+@import "_c2_module_core_components.scss";
+@import "_c2_module_test_components.scss";
