@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+#=== 'prev-commit' solution by o_O Tync
+commit_hash=$(git rev-parse --verify HEAD)
+
+# Write it
+echo -e "$commit_hash" > public_static/commit.txt

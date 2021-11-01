@@ -6,6 +6,12 @@
 * install compass (stylesheet parsing): `$ gem install compass`
 * install nodemon (restart node server on code changes): `npm install -g nodemon`
 
+### git hooks for versioning
+After you cloned this repository, run
+`sh setup_git_hooks.sh`
+This will enable the git hooks, so it triggers the update of version.js to be set to the current commit hash.
+You can also trigger it manually by doing a checkout on the current select branch (e.g. `git checkout master`)
+
 ## Coding
 * command line tool 1 : `cd compass & compass watch`
 * command line tool 2 : `nodemon`

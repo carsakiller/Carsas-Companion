@@ -57,7 +57,7 @@ registerVueComponent('pages', {
 	},
 	template: `<div class="pages">
 		<div class="sidebar">
-			<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :alt="page.title">
+			<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :title="page.title">
 				<span :class="['im', 'im-' + page.icon]"/>
 			</div>
 		</div>
@@ -84,12 +84,20 @@ registerVueComponent('pages', {
 registerVueComponent('info', {
 	computed: {
 		version (){
-			return C2_VERSION
+			return this.$store.state.C2_VERSION
+		},
+		commit (){
+			return this.$store.state.C2_COMMIT
+		},
+		commitShort (){
+			return this.commit.substring(0,8)
 		}
 	},
 	template: `<div class="info">
 		<division :name="'General'" :startExtended="true">
 			<span>Version: {{version}}</span>
+			<spacer-horizontal/>
+			<span>Commit: <span :title="commit">{{commitShort}}</span>
 		</division>
 		<division :name="'Help'" :startExtended="false">
 			You can find a manual <a href="#">here (TODO)</a>

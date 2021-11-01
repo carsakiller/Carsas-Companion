@@ -36,7 +36,13 @@
 <p>test</p>
 
 <script type="text/javascript">
-	const C2_VERSION = "v1.0"
+	$.get('/static/version.txt', (data)=>{
+		store.dispatch('setC2Version', data)
+	})
+
+	$.get('/static/commit.txt', (data)=>{
+		store.dispatch('setC2Commit', data)
+	})
 
 	const store = Vuex.createStore({
 		state: {
@@ -182,6 +188,12 @@
 			},
 			setStatus(state, status){
 				state.status = status
+			},
+			setC2Version(state, version){
+				state.C2_VERSION = version
+			},
+			setC2Commit(state, _commit){
+				state.C2_COMMIT = _commit
 			}
 			/*,
 			addTab (state, tab){
@@ -197,6 +209,12 @@
 			},
 			setStatus({commit}, status){
 				commit('setStatus', status)
+			},
+			setC2Version({commit}, version){
+				commit('setC2Version', version)
+			},
+			setC2Commit({commit}, _commit){
+				commit('setC2Commit', _commit)
 			}
 			/*,
 			switchTab ({commit}, tab){
