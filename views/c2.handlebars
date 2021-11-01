@@ -216,52 +216,7 @@
 			activeTabClass (){
 				return store.state.activeTabClass
 			},
-
-			players (){
-				return store.state.players
-			},
-			vehicles (){
-				return store.state.vehicles
-			},
-			roles (){
-				return store.state.roles
-			},
-			rules (){
-				return store.state.rules
-			},
-			preferences (){
-				return store.state.preferences
-			},
-			gamesettings (){
-				return store.state.gamesettings
-			},
-			banned (){
-				return store.state.banned
-			},
-			logs (){
-				return store.state.logs
-			}
-		},
-		provide (){
-			return {
-				players: this.players,
-				vehicles: this.vehicles,
-				roles: this.rules,
-				rules: this.rules,
-				preferences: this.preferences,
-				gamesettings: this.gamesettings,
-				banned: this.banned,
-				logs: this.logs,
-
-				allCommands: this.allCommands
-			}
 		}
-		/*,
-		methods: {
-			switchToTab (tab){
-				store.dispatch('switchTab', tab)
-			}
-		}*/
 	})
 
 	app.use(store)
