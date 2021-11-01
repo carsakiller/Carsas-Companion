@@ -7,7 +7,6 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		width: 3em;
 		height: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -20,12 +19,12 @@
 			align-items: center;
 			font-size: 1.2em;
 			cursor: pointer;
-			padding: 0.5em;
+			padding: 0.7em;
 			background: $primary;
 			transition: all 0.2s ease 0s;
 
 			&:not(:last-child) {
-				margin-bottom: 1em;
+				margin-bottom: 0.2em;
 			}
 
 			&:hover, &.selected {
@@ -126,10 +125,11 @@
 		flex-wrap: wrap;
 		max-width: 100%;
 		border-bottom: 0.15em solid tint($primary, 10%);
+		margin-bottom: 1em;
 
 		.entry {
 			position: relative;
-			padding: 1em 0.5em;
+			padding: 1em 0.5em 0.5em;
 			margin: 0 0.5em;
 			font-family: $font-tertiary;
 			color: shade($text-color, 40%);

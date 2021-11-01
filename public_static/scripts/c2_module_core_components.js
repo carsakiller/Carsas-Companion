@@ -358,13 +358,8 @@ C2.registerVueComponent('role', {
 					<command-list :commands="allCommands"/>
 				</tab>
 				<tab :title="'Permissions'">
-					
-					<spacer-horizontal/>
-
 					<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
-					
 					<spacer-horizontal/>
-
 					<requirements :role="role"/>
 				</tab>
 			</tabs>
