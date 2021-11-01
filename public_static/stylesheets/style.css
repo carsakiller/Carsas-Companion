@@ -1961,19 +1961,22 @@ POPPINS
 
 /* line 213, ../../compass/sass/_component_utility.scss */
 .status_bar {
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   padding: 0.7em 2em;
   color: #f3f3f3;
   text-align: center;
   font-size: 2em;
 }
-/* line 220, ../../compass/sass/_component_utility.scss */
+/* line 223, ../../compass/sass/_component_utility.scss */
 .status_bar.success {
-  background: #379249;
+  background: linear-gradient(45deg, #2f7c3e, #55a264);
 }
-/* line 224, ../../compass/sass/_component_utility.scss */
+/* line 227, ../../compass/sass/_component_utility.scss */
 .status_bar.error {
-  background: #c92f2f;
+  background: linear-gradient(45deg, #ab2828, #d14e4e);
 }
 
 /* line 1, ../../compass/sass/_components.scss */
@@ -2037,7 +2040,7 @@ POPPINS
   font-size: 2em;
   font-weight: 600;
   padding: 0.8em 2em;
-  background: #00446c;
+  background: linear-gradient(45deg, #003a5c, #266082);
 }
 /* line 60, ../../compass/sass/_components.scss */
 #app .pages .page .page_head h2 {

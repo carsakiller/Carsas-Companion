@@ -1,6 +1,6 @@
 
 .lockable {
-	
+
 	.lock_overlay {
 		position: absolute;
 		z-index: 9999;
@@ -211,17 +211,20 @@
 }
 
 .status_bar {
-	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
 	padding: 0.7em 2em;
 	color: $text-color;
 	text-align: center;
 	font-size: 2em;
 
 	&.success {
-		background: $enabled;
+		background: linear-gradient(45deg, shade($enabled, 15%), tint($enabled, 15%));
 	}
 
 	&.error {
-		background: $disabled;
+		background: linear-gradient(45deg, shade($disabled, 15%), tint($disabled, 15%));
 	}
 }

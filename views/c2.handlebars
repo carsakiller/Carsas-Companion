@@ -1,6 +1,7 @@
 {{{{vue-js}}}}
 
 <div id="app">
+	<status-bar></status-bar>
 	<pages v-bind:selectedindex="5">
 		<page :title="'Players'" :icon="'users'">
 			<players-management v-bind:players="players"></players-management>

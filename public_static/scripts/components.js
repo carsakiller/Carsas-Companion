@@ -29,7 +29,6 @@ registerVueComponent('page', {
 		}
 	},
 	template: `<div class="page" v-show="isSelected">
-		<status-bar/>
 		<div class="page_head">
 			<h2>{{title}}</h2>
 		</div>

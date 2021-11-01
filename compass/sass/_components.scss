@@ -55,7 +55,7 @@
 				font-size: 2em;
 				font-weight: 600;
 				padding: 0.8em 2em;
-				background: $secondary;
+				background: linear-gradient(45deg, shade($secondary, 15%), tint($secondary, 15%));
 
 				h2 {
 					font-family: $font-secondary;
@@ -279,7 +279,7 @@
 			}
 
 			.requirements {
-				
+
 			}
 		}
 	}
