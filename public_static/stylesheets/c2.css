@@ -1862,6 +1862,56 @@ a:visited {
 }
 
 /* line 101, ../../compass/sass/c2.scss */
+table {
+  position: relative;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: #f3f3f3;
+}
+/* line 109, ../../compass/sass/c2.scss */
+table thead tr th {
+  background: #414141;
+  border-top: none;
+}
+/* line 113, ../../compass/sass/c2.scss */
+table thead tr th:first-child {
+  border-top-left-radius: 0.2em;
+}
+/* line 117, ../../compass/sass/c2.scss */
+table thead tr th:last-child {
+  border-top-right-radius: 0.2em;
+}
+/* line 126, ../../compass/sass/c2.scss */
+table tbody tr td {
+  background: #2d2d2d;
+}
+/* line 131, ../../compass/sass/c2.scss */
+table tbody tr:last-child td {
+  border-bottom: none;
+}
+/* line 134, ../../compass/sass/c2.scss */
+table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 0.2em;
+}
+/* line 138, ../../compass/sass/c2.scss */
+table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 0.2em;
+}
+/* line 146, ../../compass/sass/c2.scss */
+table th, table td {
+  padding: 0.3em 0.5em;
+  border: 0.1em solid #0006;
+}
+/* line 150, ../../compass/sass/c2.scss */
+table th:first-child, table td:first-child {
+  border-left: none;
+}
+/* line 154, ../../compass/sass/c2.scss */
+table th:last-child, table td:last-child {
+  border-right: none;
+}
+
+/* line 160, ../../compass/sass/c2.scss */
 .c2 {
   display: flex;
   flex-direction: row;
@@ -2580,72 +2630,118 @@ a:visited {
   padding: 1em;
 }
 /* line 4, ../../compass/sass/_c2_module_test_components.scss */
-.tests_management .test_component {
+.tests_management .test_component_group {
   margin-bottom: 1em;
 }
 /* line 7, ../../compass/sass/_c2_module_test_components.scss */
-.tests_management .test_component .title {
-  background: #18303c;
-  font-size: 1.2em;
+.tests_management .test_component_group > * {
   padding: 0.5em 1em;
+  background: #356;
 }
-/* line 13, ../../compass/sass/_c2_module_test_components.scss */
-.tests_management .test_component .description {
-  font-size: 0.8em;
-  background: #18303c;
-  padding: 0.5em 1em;
+/* line 11, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component_group > *:not(:last-child) {
   margin-top: 0.2em;
 }
+/* line 16, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component_group .title {
+  font-size: 1.6em;
+}
 /* line 20, ../../compass/sass/_c2_module_test_components.scss */
-.tests_management .test_component .the_component {
+.tests_management .test_component_group .description {
+  font-size: 0.8em;
+}
+/* line 24, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component_group .content {
+  background: none;
+  padding: 0.5em 0.65em;
+  border: 0.2em solid #356;
+}
+/* line 31, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component {
+  margin-bottom: 1em;
+}
+/* line 34, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component > * {
+  padding: 0.5em 1em;
+  background: #18303c;
+}
+/* line 39, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component > *:not(:last-child) {
+  margin-top: 0.2em;
+}
+/* line 44, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .title {
+  font-size: 1.2em;
+}
+/* line 48, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .description {
+  font-size: 0.8em;
+}
+/* line 52, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .options {
+  font-size: 0.8em;
+}
+/* line 59, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .options .default {
+  position: relative;
+  bottom: 0.1em;
+  background: #444;
+  font-size: 0.6em;
+  padding: 0.2em 0.8em;
+  border-radius: 0.2em;
+  margin-left: 1em;
+}
+/* line 70, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .content {
+  background: none;
+  padding: 0.5em;
   border: 0.2em solid #18303c;
   border-top: none;
-  padding: 0.5em 1em;
 }
 
-/* line 113, ../../compass/sass/c2.scss */
+/* line 172, ../../compass/sass/c2.scss */
 body {
   font-size: 29px;
 }
 
 @media (min-width: 576px) {
-  /* line 118, ../../compass/sass/c2.scss */
+  /* line 177, ../../compass/sass/c2.scss */
   body {
     font-size: 24px;
   }
 }
 @media (min-width: 768px) {
-  /* line 124, ../../compass/sass/c2.scss */
+  /* line 183, ../../compass/sass/c2.scss */
   body {
     font-size: 22px;
   }
 }
 @media (min-width: 992px) {
-  /* line 130, ../../compass/sass/c2.scss */
+  /* line 189, ../../compass/sass/c2.scss */
   body {
     font-size: 20px;
   }
 }
 @media (min-width: 1200px) {
-  /* line 136, ../../compass/sass/c2.scss */
+  /* line 195, ../../compass/sass/c2.scss */
   body {
     font-size: 22px;
   }
 }
 @media (min-width: 1400px) {
-  /* line 142, ../../compass/sass/c2.scss */
+  /* line 201, ../../compass/sass/c2.scss */
   body {
     font-size: 24px;
   }
 }
 @media (min-width: 1800px) {
-  /* line 148, ../../compass/sass/c2.scss */
+  /* line 207, ../../compass/sass/c2.scss */
   body {
     font-size: 27px;
   }
 }
 @media (min-width: 2200px) {
-  /* line 154, ../../compass/sass/c2.scss */
+  /* line 213, ../../compass/sass/c2.scss */
   body {
     font-size: 32px;
   }

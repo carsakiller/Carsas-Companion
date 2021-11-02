@@ -1,27 +1,77 @@
 .tests_management {
 	padding: 1em;
 
-	.test_component {
+	.test_component_group {
 		margin-bottom: 1em;
 
-		.title {
-			background: #18303c;
-			font-size: 1.2em;
+		& > * {
 			padding: 0.5em 1em;
+			background: #356;
+
+			&:not(:last-child) {
+				margin-top: 0.2em;
+			}
+		}
+
+		.title {
+			font-size: 1.6em;
 		}
 
 		.description {
 			font-size: 0.8em;
-			background: #18303c;
-			padding: 0.5em 1em;
-			margin-top: 0.2em;
 		}
 
-		.the_component {
-			border: 0.2em solid #18303c;
-			border-top: none;
+		.content {
+			background: none;
+			padding: 0.5em 0.65em;
+			border: 0.2em solid #356;
+		}
+	}
+
+	.test_component {
+		margin-bottom: 1em;
+
+		& > * {
 			padding: 0.5em 1em;
 
+			background: #18303c;
+
+			&:not(:last-child) {
+				margin-top: 0.2em;
+			}
+		}
+
+		.title {
+			font-size: 1.2em;
+		}
+
+		.description {
+			font-size: 0.8em;
+		}
+
+		.options {
+			font-size: 0.8em;
+
+			.options_table {
+
+			}
+
+			.default {
+				position: relative;
+				bottom: 0.1em;
+				background: #444;
+				font-size: 0.6em;
+				padding: 0.2em 0.8em;
+				border-radius: 0.2em;
+				margin-left: 1em;
+			}
+		}
+
+		.content {
+			background: none;
+			padding: 0.5em;
+			border: 0.2em solid #18303c;
+			border-top: none;
 		}
 	}
 }

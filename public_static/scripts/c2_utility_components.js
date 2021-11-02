@@ -1,6 +1,6 @@
 /*
 
----- MIXINS and BASE COMPONENTS ----
+---- MIXINS ----
 
 */
 
@@ -42,24 +42,6 @@ let loggingMixin = {
 	}
 }
 
-/*
-
-	if you want to have a lockable component then do this:
-
-	Vue.component('my-lockable-component', {
-		template: `<div>
-			<lockable></lockable>
-			<span>Hello World</span>
-
-			<button v-on:click="lockComponent">lock</button>
-		</div>`,
-		mixins: [lockableComponent]
-	}
-})
-
-Now you can click the button and lock the component
-
-*/
 let lockableComponentMixin = {
 	data: function(){
 		return {
@@ -118,6 +100,49 @@ let lockableComponentMixin = {
 	}
 }
 
+let gameCommandMixin = {
+	mixins: [lockableComponentMixin],
+	methods: {
+		callGameCommandAndWaitForSync (command, args){
+			return new Promise((fulfill, reject)=>{
+				this.lockComponentUntilSync()
+
+				c2.webclient.sendCommand(command, args).then((res)=>{
+					this.info('executing command', command,'was successful')
+					this.log('args', args, 'result', res)
+				}).catch((err)=>{
+					this.info('executing command', command,'failed')
+					this.log('args', args, 'error', err)
+					this.unlockComponent()
+				})
+			})
+		}
+	}
+}
+
+/*
+
+	FUNCTIONAL COMPONENTS
+
+*/
+
+
+/*
+	Usage:
+
+	registerVueComponent('my-lockable-component', {
+		template: `<div>
+			<lockable/>
+			<span>Hello World</span>
+
+			<button v-on:click="lockComponent">lock</button>
+		</div>`,
+		mixins: [lockableComponent]
+	})
+
+	Now you can click the button and lock the component
+
+*/
 C2.registerVueComponent('lockable', {
 	template: `<div class="lockable" @click.stop>
 		<div v-if="parentIsComponentLocked" class="lock_overlay"/>
@@ -128,10 +153,28 @@ C2.registerVueComponent('lockable', {
 		}
 	},
 	mounted (){
-		this.$parent.$el.style = 'position: relative;'
+		this.$parent.$el.style.position = 'relative'
 	}
 })
 
+/*
+	Usage:
+
+	registerVueComponent('my-lockable-component', {
+		template: `<div>
+			<lockable-by-childs/>
+			<span>Hello World</span>
+
+			<some-other-component>
+				<button v-on:click="lockComponent">lock</button>
+			</some-other-component>
+		</div>`,
+		mixins: [lockableComponent]
+	})
+
+	Now you can click the button and lock the component
+
+*/
 C2.registerVueComponent('lockable-by-childs', {
 	data: function (){
 		return {
@@ -149,7 +192,7 @@ C2.registerVueComponent('lockable-by-childs', {
 		<slot/>
 	</div>`,
 	mounted (){
-		this.$parent.$el.style = 'position: relative;'
+		this.$parent.$el.style.position = 'relative'
 	},
 	methods: {
 		addLockedChild (){
@@ -174,7 +217,7 @@ C2.registerVueComponent('lockable-by-parent', {
 		<slot/>
 	</div>`,
 	mounted (){
-		this.$parent.$el.style = 'position: relative;'
+		this.$parent.$el.style.position = 'relative'
 	}
 })
 
@@ -182,7 +225,7 @@ C2.registerVueComponent('lockable-by-parent', {
 	Usage:
 
 	<disabled-when-any-parent-locked v-slot="disabledProps">
-		<input :disable="disabledProps.isDisabled">
+		<input :disabled="disabledProps.isDisabled">
 	</disabled-when-any-parent-locked>
 
 */
@@ -240,29 +283,10 @@ C2.registerVueComponent('disabled-when-any-parent-locked', {
 	}
 })
 
-let gameCommandMixin = {
-	mixins: [lockableComponentMixin],
-	methods: {
-		callGameCommandAndWaitForSync (command, args){
-			return new Promise((fulfill, reject)=>{
-				this.lockComponentUntilSync()
-
-				c2.webclient.sendCommand(command, args).then((res)=>{
-					this.info('executing command', command,'was successful')
-					this.log('args', args, 'result', res)
-				}).catch((err)=>{
-					this.info('executing command', command,'failed')
-					this.log('args', args, 'error', err)
-					this.unlockComponent()
-				})
-			})
-		}
-	}
-}
-
 C2.registerVueComponent('confirm-button', {
 	data: function (){
 		return {
+			timeToFill: 0,
 			mouseIsHovering: false,
 			timeHoverStarted: 0,
 			fillPercentage: 0,
@@ -280,7 +304,7 @@ C2.registerVueComponent('confirm-button', {
 	props: {
 		time: {
 			type: Number,
-			default: 1
+			default: 0
 		},
 		serious: {
 			type: Boolean,
@@ -338,10 +362,16 @@ C2.registerVueComponent('confirm-button', {
 			}
 		},
 		updateFillPercentage (){
-			this.fillPercentage = this.timeHoverStarted > 0 ? Math.min(1, (Date.now() - this.timeHoverStarted) / (this.time * 1000) ) * 100 : 0
+			this.fillPercentage = this.timeHoverStarted > 0 ? Math.min(1, (Date.now() - this.timeHoverStarted) / (this.timeToFill * 1000) ) * 100 : 0
 		}
 	},
-
+	created: function (){
+		if(this.time === 0){
+			this.timeToFill = this.serious ? 2 : 1
+		} else {
+			this.timeToFill = this.time
+		}
+	}
 })
 
 C2.registerVueComponent('loading-spinner', {
@@ -411,26 +441,6 @@ C2.registerVueComponent('loading-spinner-or', {
 			}
 		}
 	}
-})
-
-C2.registerVueComponent('spacer-horizontal', {
-	props: {
-		height: {
-			type: String,
-			default: '1em'
-		}
-	},
-	template: `<div :style="'clear: both; height: ' + height"/>`
-})
-
-C2.registerVueComponent('spacer-vertical', {
-	props: {
-		width: {
-			type: String,
-			default: '1em'
-		}
-	},
-	template: `<div :style="'display: inline-block; width: ' + width"/>`
 })
 
 C2.registerVueComponent('steamid', {
@@ -511,113 +521,11 @@ C2.registerVueComponent('toggleable-element', {
 	mixins: [loggingMixin]
 })
 
-C2.registerVueComponent('tab', {
-	data: function (){
-		return {
-			isSelected: false
-		}
-	},
-	props: {
-		title: {
-			type: String,
-			default: 'Tab'
-		}
-	},
-	template: `<div class="tab" v-show="isSelected">
-		<slot/>
-	</div>`,
-	created: function(){
-		this.$parent.tabs.push(this)
-	}
-})
+/*
 
-C2.registerVueComponent('tabs', {
-	data: function (){
-		return {
-			selectedIndex: 0,
-			tabs: []
-		}
-	},
-	template: `<div class="tabs">
-		<div class="tabs_selector">
-			<div v-for="(tab, index) in tabs" :key="index" @click="selectTab(index)" :class="['entry', {selected: (index === selectedIndex)}]">
-				{{tab.title}}
-			</div>
-		</div>
-		
-		<slot/>
-	</div>`,
-	methods: {
-		selectTab (i){
-			this.selectedIndex = i
+	STRUCTURAL COMPONENTS
 
-			this.tabs.forEach((tab, index) => {
-		    	tab.isSelected = (index === i)
-		    })
-		}
-	},
-	mounted: function (){
-		this.selectTab(0)
-	}
-})
-
-C2.registerVueComponent('status-bar', {
-	computed: {
-		status (){
-			return this.$store.state.status
-		}
-	},
-	template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
-		{{status.message}}
-	</div>`
-})
-
-C2.registerVueComponent('error-popup', {
-	computed: {
-		theError (){
-			return this.$store.state.error
-		}
-	},
-	template: `<div class="error_popup" v-show="theError.message">
-		<div class="inner">
-			<p class="title">{{theError.title}}</p>
-			<textarea class="message" cols="30" rows="5" readonly="true" wrap="hard">{{theError.message}}</textarea>
-			<button onclick="document.location.reload()">Reload Page</button>
-		</div>
-	</div>`
-})
-
-
-C2.registerVueComponent('page', {
-	data: function (){
-		return {
-			isSelected: false
-		}
-	},
-	props: {
-		title: {
-			type: String,
-			default: 'Page',
-			required: false
-		},
-		icon: {
-			type: String,
-			default: '',
-			required: false
-		}
-	},
-	template: `<div class="page" v-show="isSelected">
-		<div class="page_head">
-			<h2>{{title}}</h2>
-		</div>
-		<div class="page_body">
-			<slot/>
-		</div>
-	</div>`,
-	created: function(){
-		this.$parent.pages.push(this)
-	}
-})
+*/
 
 C2.registerVueComponent('pages', {
 	data: function (){
@@ -662,6 +570,108 @@ C2.registerVueComponent('pages', {
 	}
 })
 
+C2.registerVueComponent('page', {
+	data: function (){
+		return {
+			isSelected: false,
+			mountedTime: 0,
+			userHasScrolled: false,
+			checkInterval: undefined
+		}
+	},
+	props: {
+		title: {
+			type: String,
+			required: true
+		},
+		icon: {
+			type: String,
+			required: true
+		}
+	},
+	template: `<div class="page" v-show="isSelected">
+		<div class="page_head">
+			<h2>{{title}}</h2>
+		</div>
+		<div class="page_body" @scroll="onScroll">
+			<slot/>
+		</div>
+	</div>`,
+	methods: {
+		onScroll (){
+			this.userHasScrolled = true
+		}
+	},
+	created: function (){
+		this.$parent.pages.push(this)
+	},
+	mounted: function (){
+		this.mountedTime = Date.now()
+
+		this.checkInterval = setInterval(()=>{
+			this.log('check')
+			if(Date.now() - this.mountedTime > 2000){//stop the check when we think the page has fully loaded
+				clearInterval(this.checkInterval)
+				return
+			}
+			if(this.userHasScrolled){//when user scrolls for the first time
+				$(this.$el).find('.page_body').scrollTop(0)
+				clearInterval(this.checkInterval)
+				return
+			}
+		}, 100)
+	}
+})
+
+C2.registerVueComponent('tabs', {
+	data: function (){
+		return {
+			selectedIndex: 0,
+			tabs: []
+		}
+	},
+	template: `<div class="tabs">
+		<div class="tabs_selector">
+			<div v-for="(tab, index) in tabs" :key="index" @click="selectTab(index)" :class="['entry', {selected: (index === selectedIndex)}]">
+				{{tab.title}}
+			</div>
+		</div>
+
+		<slot/>
+	</div>`,
+	methods: {
+		selectTab (i){
+			this.selectedIndex = i
+
+			this.tabs.forEach((tab, index) => {
+		    	tab.isSelected = (index === i)
+		    })
+		}
+	},
+	mounted: function (){
+		this.selectTab(0)
+	}
+})
+
+C2.registerVueComponent('tab', {
+	data: function (){
+		return {
+			isSelected: false
+		}
+	},
+	props: {
+		title: {
+			type: String,
+			default: 'Tab'
+		}
+	},
+	template: `<div class="tab" v-show="isSelected">
+		<slot/>
+	</div>`,
+	created: function(){
+		this.$parent.tabs.push(this)
+	}
+})
 
 C2.registerVueComponent('extendable', {
 	data: function (){
@@ -788,7 +798,7 @@ C2.registerVueComponent('division', {
 			default: false
 		}
 	},
-	template: `<extendable class="division" v-slot="extendableProps" :startExtended="startExtended || alwaysExtended">
+	template: `<extendable class="division" v-slot="extendableProps" :startExtended="startExtended || alwaysExtended || !name">
 		<div class="division_head" v-if="name && alwaysExtended">
 			<h3>{{name}}</h3>
 		</div>
@@ -807,4 +817,46 @@ C2.registerVueComponent('division', {
 	mounted: function (){
 		this.isExtended = this.$props.name ? this.$props.startExtended === true : true
 	}
+})
+
+C2.registerVueComponent('spacer-horizontal', {
+	props: {
+		height: {
+			type: String,
+			default: '1em'
+		}
+	},
+	template: `<div :style="'clear: both; height: ' + height"/>`
+})
+
+C2.registerVueComponent('spacer-vertical', {
+	props: {
+		width: {
+			type: String,
+			default: '1em'
+		}
+	},
+	template: `<div :style="'display: inline-block; width: ' + width"/>`
+})
+
+C2.registerVueComponent('todo', {
+	computed: {
+		status (){
+			return this.$store.state.status
+		}
+	},
+	template: `<div style="display: inline-block; padding: 0.5em 1em; background: red; color: white; font-weight: bold;">
+		<span>TODO: </span><slot/>
+	</div>`
+})
+
+//TODO replace the hardcoded icons with this component
+C2.registerVueComponent('icon', {
+	props: {
+		icon: {
+			type: String,
+			required: true
+		}
+	},
+	template: `<span :class="['im', 'im-' + icon]"><slot/></span>`
 })

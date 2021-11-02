@@ -1,6 +1,39 @@
 /*
 
-	INFO
+	GLOBAL
+
+*/
+
+C2.registerVueComponent('status-bar', {
+	computed: {
+		status (){
+			return this.$store.state.status
+		}
+	},
+	template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
+		{{status.message}}
+	</div>`
+})
+
+C2.registerVueComponent('error-popup', {
+	computed: {
+		theError (){
+			return this.$store.state.error
+		}
+	},
+	template: `<div class="error_popup" v-show="theError.message">
+		<div class="inner">
+			<p class="title">{{theError.title}}</p>
+			<textarea class="message" cols="30" rows="5" readonly="true" wrap="hard">{{theError.message}}</textarea>
+			<button onclick="document.location.reload()">Reload Page</button>
+		</div>
+	</div>`
+})
+
+
+/*
+
+	PAGE INFO
 
 */
 
@@ -40,7 +73,7 @@ C2.registerVueComponent('info', {
 
 /*
 
-	PLAYERS MANAGEMENT
+	PAGE PLAYERS MANAGEMENT
 
 */
 
@@ -195,7 +228,7 @@ C2.registerVueComponent('player-role', {
 
 /*
 
-	VEHICLES MANAGEMENT
+	PAGE VEHICLES MANAGEMENT
 
 */
 
@@ -255,7 +288,7 @@ C2.registerVueComponent('vehicle', {
 
 /*
 
-	ROLES MANAGEMENT
+	PAGE ROLES MANAGEMENT
 
 */
 
@@ -501,7 +534,7 @@ C2.registerVueComponent('member', {
 
 /*
 
-	RULES MANAGEMENT
+	PAGE RULES MANAGEMENT
 
 */
 
@@ -577,7 +610,7 @@ C2.registerVueComponent('rule', {
 
 /*
 
-	PREFERENCES MANAGEMENT
+	PAGE PREFERENCES MANAGEMENT
 
 */
 
@@ -727,7 +760,7 @@ C2.registerVueComponent('preference-table', {
 
 /*
 
-	GAME SETTINGS MANAGEMENT
+	PAGE GAME SETTINGS MANAGEMENT
 
 */
 
@@ -828,7 +861,7 @@ C2.registerVueComponent('gamesetting-number', {
 
 /*
 
-	LOGS MANAGEMENT
+	PAGE LOGS MANAGEMENT
 
 */
 C2.registerPage('Logs', 'note-o', 'logs-management')

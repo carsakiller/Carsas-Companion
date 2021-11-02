@@ -98,6 +98,65 @@ a {
 	}
 }
 
+table {
+	position: relative;
+	table-layout: fixed;
+	border-collapse: collapse;
+	color: $text-color;
+
+	thead {
+		tr {
+			th {
+				background: #414141;
+				border-top: none;
+
+				&:first-child {
+					border-top-left-radius: 0.2em;
+				}
+
+				&:last-child {
+					border-top-right-radius: 0.2em;
+				}
+			}
+		}
+	}
+
+	tbody {
+		tr {
+			td {
+				background: #2d2d2d;
+			}
+
+			&:last-child {
+				td {
+					border-bottom: none;
+
+					&:first-child {
+						border-bottom-left-radius: 0.2em;
+					}
+
+					&:last-child {
+						border-bottom-right-radius: 0.2em;
+					}
+				}
+			}
+		}
+	}
+
+	th, td {
+		padding: 0.3em 0.5em;
+		border: 0.1em solid #0006;
+
+		&:first-child {
+			border-left: none;
+		}
+
+		&:last-child {
+			border-right: none;
+		}
+	}
+}
+
 .c2 {
 	display: flex;
 	flex-direction: row;
