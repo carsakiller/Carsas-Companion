@@ -602,9 +602,9 @@ C2.registerVueComponent('page', {
 	data: function (){
 		return {
 			isSelected: false,
-			mountedTime: 0,
-			userHasScrolled: false,
-			checkInterval: undefined
+			lastPageHeight: 0,
+			lastPageHeightChangeTime: 0,
+			checkPageHeightInterval: undefined
 		}
 	},
 	props: {
@@ -622,33 +622,29 @@ C2.registerVueComponent('page', {
 			<h2>{{title}}</h2>
 		</div>
 
-		<div class="page_body" @scroll="onScroll">
+		<div class="page_body">
 			<slot/>
 		</div>
 	</div>`,
-	methods: {
-		onScroll (){
-			this.userHasScrolled = true
-		}
-	},
 	created: function(){
 		this.$parent.pages.push(this)
 	},
 	mounted: function (){
-		this.mountedTime = Date.now()
+		this.checkPageHeightInterval = setInterval(()=>{
+			let newHeight = $(this.$el).height()
+			if(newHeight !== this.lastPageHeight){
+				this.log('page', this.title, 'resized')
+				this.lastPageHeight = newHeight
+				this.lastPageHeightChangeTime = Date.now()
+			}
 
-		this.checkInterval = setInterval(()=>{
-			this.log('check')
-			if(Date.now() - this.mountedTime > 2000){//stop the check when we think the page has fully loaded
-				clearInterval(this.checkInterval)
-				return
-			}
-			if(this.userHasScrolled){//when user scrolls for the first time
+			if(this.lastPageHeightChangeTime > 0 && (Date.now() - this.lastPageHeightChangeTime) > 20){//stop the check when we think the page has fully loaded
+				this.log('page', this.title, 'stopped to resize')
 				$(this.$el).find('.page_body').scrollTop(0)
-				clearInterval(this.checkInterval)
+				clearInterval(this.checkPageHeightInterval)
 				return
 			}
-		}, 100)
+		}, 5)
 	}
 })
 
