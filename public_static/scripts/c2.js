@@ -16,6 +16,8 @@ class C2 {
 
 		this.store = Vuex.createStore({
 			state: {
+				localStorage: {},
+
 				pages: [],
 
 				status: {
@@ -177,10 +179,16 @@ class C2 {
 				},
 				addPage (state, page){
 					state.pages.push(page)
+				},
+				setLocalStorage (state, _localStorage){
+					state.localStorage = _localStorage
+				},
+				setToken (state, token){
+					state.localStorage = token
 				}
 			},
 			actions: {
-				setPlayers ({ commit }, players){
+				setPlayers ({commit}, players){
 					commit('setPlayers', players)
 				},
 				test ({commit}){
@@ -198,8 +206,14 @@ class C2 {
 				setC2Commit({commit}, _commit){
 					commit('setC2Commit', _commit)
 				},
-				addPage ({ commit }, page){
+				addPage ({commit}, page){
 					commit('addPage', page)
+				},
+				setLocalStorage ({commit}, _localStorage){
+					commit('setLocalStorage', _localStorage)
+				},
+				setToken ({commit}, token){
+					commit('setToken', token)
 				}
 			},
 
@@ -219,6 +233,29 @@ class C2 {
 			}
 		})
 
+		$.get({
+			url: '/static/version.txt',
+			accepts: 'text/plain',
+			async: true,
+			success: (data)=>{
+				this.store.dispatch('setC2Version', data)
+
+				this.loadLocalStorage()
+				$(window).on('beforeunload', ()=>{
+					this.saveLocalStorage()
+				})
+			},
+			error: (err)=>{
+				console.error('Error checking version', err)
+				this.showError('Unable to check version.\n\n' + err)
+			},
+			complete: ()=>{
+				this.createApp(el)
+			}
+		})
+	}
+
+	createApp (el){
 		this.app = Vue.createApp({
 			computed: {
 				pages: function (){
@@ -265,10 +302,6 @@ class C2 {
 		this.webclient = new C2WebClient(this)
 
 		setTimeout(()=>{
-			$.get('/static/version.txt', (data)=>{
-				this.store.dispatch('setC2Version', data)
-			})
-
 			$.get('/static/commit.txt', (data)=>{
 				this.store.dispatch('setC2Commit', data)
 			})
@@ -284,12 +317,16 @@ class C2 {
 
 	handleVueError(err, vm, info){
 		console.error('[C2]', err, vm, info)
-		this.setError('An Error has occured (Please contact an admin)', '' + err + '\n\n' + info)
+		this.showError('' + err + '\n\n' + info)
 	}
 
 	handleVueWarning(msg, vm, trace){
 		console.warn('[C2]', msg, vm, trace)
-		this.setError('An Error has occured (Please contact an admin)', '' + msg + '\n\n' + trace)
+		this.showError('' + msg + '\n\n' + trace)
+	}
+
+	showError(msg){
+		this.setError('An Error has occured (Please contact an admin)', msg)
 	}
 
 	registerComponent (name, options){
@@ -306,6 +343,32 @@ class C2 {
 
 	registerPage(page){
 		this.store.dispatch('addPage', page)
+	}
+
+	loadLocalStorage(){
+		let value = {
+			version: this.store.C2_VERSION
+		}
+
+		let saved = localStorage.getItem('c2')
+		if(saved){
+			try {
+				let parsed = JSON.parse(saved)
+				if(parsed.version === this.store.C2_VERSION){
+					value = parsed
+				} else {
+					console.info('ignoring outdated localStorage.c2')
+				}
+			} catch (ex){
+				console.warn('failed to parse saved localStorage.c2', ex)
+			}
+		}
+
+		this.store.dispatch('setLocalStorage', value)
+	}
+
+	saveLocalStorage(){
+		localStorage.setItem('c2', JSON.stringify(this.store.localStorage))
 	}
 }
 
