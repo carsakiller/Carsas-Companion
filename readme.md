@@ -53,16 +53,13 @@ The method then sends that command to the game, if game responds with success, w
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
 
 ## Browser
-* save current selected page (maybe even more) and try to restore it on
 * check if we should refactor the extendable components (base, body, trigger) into a single component by using the ability to declare multiple slots
-* mobile touchscreen support (e.g. the confirm-button wont work)
 * preserve selected page, tab, scroll positions
 * Sandbox logging: so we can only show logs in the console for a specific component instance
 
 ## WebServer
 * version check with the script running in the game
 * detect game server restart / script reload
-* when did not receive a heartbeat / any message for some time, set server to notAvailable (inform webclients, and directly reject their requests)
 
 ## GameAddon
 * for every command, create a field "onChangeSync" = "players"

@@ -8,10 +8,10 @@ module.exports = class C2 extends C2LoggingUtility {
 	constructor(loglevel, app){
 		super(loglevel)
 
-		this.c2GameInterface = new C2GameInterface(loglevel, app)
-		this.c2WebInterface = new C2WebInterface(loglevel, app)
+		let gameApp = require('./c2GameWebServer.js')
 
-		this.syncedData = {}
+		this.c2GameInterface = new C2GameInterface(loglevel, gameApp)
+		this.c2WebInterface = new C2WebInterface(loglevel, app)
 
 		process.on('unhandledRejection', error => {
 		  this.error(error);

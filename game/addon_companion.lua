@@ -435,7 +435,7 @@ local function triggerHeartbeat()
 end
 
 local c2HasMoreCommands = false
-local HTTP_GET_HEARTBEAT_TIMEOUT = 60 * 5 -- at least one heartbeat every 5 seconds
+local HTTP_GET_HEARTBEAT_TIMEOUT = 60 * 3 -- at least one heartbeat every 5 seconds
 function syncTick()
 	checkPacketSendingQueue()
 	
