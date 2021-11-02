@@ -364,7 +364,7 @@ class C2 {
 	}
 
 	saveLocalStorage(){
-		localStorage.setItem('c2', JSON.stringify(this.store.localStorage))
+		localStorage.setItem('c2', JSON.stringify(this.store.state.localStorage))
 	}
 }
 
