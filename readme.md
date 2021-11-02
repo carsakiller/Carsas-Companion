@@ -55,6 +55,7 @@ The method then sends that command to the game, if game responds with success, w
 ## Browser
 * save current selected page (maybe even more) and try to restore it on
 * check if we should refactor the extendable components (base, body, trigger) into a single component by using the ability to declare multiple slots
+* mobile touchscreen support (e.g. the confirm-button wont work)
 
 ## WebServer
 * version check with the script running in the game
