@@ -14,7 +14,8 @@ C2.registerVueComponent('todo', {
 C2.registerVueComponent('tests-management', {
 	data: function (){
 		return {
-			toggleState: false
+			toggleState: false,
+			isConfirmed: false
 		}
 	},
 	template: `<div class="tests_management">
@@ -25,7 +26,23 @@ C2.registerVueComponent('tests-management', {
 				</test-component>
 
 				<test-component :title="'confirm-button'" :description="'Button which requires to hover over it for a certain time'">
-					<confirm-button>Confirm</confirm-button>
+					<confirm-button @click="isConfirmed = !isConfirmed">
+						<span v-if="isConfirmed">Unconfirm</span>
+						<span v-else>Confirm</span>
+					</confirm-button>
+					<br>
+					<span v-if="isConfirmed">Confirmed</span>
+					<span v-else>Not confirmed</span>
+				</test-component>
+
+				<test-component :title="'confirm-button'" :description="'Serious version'">
+					<confirm-button class="serious" @click="isConfirmed = !isConfirmed">
+						<span v-if="isConfirmed">Unconfirm</span>
+						<span v-else>Confirm</span>
+					</confirm-button>
+					<br>
+					<span v-if="isConfirmed">Confirmed</span>
+					<span v-else>Not confirmed</span>
 				</test-component>
 
 				<test-component :title="'confirm-button'" :description="'Small version of confirm-button'">

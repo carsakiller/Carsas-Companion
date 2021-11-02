@@ -2264,39 +2264,39 @@ a:visited {
   letter-spacing: 0.15em;
 }
 /* line 403, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button.small_button:hover.confirmed:before {
+.confirm_button.small_button.hovering.confirmed:before {
   opacity: 0;
 }
 /* line 408, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button.small_button:hover:not(.confirmed) {
+.confirm_button.small_button.hovering:not(.confirmed) {
   color: transparent;
 }
 /* line 411, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button.small_button:hover:not(.confirmed):before {
+.confirm_button.small_button.hovering:not(.confirmed):before {
   color: #f3f3f3;
 }
 /* line 420, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:not(.small_button):hover {
+.confirm_button:not(.small_button).hovering {
   padding-left: 2.2em;
 }
 /* line 427, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover:before, .confirm_button:hover:after {
+.confirm_button.hovering:before, .confirm_button.hovering:after {
   opacity: 1;
 }
 /* line 431, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover.confirmed {
+.confirm_button.hovering.confirmed {
   background: #379249 !important;
 }
 /* line 434, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover.confirmed:before {
+.confirm_button.hovering.confirmed:before {
   content: '\e062';
 }
 /* line 438, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover.confirmed:after {
+.confirm_button.hovering.confirmed:after {
   opacity: 0;
 }
 /* line 443, ../../compass/sass/_c2_utility_components.scss */
-.confirm_button:hover:not(.confirmed) {
+.confirm_button.hovering:not(.confirmed) {
   color: #aaaaaa;
 }
 /* line 448, ../../compass/sass/_c2_utility_components.scss */

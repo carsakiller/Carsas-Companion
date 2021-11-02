@@ -396,7 +396,7 @@
 
 	&.small_button {
 
-		&:hover {
+		&.hovering {
 
 			&.confirmed {
 
@@ -417,12 +417,12 @@
 
 	&:not(.small_button) {
 
-		&:hover {
+		&.hovering {
 			padding-left: 2.2em;
 		}
 	}
 
-	&:hover {
+	&.hovering {
 
 		&:before, &:after {
 			opacity: 1;

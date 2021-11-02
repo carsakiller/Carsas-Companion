@@ -287,11 +287,16 @@ C2.registerVueComponent('confirm-button', {
 			default: false
 		}
 	},
-	template: `<button :class="['confirm_button', {confirmed: isClickable, serious: serious}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
+	template: `<button :class="['confirm_button', {confirmed: isClickable, serious: serious, hovering: mouseIsHovering}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
 		<slot/>
 	</button>`,
 	methods: {
 		handleMouseEnter (){
+			this.log('mouseenter')
+			if(this.mouseIsHovering){
+				return
+			}
+
 			this.mouseIsHovering = true
 			this.timeHoverStarted = Date.now()
 
@@ -310,6 +315,7 @@ C2.registerVueComponent('confirm-button', {
 			}			
 		},
 		handleMouseLeave (){
+			this.log('mouseleave')
 			this.mouseIsHovering = false
 			this.timeHoverStarted = 0
 
@@ -326,6 +332,9 @@ C2.registerVueComponent('confirm-button', {
 			if(!this.isClickable){
 				evt.preventDefault()
 				evt.stopImmediatePropagation()
+				this.handleMouseEnter()
+			} else {
+				this.handleMouseLeave()
 			}
 		},
 		updateFillPercentage (){
