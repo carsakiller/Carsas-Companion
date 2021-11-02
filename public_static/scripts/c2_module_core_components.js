@@ -415,7 +415,7 @@ C2.registerVueComponent('role', {
 	</extendable>`,
 	methods: {
 		remove (){
-			this.callGameCommandAndWaitForSync('removeRole', [1, this.roleName])//TODO replace 1 with my peer_id
+			this.callGameCommandAndWaitForSync('removeRole', this.roleName)
 		},
 		addMember (){
 			alert('not implemented')
