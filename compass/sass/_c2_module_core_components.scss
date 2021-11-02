@@ -179,10 +179,25 @@
 
 				.add_member {
 					width: 100%;
-					border: 0.3em #315fb0 outset;
+					border: 0.2em solid;
+					border-top-color: #315fb0;
+					border-left-color: #315fb0;
+					border-bottom-color: #00346c;
+					border-right-color: #00346c;
+					transition: border 0.2s linear, background 0.2s linear;
+
+					.im {
+						transition: transform 0.4s cubic-bezier(0.39, 0.56, 0.24, 2);
+	    				transform: rotate(0deg);
+	    			}
 
 					&:hover {
-						background: #68b8ff14;
+						background: #21427c;
+						border: 0.2em solid #21427c;
+
+						.im {
+							transform: rotate(90deg);
+						}
 					}
 				}
 

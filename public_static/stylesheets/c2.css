@@ -2157,7 +2157,7 @@ a:visited {
   height: 1em;
   background: #f3f3f3;
   border-radius: 10000px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.43, 1.38);
   transform: translateX(0);
 }
 /* line 298, ../../compass/sass/_c2_utility_components.scss */
@@ -2488,17 +2488,32 @@ a:visited {
 /* line 180, ../../compass/sass/_c2_module_core_components.scss */
 .roles_management .role_list .role .role_body .add_member {
   width: 100%;
-  border: 0.3em #315fb0 outset;
-}
-/* line 184, ../../compass/sass/_c2_module_core_components.scss */
-.roles_management .role_list .role .role_body .add_member:hover {
-  background: #68b8ff14;
+  border: 0.2em solid;
+  border-top-color: #315fb0;
+  border-left-color: #315fb0;
+  border-bottom-color: #00346c;
+  border-right-color: #00346c;
+  transition: border 0.2s linear, background 0.2s linear;
 }
 /* line 189, ../../compass/sass/_c2_module_core_components.scss */
+.roles_management .role_list .role .role_body .add_member .im {
+  transition: transform 0.4s cubic-bezier(0.39, 0.56, 0.24, 2);
+  transform: rotate(0deg);
+}
+/* line 194, ../../compass/sass/_c2_module_core_components.scss */
+.roles_management .role_list .role .role_body .add_member:hover {
+  background: #21427c;
+  border: 0.2em solid #21427c;
+}
+/* line 198, ../../compass/sass/_c2_module_core_components.scss */
+.roles_management .role_list .role .role_body .add_member:hover .im {
+  transform: rotate(90deg);
+}
+/* line 204, ../../compass/sass/_c2_module_core_components.scss */
 .roles_management .role_list .role .role_body .member_list {
   margin: 1em 0;
 }
-/* line 192, ../../compass/sass/_c2_module_core_components.scss */
+/* line 207, ../../compass/sass/_c2_module_core_components.scss */
 .roles_management .role_list .role .role_body .member_list .member {
   display: flex;
   flex-direction: row;
@@ -2506,13 +2521,13 @@ a:visited {
   padding: 0.5em 1em;
   background: #000c12;
 }
-/* line 199, ../../compass/sass/_c2_module_core_components.scss */
+/* line 214, ../../compass/sass/_c2_module_core_components.scss */
 .roles_management .role_list .role .role_body .member_list .member .name {
   font-family: "Poppins";
   font-size: 1.2em;
 }
 
-/* line 225, ../../compass/sass/_c2_module_core_components.scss */
+/* line 240, ../../compass/sass/_c2_module_core_components.scss */
 .rules_management .new_rule_container textarea {
   width: 100%;
   min-height: 2em;
@@ -2520,7 +2535,7 @@ a:visited {
   max-width: 100%;
   margin-bottom: 1em;
 }
-/* line 236, ../../compass/sass/_c2_module_core_components.scss */
+/* line 251, ../../compass/sass/_c2_module_core_components.scss */
 .rules_management .rule_list .rule {
   display: flex;
   flex-direction: row;
@@ -2528,34 +2543,34 @@ a:visited {
   background: #07192B;
   padding: 0.5em 1em;
 }
-/* line 243, ../../compass/sass/_c2_module_core_components.scss */
+/* line 258, ../../compass/sass/_c2_module_core_components.scss */
 .rules_management .rule_list .rule:not(:last-child) {
   margin-bottom: 1em;
 }
-/* line 247, ../../compass/sass/_c2_module_core_components.scss */
+/* line 262, ../../compass/sass/_c2_module_core_components.scss */
 .rules_management .rule_list .rule .text {
   margin-right: 1em;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-/* line 283, ../../compass/sass/_c2_module_core_components.scss */
+/* line 298, ../../compass/sass/_c2_module_core_components.scss */
 .logs_management .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 288, ../../compass/sass/_c2_module_core_components.scss */
+/* line 303, ../../compass/sass/_c2_module_core_components.scss */
 .logs_management .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 293, ../../compass/sass/_c2_module_core_components.scss */
+/* line 308, ../../compass/sass/_c2_module_core_components.scss */
 .logs_management .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 297, ../../compass/sass/_c2_module_core_components.scss */
+/* line 312, ../../compass/sass/_c2_module_core_components.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
 }

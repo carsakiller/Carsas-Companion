@@ -289,7 +289,7 @@
 				height: 1em;
 				background: $text-color;				
 				border-radius: 10000px;
-				transition: all 0.2s ease;
+				transition: all 0.3s cubic-bezier(0.18, 0.89, 0.43, 1.38);
 				transform: translateX(0);
 			}
 		}
