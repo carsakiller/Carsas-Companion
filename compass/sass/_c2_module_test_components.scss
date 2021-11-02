@@ -1,3 +1,27 @@
 .tests_management {
+	padding: 1em;
 
+	.test_component {
+		margin-bottom: 1em;
+
+		.title {
+			background: #18303c;
+			font-size: 1.2em;
+			padding: 0.5em 1em;
+		}
+
+		.description {
+			font-size: 0.8em;
+			background: #18303c;
+			padding: 0.5em 1em;
+			margin-top: 0.2em;
+		}
+
+		.the_component {
+			border: 0.2em solid #18303c;
+			border-top: none;
+			padding: 0.5em 1em;
+
+		}
+	}
 }

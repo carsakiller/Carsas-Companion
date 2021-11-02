@@ -23,4 +23,10 @@
 
 <script type="text/javascript">
 	let c2 = new C2('#app')
+
+	$(window).on('load', ()=>{
+		$('<span style="position: fixed; top: 5px; left: 5em; z-index: 99">')
+			.text(window.innerWidth + 'x' + window.innerHeight)
+			.appendTo($('body'))
+	})
 </script>

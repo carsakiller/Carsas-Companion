@@ -2575,9 +2575,37 @@ a:visited {
   margin-right: 1em;
 }
 
+/* line 1, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management {
+  padding: 1em;
+}
+/* line 4, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component {
+  margin-bottom: 1em;
+}
+/* line 7, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .title {
+  background: #18303c;
+  font-size: 1.2em;
+  padding: 0.5em 1em;
+}
+/* line 13, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .description {
+  font-size: 0.8em;
+  background: #18303c;
+  padding: 0.5em 1em;
+  margin-top: 0.2em;
+}
+/* line 20, ../../compass/sass/_c2_module_test_components.scss */
+.tests_management .test_component .the_component {
+  border: 0.2em solid #18303c;
+  border-top: none;
+  padding: 0.5em 1em;
+}
+
 /* line 113, ../../compass/sass/c2.scss */
 body {
-  font-size: 26px;
+  font-size: 29px;
 }
 
 @media (min-width: 576px) {

@@ -389,7 +389,12 @@ C2.registerVueComponent('loading-spinner-or', {
 			}
 
 			let ret = new Function(this.isLoadingCode).apply(node)
-			if(ret !== true){
+			if(ret == true){
+				if(!this.isLoading){
+					this.log('started loading')
+				}
+				this.isLoading = true
+			} else {
 				if(this.isLoading){
 					this.log('stopped loading')
 				}
