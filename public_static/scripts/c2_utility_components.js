@@ -479,7 +479,7 @@ C2.registerVueComponent('steamid', {
 		}
 	},
 	template: `
-		<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid"><span class="icon im im-external-link"></span>{{steamid}}</a>
+		<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid"><icon :icon="'external-link'" class="icon"/>{{steamid}}</a>
 		<span v-else class="steamid">"Invalid SteamId"</span>`
 })
 
@@ -572,7 +572,7 @@ C2.registerVueComponent('pages', {
 	template: `<div class="pages">
 		<div class="sidebar">
 			<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :title="page.title">
-				<span :class="['im', 'im-' + page.icon]"/>
+				<icon :icon="page.icon"/>
 			</div>
 		</div>
 
@@ -879,7 +879,6 @@ C2.registerVueComponent('todo', {
 	</div>`
 })
 
-//TODO replace the hardcoded icons with this component
 C2.registerVueComponent('icon', {
 	props: {
 		icon: {

@@ -136,8 +136,8 @@ C2.registerVueComponent('player', {
 
 			<extendable-trigger class="name_container">
 				<div class="name">{{player.name}}
-					<span class="im im-angle-up extend_arrow" v-if="extendableProps.isExtended"></span>
-					<span class="im im-angle-down extend_arrow" v-else></span>
+					<icon v-if="extendableProps.isExtended" :icon="'angle-up'" class="extend_arrow"/>
+					<icon v-else :icon="'angle-down'" class="extend_arrow"/>
 				</div>
 				<steamid :steamid="steamid"/>
 			</extendable-trigger>
