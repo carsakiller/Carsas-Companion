@@ -177,7 +177,17 @@
 			.role_body {
 				padding: 1em;
 
-				.member_list  {
+				.add_member {
+					width: 100%;
+					border: 0.3em #315fb0 outset;
+
+					&:hover {
+						background: #68b8ff14;
+					}
+				}
+
+				.member_list {
+					margin: 1em 0;
 
 					.member {
 						display: flex;

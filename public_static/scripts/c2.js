@@ -1,11 +1,6 @@
 class C2 {
 
 	constructor(el){
-		for(let script of ['c2_webclient.js', 'c2_websock.js', 'c2_utility_components.js', 'c2_module_core_components.js', 'c2_module_test_components.js']){
-			let s = $('<script>').attr('type', 'text/javascript').attr('src', '/static/scripts/' + script)
-			$('body').append(s)
-		}
-
 		$(window).on('load', ()=>{
 			this.setup(el)
 		})
@@ -308,6 +303,7 @@ class C2 {
 		}, 1000)
 	}
 
+	//TODO: rework this to work without vue, because if vue fucks up, we still want to have an error message!
 	setError(title, message){
 		this.store.dispatch('setError', {
 			title: title,

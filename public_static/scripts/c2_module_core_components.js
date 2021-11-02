@@ -336,9 +336,21 @@ C2.registerVueComponent('role', {
 			}
 
 			return ret
+		},
+		playersThatAreNotAMember (){//TODO: show that in a popup so one can select it
+			let ret = []
+
+			for(let steamid of Object.keys(this.$store.getters.players)){
+				if(! this.members.includes(steamid)){
+					ret.push(steamid)
+				}
+			}
+
+			return ret
 		}
 	},
 	template: `<extendable class="role">
+		<lockable-by-parent/>
 		<div class="role_head">
 			<extendable-trigger :useDefaultArrows="true">
 				<span class="name">{{roleName}}</span>
@@ -352,6 +364,9 @@ C2.registerVueComponent('role', {
 		<extendable-body class="role_body" :showShadow="true">
 			<tabs>
 				<tab :title="'Members'">
+					<button class="add_member" @click="addMember">
+						<span class="im im-plus"/>
+					</button>
 					<member-list :members="role.members"/>
 				</tab>
 				<tab :title="'Commands'">
@@ -367,9 +382,13 @@ C2.registerVueComponent('role', {
 	</extendable>`,
 	methods: {
 		remove (){
+			this.callGameCommandAndWaitForSync('removeRole', [1, this.roleName])//TODO replace 1 with my peer_id
+		},
+		addMember (){
 			alert('not implemented')
 		}
-	}
+	},
+	mixins: [gameCommandMixin]
 })
 
 C2.registerVueComponent('requirements', {
@@ -449,7 +468,7 @@ C2.registerVueComponent('member-list', {
 		}
 	},
 	template: `<div class="list member_list">
-		<member v-for="(steamid, index) of members" :key="steamid" :steamid="steamid"/>
+		<member v-for="steamid of members" :key="steamid" :steamid="steamid"/>
 	</div>`
 })
 
