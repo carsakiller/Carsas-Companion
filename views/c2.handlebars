@@ -3,7 +3,7 @@
 <div id="app" style="width: 100vw; height: 100vh">
 </div>
 
-<label for="no-magic-reload" style="position: fixed; z-index: 99; top: 5px; right: 5px;">No Magic Reload<input id="no-magic-reload" autocomplete="off" type="checkbox" onchange="window.NO_MAGIC_PAGE_RELOAD = !window.NO_MAGIC_PAGE_RELOAD"></label>
+<label for="no-magic-reload" style="position: fixed; z-index: 99; top: 5px; right: 5px;">Prevent Reload<input id="no-magic-reload" autocomplete="off" type="checkbox" onchange="window.NO_MAGIC_PAGE_RELOAD = !window.NO_MAGIC_PAGE_RELOAD"></label>
 
 
 {{{{/vue-js}}}}
@@ -25,8 +25,11 @@
 	let c2 = new C2('#app')
 
 	$(window).on('load', ()=>{
-		$('<span style="position: fixed; top: 5px; left: 5em; z-index: 99">')
-			.text(window.innerWidth + 'x' + window.innerHeight)
-			.appendTo($('body'))
+		let indicator = $('<span style="position: fixed; top: 5px; left: 3em; z-index: 99">')
+		indicator.appendTo( $('body') )
+
+		setInterval(()=>{
+			indicator.text(window.innerWidth + 'x' + window.innerHeight)
+		}, 500)
 	})
 </script>
