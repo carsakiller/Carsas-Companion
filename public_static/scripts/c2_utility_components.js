@@ -137,7 +137,7 @@ let gameCommandMixin = {
 
 			<button v-on:click="lockComponent">lock</button>
 		</div>`,
-		mixins: [lockableComponent]
+		mixins: [lockableComponentMixin]
 	})
 
 	Now you can click the button and lock the component
@@ -165,11 +165,16 @@ C2.registerVueComponent('lockable', {
 			<lockable-by-childs/>
 			<span>Hello World</span>
 
-			<some-other-component>
-				<button v-on:click="lockComponent">lock</button>
-			</some-other-component>
+			<some-other-component/>
+
+
 		</div>`,
-		mixins: [lockableComponent]
+		mixins: [lockableComponentMixin]
+	})
+
+	C2.registerVueComponent('some-other-component', {
+		template: `<button v-on:click="lockComponent">lock</button>`,
+		mixins: [lockableComponentMixin]
 	})
 
 	Now you can click the button and lock the component
@@ -206,6 +211,29 @@ C2.registerVueComponent('lockable-by-childs', {
 	}
 })
 
+/*
+	Usage:
+
+	registerVueComponent('my-lockable-component', {
+		template: `<div>
+			<lockable-by-parent/>
+			<span>Hello World</span>
+		</div>`,
+		mixins: [lockableComponentMixin]
+	})
+
+	C2.registerVueComponent('some-parent-component', {
+		template: `<div>
+			<my-lockable-component/>
+
+			<button v-on:click="lockComponent">lock</button>
+		</di>`
+		mixins: [lockableComponentMixin]
+	})
+
+	Now you can click the button and lock the component
+
+*/
 C2.registerVueComponent('lockable-by-parent', {
 	computed: {
 		parentComponentIsLocked (){
@@ -593,6 +621,7 @@ C2.registerVueComponent('page', {
 		<div class="page_head">
 			<h2>{{title}}</h2>
 		</div>
+
 		<div class="page_body" @scroll="onScroll">
 			<slot/>
 		</div>
@@ -602,7 +631,7 @@ C2.registerVueComponent('page', {
 			this.userHasScrolled = true
 		}
 	},
-	created: function (){
+	created: function(){
 		this.$parent.pages.push(this)
 	},
 	mounted: function (){
