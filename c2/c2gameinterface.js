@@ -22,6 +22,8 @@ module.exports = class C2GameInterface extends C2Interface {
 				if(this.isGameAvailable){
 					this.warn('Game is not available anymore')
 					this.isGameAvailable = false
+
+					this.c2GameHttpHandler.failAllPendingCommandResponses()
 				}
 			}
 		}, 100)

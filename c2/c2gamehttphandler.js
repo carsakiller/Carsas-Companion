@@ -32,7 +32,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 
 		setInterval(()=>{
 			this.checkPendingCommandResponsesForTimeout()
-		}, 100)
+		}, 50)
 	}
 
 	checkPendingCommandResponsesForTimeout(){
@@ -50,6 +50,16 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				break
 			}
 		}
+	}
+
+	failAllPendingCommandResponses(){
+		for(let i in this.pendingCommandResponses){
+			let pcr = this.pendingCommandResponses[i]
+			this.info('pending command (', pcr.commandname, ') failed because game unavailable')
+			pcr.reject('Timeout: Game not responding');
+		}
+
+		this.pendingCommandResponses = []
 	}
 
 	onGameHTTP(req, res){
