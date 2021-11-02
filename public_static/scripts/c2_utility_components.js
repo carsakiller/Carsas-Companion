@@ -271,7 +271,7 @@ C2.registerVueComponent('disabled-when-any-parent-locked', {
 	},
 	template: `<slot :is-disabled="isDisabled"/>`,
 	methods: {
-		checkIfAnyParentIsLocked (){//TODO: fix that we are unable to detect when component has unlocked again
+		checkIfAnyParentIsLocked (){
 			return searchForLockedParentRecursively(this, this.$parent)
 
 			function searchForLockedParentRecursively(me, node){
@@ -293,7 +293,6 @@ C2.registerVueComponent('disabled-when-any-parent-locked', {
 	watch: {
 		isDisabled (){
 			this.log('isDisabled changed to', this.isDisabled)
-			//this.$refs.slot
 		}
 	},
 	mounted (){
@@ -303,7 +302,7 @@ C2.registerVueComponent('disabled-when-any-parent-locked', {
 				if(newValue){
 					this.disable()
 				} else {
-					this.disable()
+					this.enable()
 				}
 				this.oldValue = newValue
 			}
