@@ -70,17 +70,29 @@ module.exports = class C2 extends C2LoggingUtility {
 			return this.handleWebClientMessage.apply(this, args)
 		})
 
+		this.c2WebInterface.on('new-client', (client)=>{
+			this.c2WebInterface.sendDataTo(client, 'game-connection', this.c2GameInterface.isGameAvailable)
+		})
+
 		this.c2GameInterface.on('message', (...args)=>{
 			return this.handleGameMessage.apply(this, args)
+		})
+
+		this.c2GameInterface.on('game-connected', ()=>{
+			this.c2WebInterface.sendDataTo('all', 'game-connection', true)
+		})
+
+		this.c2GameInterface.on('game-disconnected', ()=>{
+			this.c2WebInterface.sendDataTo('all', 'game-connection', false)
 		})
 	}
 
 	handleWebClientMessage(client, message){
-		this.info('handleWebClientMessage', client.token, message.type)
+		this.info('handleWebClientMessage', client, message.type)
 
 		switch(message.type){
 			case 'rtt': {
-				this.c2WebInterface.sendDataTo(client.token, 'rtt-response', message.data).then((res)=>{
+				this.c2WebInterface.sendDataTo(client, 'rtt-response', message.data).then((res)=>{
 					this.log('rtt-response success:', res)
 				}).catch((err)=>{
 					this.log('rtt-response unsuccessful:', err)

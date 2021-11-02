@@ -24,6 +24,8 @@ module.exports = class C2GameInterface extends C2Interface {
 					this.isGameAvailable = false
 
 					this.c2GameHttpHandler.failAllPendingCommandResponses()
+
+					this.dispatch('game-disconnected')
 				}
 			}
 		}, 100)
@@ -33,6 +35,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		app.use('/game-api', (req, res)=>{
 			if(!this.isGameAvailable){
 				this.info('Game is available again')
+				this.dispatch('game-connected')
 			}
 			this.isGameAvailable = true
 			this.lastGameMessage = Date.now()

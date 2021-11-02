@@ -158,7 +158,7 @@ class C2EventManager extends mixin_EventManager(C2BaseClass) {
 }
 
 
-class C2Handler extends mixin_LoggingUtility(C2BaseClass) {
+class C2Handler extends mixin_EventManager(mixin_LoggingUtility(C2BaseClass)) {
 
 	constructor(loglevel){
 		super(loglevel)

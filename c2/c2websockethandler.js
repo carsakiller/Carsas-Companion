@@ -57,11 +57,11 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		let client = {
 			id: this.clientIdCounter++,
 			ws: ws,
+			token: undefined,//TODO: set this token once the client logs in
 			req: req
 		}
 
 		this.clients.push(client)
-
 
 		ws.on('message', (msg)=>{
 			if(msg === '*RELOAD_PAGE?*'){
@@ -81,6 +81,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		ws.on('close', ()=>{this.handleClose(client)})
 
 		this.info('new client #' + client.id, '@', req.ip)
+
+		this.dispatch('new-client', client)
 	}
 
 	sendToClient(client, data){

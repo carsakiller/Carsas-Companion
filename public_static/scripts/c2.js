@@ -262,12 +262,12 @@ class C2 {
 				}
 			},
 			template: `<div class="c2">
-				<status-bar/>
 				<error-popup/>
 				<pages :initial-index="initialPage" @page-change="onPageChange">
 					<page v-for="(page, index) of pages" :title="page.title" :icon="page.iconClass">
 						<component :is="page.componentName"/>
 					</page>
+					<status-bar/>
 				</pages>
 			</div>`,
 			methods: {

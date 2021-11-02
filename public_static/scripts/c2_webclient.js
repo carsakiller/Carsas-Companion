@@ -12,10 +12,6 @@ class C2WebClient {
 
 		this.ws.on('open', ()=>{
 			this.log('is now open')
-			this.setStatus('Server Connected', 'success')
-			setTimeout(()=>{
-				this.setStatus(undefined, undefined)
-			}, 2000)
 
 			if(false){
 				setTimeout(()=>{
@@ -44,7 +40,7 @@ class C2WebClient {
 
 		this.ws.on('close', ()=>{
 			this.log('is now closed')
-			this.setStatus('Server Connection Lost', 'error')
+			this.setStatusError('Server Connection Lost')
 		})
 
 		this.ws.on('message', (message)=>{
@@ -58,6 +54,15 @@ class C2WebClient {
 				switch(message.type){
 					case 'heartbeat': {
 						//TODO
+						fulfill()
+					}; break;
+
+					case 'game-connection': {
+						if(message.data === true){
+							this.setStatusSuccess('Game connected', 3000)
+						} else {
+							this.setStatusError('Game disconnected')
+						}
 						fulfill()
 					}; break;
 
@@ -126,11 +131,34 @@ class C2WebClient {
 		})
 	}
 
-	setStatus(message, clazz){
+	setStatus(message, clazz, /* optional */hideAfterTime){
+		this.log('setStatus', message)
 		this.c2.store.dispatch('setStatus', {
 			message: message,
 			clazz: clazz
 		})
+
+		if(hideAfterTime){
+			setTimeout(()=>{
+				this.setStatus(undefined, undefined)
+			}, hideAfterTime)
+		}
+	}
+
+	setStatusSuccess(message, /* optional */hideAfterTime){
+		this.setStatus(message, 'success', hideAfterTime)
+	}
+
+	setStatusWarn(message, /* optional */hideAfterTime){
+		this.setStatus(message, 'warn', hideAfterTime)
+	}
+
+	setStatusError(message, /* optional */hideAfterTime){
+		this.setStatus(message, 'error', hideAfterTime)
+	}
+
+	clearStatus(){
+		this.setStatus(undefined, undefined)
 	}
 
 	error(...args){
