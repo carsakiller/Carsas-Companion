@@ -54,7 +54,6 @@ The method then sends that command to the game, if game responds with success, w
 * module activation: modules are controled via lua addon properties. The lua script transmits those properties to the web server.
 
 ## Browser
-* check if we should refactor the extendable components (base, body, trigger) into a single component by using the ability to declare multiple slots
 * preserve selected page, tab, scroll positions
 * Sandbox logging: so we can only show logs in the console for a specific component instance
 
@@ -75,7 +74,6 @@ The method then sends that command to the game, if game responds with success, w
 
 ## Modules
 * live module (map with players and vehicles)
-* gameserver management module (start/stop game, manage saves)
 * Statistics: how do we do the database? Is handling it in a simple object to RAM intensive    
 * Performance: show tps etc on the website
 
