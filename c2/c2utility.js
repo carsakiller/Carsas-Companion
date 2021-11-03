@@ -157,6 +157,11 @@ class C2EventManager extends mixin_EventManager(C2BaseClass) {
 	}
 }
 
+class C2EventManagerAndLoggingUtility extends mixin_EventManager(mixin_LoggingUtility(C2BaseClass)) {
+	constructor(){
+		super()
+	}
+}
 
 class C2Handler extends mixin_EventManager(mixin_LoggingUtility(C2BaseClass)) {
 
@@ -189,6 +194,8 @@ class C2Interface extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) 
 
 module.exports = {
 	C2LoggingUtility: C2LoggingUtility,
+	C2EventManager: C2EventManager,
+	C2EventManagerAndLoggingUtility: C2EventManagerAndLoggingUtility,
 	C2Handler: C2Handler,
 	C2Interface: C2Interface
 }

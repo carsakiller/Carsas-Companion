@@ -1,5 +1,6 @@
 const C2GameInterface = require('./c2gameinterface.js')
 const C2WebInterface = require('./c2webinterface.js')
+const C2GameServerManager = require('./c2GameServerManager.js')
 
 const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
 
@@ -12,6 +13,9 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		this.c2GameInterface = new C2GameInterface(loglevel, gameApp)
 		this.c2WebInterface = new C2WebInterface(loglevel, app)
+
+		// TODO: only do this when user wants to activate this module
+		this.c2GameServerManager = new C2GameServerManager(loglevel)
 
 		process.on('unhandledRejection', error => {
 		  this.error(error);

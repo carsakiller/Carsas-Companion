@@ -76,6 +76,7 @@ The method then sends that command to the game, if game responds with success, w
 * live module (map with players and vehicles)
 * gameserver management module (start/stop game, manage saves)
 * Statistics: how do we do the database? Is handling it in a simple object to RAM intensive    
+* Performance: show tps etc on the website
 
 ## Other
 * Discord link: use discord role memebers for gameaddon role members (synced)
