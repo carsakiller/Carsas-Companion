@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const { fork } = require('child_process');
 const { C2EventManagerAndLoggingUtility } = require('./c2utility.js')
 const ps = require('ps-node');
 const path = require('path')
@@ -12,13 +12,15 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 		this.pid = undefined // '12345'
 		this.type = undefined // 'x64' or 'x32'
 
-		this.pathToServerExecutable = "C:\\condenser\\server\\stormworks_dedicated_server"
+		this.executableDirectory = "C:\\condenser\\server\\stormworks_dedicated_server"
 		this.executableName32 = 'server.exe'
 		this.executableName64 = 'server64.exe'
 
 		this.autoRestartServer = false
 
+		this.spawnGameServer()
 
+		/*
 		this.isGameServerRunning((err, isRunning)=>{
 			if(!isRunning && this.autoRestartServer){
 				this.spawnGameServer()
@@ -28,43 +30,63 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 		setInterval(()=>{
 			this.checkIfGameServerIsRunning()
 		}, 1000 * 10)
+		*/
 	}
 
 	spawnGameServer(){
 		return new Promise((fulfill, reject)=>{
-			try {
-				this.childProcess = spawn('cmd.exe', {// TODO: we are not able to get stdout from the server using the cmd.exe, thats bad. Maybe we need to spawn a seperate node.js process that directly executes the server.exe (and then unref that nodejs subprocess so it can survive when the main process exits)
-					cwd: this.pathToServerExecutable,
-					windowsHide: false,
-					/*stdio: 'ignore',*/
-					detached: true
-				})
+			this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'), ['executableDirectory=' + this.executableDirectory, 'executableName=' + this.executableName64], {
+				detached: true
+			})
 
-				this.childProcess.on('spawn', ()=>{
-					this.info('Spawned child process', this.childProcess.pid)
+			this.childProcess.on('spawn', ()=>{
+				this.info('fork process spawned')
 
-					this.childProcess.stdin.write(path.join(this.pathToServerExecutable, this.executableName64) + '\r\n')
+				this.childProcess.unref()
+			})
 
-					this.childProcess.stdout.on('data', (data) => {
-						this.debug('Received chunk', data.toString());
-						this.dispatch('stdout', data.toString())
-					});
+			this.childProcess.on('close', ()=>{
+				this.info('fork process closed')
+			})
 
-					this.childProcess.unref()
-				})
+			this.childProcess.on('exit', ()=>{
+				this.info('fork process exited')
+			})
 
-				this.childProcess.on('error', (err)=>{
-					this.error('child process error', err)
-				})
+			this.childProcess.on('error', (err)=>{
+				this.err('fork process error', err)
+			})
 
-				this.childProcess.on('close', ()=>{
-					this.info('child process has ended')
-				})
+			this.childProcess.on('message', (message)=>{
+				this.debug('got message from fork process', message)
 
-			} catch (ex){
-				this.error('error spawning child process')
-				reject(ex)
-			}
+				switch(message.type){
+					case 'stdout': {
+
+						let str = message.data.toString()
+
+						//fix that the text will not arrive in one nice piece, instead it will arrive as multiple copies in random positions
+						let start = str.indexOf('Server Version')
+						let end = str.indexOf('Server Version', start + 1)
+
+						if(start < 0 || end < 0){
+							return
+						}
+
+						let fixed = str.substring(start, end)
+
+						if(fixed.trim() === ''){
+
+						}
+
+						this.dispatch('stdout', fixed)
+					}; break;
+
+					default: {
+						this.error('fork process sent unsupported message type', message.type)
+					}
+				}
+			})
 		})
 	}
 
@@ -111,12 +133,12 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 			cool in windows: if you double click the executable, it also includes the full path name.
 			So only when someone starts the server like via cmd.exe `server64.exe` we cannot be sure.
 		*/
-		this.isProcessRunning(this.executableName32, path.join(this.pathToServerExecutable, this.executableName32), (err, isRunning, task)=>{
+		this.isProcessRunning(this.executableName32, path.join(this.executableDirectory, this.executableName32), (err, isRunning, task)=>{
 			if(!err && isRunning){
 				x32 = task.pid
 			}
 
-			this.isProcessRunning(this.executableName64, path.join(this.pathToServerExecutable, this.executableName64), (err, isRunning, task)=>{
+			this.isProcessRunning(this.executableName64, path.join(this.executableDirectory, this.executableName64), (err, isRunning, task)=>{
 				if(!err && isRunning){
 					x64 = task.pid
 				}

@@ -106,9 +106,7 @@ let mixin_LoggingUtility = Base => class extends Base {
 		console.log.apply(null, [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
-			+ this.colorizeConsole('}-', 'FgBlue'),
-
-			this
+			+ this.colorizeConsole('}-', 'FgBlue')
 		].concat(args))
 	}
 }

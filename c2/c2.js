@@ -25,7 +25,7 @@ module.exports = class C2 extends C2LoggingUtility {
 			})
 		})
 
-		if(true){
+		if(false){
 			setInterval(()=>{
 				this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', 'test ' + new Date().toLocaleString())
 			}, 1000)
