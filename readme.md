@@ -51,6 +51,7 @@ The method then sends that command to the game, if game responds with success, w
 
 ## All
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
+* module activation: modules are controled via lua addon properties. The lua script transmits those properties to the web server.
 
 ## Browser
 * check if we should refactor the extendable components (base, body, trigger) into a single component by using the ability to declare multiple slots

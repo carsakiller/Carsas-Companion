@@ -1,0 +1,11 @@
+.gameserver_management {
+	padding: 1em;
+
+	.controls {
+
+		button:not(:last-child) {
+			margin-right: 1em;
+		}
+	}
+
+}

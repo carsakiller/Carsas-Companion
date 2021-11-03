@@ -1,6 +1,18 @@
-class C2 {
+class C2 extends C2LoggingUtility {
 
 	constructor(el){
+		super()
+
+		this.register = new C2Register(2)
+
+		this.register.createNewRegister('VueComponent')
+
+		this.register.createNewRegister('Page')
+
+		this.register.createNewRegister('MessageHandler')
+
+		this.register.createNewRegister('Storable')
+
 		$(window).on('load', ()=>{
 			this.setup(el)
 		})
@@ -9,7 +21,7 @@ class C2 {
 	setup(el){
 		console.log('[C2] setup', el)
 
-		this.store = Vuex.createStore({
+		let storeConfig = {
 			state: {
 				localStorage: {},
 
@@ -226,7 +238,45 @@ class C2 {
 					return state.players
 				}
 			}
-		})
+		}
+
+		for(let storableName of this.register.getRegister('Storable')){
+			if(!storeConfig.state){
+				storeConfig.state = {}
+			}
+
+			if(storeConfig.state[storableName]){
+				this.warn('storable is overwriting existing store state', storableName)
+			}
+
+			storeConfig.state[storableName] = undefined
+
+			if(!storeConfig.mutations){
+				storeConfig.mutations = {}
+			}
+
+			storeConfig.mutations['set_' + storableName] = function (state, data){
+				state[storableName] = data
+			}
+
+			if(!storeConfig.actions){
+				storeConfig.actions = {}
+			}
+
+			storeConfig.actions['set_' + storableName] = function ({ commit }, data){
+				commit('set_' + storableName, data)
+			}
+
+			if(!storeConfig.getters){
+				storeConfig.getters = {}
+			}
+
+			storeConfig.getters[storableName] = function (state){
+				return state[storableName]
+			}
+		}
+
+		this.store = Vuex.createStore(storeConfig)
 
 		$.get({
 			url: '/static/version.txt',
@@ -264,7 +314,7 @@ class C2 {
 			template: `<div class="c2">
 				<error-popup/>
 				<pages :initial-index="initialPage" @page-change="onPageChange">
-					<page v-for="(page, index) of pages" :title="page.title" :icon="page.iconClass">
+					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon" :keep-alife="false">
 						<component :is="page.componentName"/>
 					</page>
 					<status-bar/>
@@ -272,7 +322,7 @@ class C2 {
 			</div>`,
 			methods: {
 				onPageChange (index){
-					this.log('onPageChange', index)
+					this.debug('onPageChange', index)
 					localStorage.setItem('lastPageIndex', index)
 				}
 			},
@@ -281,12 +331,12 @@ class C2 {
 
 		this.app.use(this.store)
 
-		for(let name of Object.keys(C2.registeredComponents)){
-			this.registerComponent(name, C2.registeredComponents[name])
+		for(let entry of this.register.getRegister('VueComponent')){
+			this.registerComponent(entry.name, entry.options)
 		}
 
-		for(let name of Object.keys(C2.registeredPages)){
-			this.registerPage(C2.registeredPages[name])
+		for(let entry of this.register.getRegister('Page')){
+			this.registerPage(entry)
 		}
 
 		this.app.config.errorHandler = (...args)=>{this.handleVueError.apply(this, args)}
@@ -295,6 +345,52 @@ class C2 {
 		this.vm = this.app.mount(el)
 
 		this.webclient = new C2WebClient(this)
+
+		this.webclient.on('connected', ()=>{
+			this.setStatusSuccess('Server Connected')
+		})
+
+		this.webclient.on('disconnected', ()=>{
+			this.setStatusError('Server Connection Lost')
+		})
+
+		this.messageHandlers = {}
+		this.webclient.on('message', (...args)=>{return this.handleMessage.apply(this, args)})
+
+		this.registerMessageHandler('heartbeat', (data)=>{
+			//TODO: maybe lock the UI? or at least parts of the UI that interact with the game
+		})
+
+		this.registerMessageHandler('game-connection', (data)=>{
+			if(data === true){
+				this.setStatusSuccess('Game connected', 3000)
+			} else {
+				this.setStatusError('Game disconnected')
+			}
+		})
+
+		this.registerMessageHandler('rtt-response', (data)=>{
+			let rtt = new Date().getTime() - data
+			this.log('RoundTripTime:', rtt, 'ms')
+			return rtt + 'ms'
+		})
+
+		this.registerMessageHandler('test-timeout', (data)=>{
+			return new Promise(()=>{
+				//ignore so it runs into a timeout
+			})
+		})
+
+		this.registerMessageHandler('sync-players', (data)=>{
+			return new Promise((fulfill, reject)=>{
+				this.c2.store.dispatch('setPlayers', data)
+				fulfill()
+			})
+		})
+
+		for(let entry of this.register.getRegister('MessageHandler')){
+			this.registerMessageHandler(entry.messageType, entry.callback)
+		}
 
 		setTimeout(()=>{
 			$.get('/static/commit.txt', (data)=>{
@@ -311,6 +407,69 @@ class C2 {
 		})
 	}
 
+	setStatus(message, clazz, /* optional */hideAfterTime){
+		this.log('setStatus', message)
+		this.store.dispatch('setStatus', {
+			message: message,
+			clazz: clazz
+		})
+
+		if(hideAfterTime){
+			setTimeout(()=>{
+				this.setStatus(undefined, undefined)
+			}, hideAfterTime)
+		}
+	}
+
+	setStatusSuccess(message, /* optional */hideAfterTime){
+		this.setStatus(message, 'success', hideAfterTime)
+	}
+
+	setStatusWarn(message, /* optional */hideAfterTime){
+		this.setStatus(message, 'warn', hideAfterTime)
+	}
+
+	setStatusError(message, /* optional */hideAfterTime){
+		this.setStatus(message, 'error', hideAfterTime)
+	}
+
+	clearStatus(){
+		this.setStatus(undefined, undefined)
+	}
+
+	handleMessage(message){
+
+		if(message.type === 'heartbeat'){
+			this.log('received message', message)
+		} else {
+			this.info('received message', message)
+		}
+
+		if(this.messageHandlers[message.type]){
+			try {
+				let promiseOrResult = this.messageHandlers[message.type](message.data)
+
+				if(promiseOrResult instanceof Promise){
+					return promiseOrResult
+				} else {
+					return new Promise((fulfill, reject)=>{
+						fulfill(promiseOrResult)
+					})
+				}
+			} catch (ex){
+				this.error(ex)
+				return new Promise((fulfill, reject)=>{
+					reject('Error check client logs')
+				})
+			}
+		} else {
+			return new Promise((fulfill, reject)=>{
+				reject('unsupported request type: ' + message.type)
+			})
+		}
+	}
+
+
 	handleVueError(err, vm, info){
 		console.error('[C2]', err, vm, info)
 		this.showError('' + err + '\n\n' + info)
@@ -326,6 +485,16 @@ class C2 {
 	}
 
 	registerComponent (name, options){
+		if(!name){
+			this.error('name is undefined')
+			return
+		}
+
+		if(!options){
+			this.error('options is undefined (name: ', name, ')')
+			return
+		}
+
 		// set name if not happened (for logging)
 		if(!options.name){
 			options.name = name
@@ -338,7 +507,30 @@ class C2 {
 	}
 
 	registerPage(page){
+		if(!page){
+			this.error('page is undefined')
+			return
+		}
 		this.store.dispatch('addPage', page)
+	}
+
+	/*
+		@callback callback(messageData)
+		can return a promise
+		if it does not, we assume it has executed successful and we will fulfill() with whatever callback() returned
+	*/
+	registerMessageHandler(messageType, callback){
+		if(this.messageHandlers[messageType]){
+			this.error('Cannot overwrite existing message handler: ' + messageType)
+			return
+		}
+
+		if(typeof callback !== 'function'){
+			this.error('callback must be a function: ' + messageType)
+			return
+		}
+
+		this.messageHandlers[messageType] = callback
 	}
 
 	loadLocalStorage(){
@@ -368,24 +560,58 @@ class C2 {
 	}
 }
 
-C2.registeredComponents = {}
-
-C2.registerVueComponent = function (name, options){
-	C2.registeredComponents[name] = options
-}
-
-C2.registeredPages = {}
-
-C2.registerPage = function (title, iconClass, componentName){
-	C2.registeredPages[title] = {
-		title: title,
-		componentName: componentName,
-		iconClass: iconClass
-	}
-}
-
 C2.uuid = function (){
 	return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
 		(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
 	);
+}
+
+
+/*
+	you can register things and later fetch them
+*/
+class C2Register extends C2LoggingUtility {
+	constructor(loglevel){
+		super(loglevel)
+
+		this.registers = {}
+	}
+
+	createNewRegister(registerName){
+		if(typeof registerName !== 'string'){
+			throw new Error('missing registerName')
+		}
+
+		this.info('createNewRegister', registerName)
+
+		this.registers[registerName] = []
+	}
+
+	getRegister(registerName){
+		if(typeof registerName !== 'string'){
+			throw new Error('missing registerName')
+		}
+
+		return this.registers[registerName]
+	}
+
+	register(registerName, data){
+		if(typeof registerName !== 'string'){
+			throw new Error('missing registerName')
+		}
+
+		if(data === undefined){
+			throw new Error('data is undefined')
+		}
+
+		if(!this.registers[registerName]){
+			this.error('register is not defined:', registerName)
+			return
+		}
+
+		this.info('register', registerName)
+		this.log(data)
+
+		this.registers[registerName].push(data)
+	}
 }

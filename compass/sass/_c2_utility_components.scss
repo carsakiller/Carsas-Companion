@@ -364,10 +364,9 @@
 		padding: 2em 3em;
 		color: $text-color;
 		text-align: center;
-		font-size: 1.3em;
 
 		.title {
-			font-size: 2.5em;
+			font-size: 1.2em;
 		}
 
 		.message {
@@ -471,5 +470,19 @@
 		background: $disabled;
 		border-radius: 0.15em;
 		z-index: 1;
+	}
+}
+
+.module_enableable {
+
+	.module_not_enabled {
+		padding: 0.5em 1em;
+		background: shade($disabled, 30%);
+
+		.name {
+			font-size: 1.3em;
+			font-weight: 600;
+			font-style: italic;
+		}
 	}
 }

@@ -33,7 +33,7 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 	spawnGameServer(){
 		return new Promise((fulfill, reject)=>{
 			try {
-				this.childProcess = spawn('cmd.exe', {
+				this.childProcess = spawn('cmd.exe', {// TODO: we are not able to get stdout from the server using the cmd.exe, thats bad. Maybe we need to spawn a seperate node.js process that directly executes the server.exe (and then unref that nodejs subprocess so it can survive when the main process exits)
 					cwd: this.pathToServerExecutable,
 					windowsHide: false,
 					/*stdio: 'ignore',*/
@@ -45,16 +45,17 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 
 					this.childProcess.stdin.write(path.join(this.pathToServerExecutable, this.executableName64) + '\r\n')
 
+					this.childProcess.stdout.on('data', (data) => {
+						this.debug('Received chunk', data.toString());
+						this.dispatch('stdout', data.toString())
+					});
+
 					this.childProcess.unref()
 				})
 
 				this.childProcess.on('error', (err)=>{
 					this.error('child process error', err)
 				})
-
-				this.childProcess.stdout.on('data', (data) => {
-					this.log('Received chunk', data.toString());
-				});
 
 				this.childProcess.on('close', ()=>{
 					this.info('child process has ended')

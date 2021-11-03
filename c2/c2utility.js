@@ -1,7 +1,7 @@
 let mixin_LoggingUtility = Base => class extends Base {
 
 	/*
-		loglevels: 1 = error, 2 = warn, 3 = info, 4 = log
+		loglevels: 1 = error, 2 = warn, 3 = info, 4 = log, 5 = debug
 	*/
 
 	constructor(loglevel){
@@ -66,7 +66,7 @@ let mixin_LoggingUtility = Base => class extends Base {
 		if(this.loglevel < 2){
 			return
 		}
-		console.error.apply(null, [
+		console.warn.apply(null, [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
@@ -79,7 +79,7 @@ let mixin_LoggingUtility = Base => class extends Base {
 		if(this.loglevel < 3){
 			return
 		}
-		console.error.apply(null, [
+		console.info.apply(null, [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
@@ -92,10 +92,23 @@ let mixin_LoggingUtility = Base => class extends Base {
 		if(this.loglevel < 4){
 			return
 		}
-		console.error.apply(null, [
+		console.log.apply(null, [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
+		].concat(args))
+	}
+
+	debug(...args){
+		if(this.loglevel < 4){
+			return
+		}
+		console.log.apply(null, [
+			this.colorizeConsole('-{', 'FgBlue')
+			+ this.constructor.name
+			+ this.colorizeConsole('}-', 'FgBlue'),
+
+			this
 		].concat(args))
 	}
 }
@@ -123,6 +136,13 @@ let mixin_EventManager = Base => class extends Base {
 		}
 	}
 
+	/*
+		the first registered event listener can return something and this will be forwarded to the caller of dispatch()
+
+		e.g.
+
+		let res = this.dispatch('example')
+	*/
 	dispatch(eventname, ...data){
 		let ret
 		if(this.eventListeners[eventname]){
@@ -180,9 +200,6 @@ class C2Handler extends mixin_EventManager(mixin_LoggingUtility(C2BaseClass)) {
 
 }
 
-let mixin_C2LoggingUtility = Base => class extends Base{
-
-}
 
 class C2Interface extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
 

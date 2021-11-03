@@ -44,9 +44,29 @@
 
 */
 
-class C2WebSock {
+class C2WebSock extends C2EventManagerAndLoggingUtility {
+
+	/* events:
+		open
+		close
+		error
+		message (only the first registered callback can respond to the message!)
+
+		Responding to a server message:
+
+		webSock.on('message', (data)=>{
+			return new Promise((fulfill, reject)=>{
+				//do Something
+				fulfill('result')
+			})
+		})
+
+		The promise is optional. If you don't return a promise, the server will be sent a sucess response once callback() finished execution
+	*/
 
 	constructor(url, token){
+		super(4)
+
 		console.log('new WebSock', url)
 
 		this.url = url
@@ -87,7 +107,7 @@ class C2WebSock {
 	}
 
 	handleWesocketOpen(evt){
-		this._dispatch('open', evt)
+		this.dispatch('open', evt)
 	}
 
 	handleWesocketMessage(evt){
@@ -136,7 +156,7 @@ class C2WebSock {
 
 				try {
 					let parsedInternalData = JSON.parse(parsed.data)
-					promise = this._dispatch('message', parsedInternalData)
+					promise = this.dispatch('message', parsedInternalData)
 				} catch (ex){
 					answer(false, ex.toString())
 					return
@@ -171,7 +191,7 @@ class C2WebSock {
 	}
 
 	handleWesocketClose(evt){
-		this._dispatch('close', evt)
+		this.dispatch('close', evt)
 
 		this.on('open', ()=>{
 			this.websocket.send('*RELOAD_PAGE?*')
@@ -184,50 +204,7 @@ class C2WebSock {
 
 	handleWebsocketError(evt){
 		this.error(evt)
-		this._dispatch('error', evt)
-	}
-
-	/* events:
-		open
-		close
-		error
-		message (only the first registered callback can respond to the message!)
-
-		Responding to a server message:
-
-		webSock.on('message', (data)=>{
-			return new Promise((fulfill, reject)=>{
-				//do Something
-				fulfill('result')
-			})
-		})
-
-		The promise is optional. If you don't return a promise, the server will be sent a sucess response once callback() finished execution
-	*/
-	on(eventname, callback){
-		if(! this.listeners[eventname]){
-			this.listeners[eventname] = []
-		}
-
-		if(typeof eventname !== 'string'){
-			throw new Error('eventname is not a string')
-		}
-
-		if(typeof callback === 'function'){
-			this.listeners[eventname].push(callback)
-		} else {
-			throw new Error('callback is not a function')
-		}
-	}
-
-	_dispatch(eventname, data){
-		let ret
-		if(this.listeners[eventname]){
-			for(let l of this.listeners[eventname]){
-				ret = l(data)
-			}
-		}
-		return ret
+		this.dispatch('error', evt)
 	}
 
 	/* promise will be fulfilled when the server returns success=true, and rejected if server returns success=false or the pending message runs into connection close */
@@ -259,34 +236,6 @@ class C2WebSock {
 
 	close(){
 		this.websocket.close()
-	}
-	
-	error(...args){
-		if( this.LOGLEVEL < 1){
-			return
-		}
-		console.error.apply(null, ['WebSock Error:'].concat(args))
-	}
-
-	warn(...args){
-		if( this.LOGLEVEL < 2){
-			return
-		}
-		console.warn.apply(null, ['WebSock Warning:'].concat(args))
-	}
-
-	info(...args){
-		if( this.LOGLEVEL < 3){
-			return
-		}
-		console.info.apply(null, ['WebSock Info:'].concat(args))
-	}
-
-	log(...args){
-		if( this.LOGLEVEL < 4){
-			return
-		}
-		console.log.apply(null, ['WebSock:'].concat(args))
 	}
 
 	isOpen(){

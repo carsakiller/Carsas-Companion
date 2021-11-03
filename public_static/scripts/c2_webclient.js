@@ -1,12 +1,17 @@
-class C2WebClient {
+class C2WebClient extends C2EventManagerAndLoggingUtility {
+
+	/*
+		events:
+
+		connected
+		disconnected
+		message
+	*/
 
 	constructor(c2){
-		this.c2 = c2
+		super(4)
 
-		/*
-			loglevels: 1 = error, 2 = warn, 3 = info, 4 = log
-		*/
-		this.LOGLEVEL = 4
+		this.c2 = c2
 
 		this.ws = new C2WebSock('ws://' + window.location.host + '/ws', 'XYZ')
 
@@ -36,65 +41,17 @@ class C2WebClient {
 					})
 				}, 10000)
 			}
+
+			this.dispatch('connected')
 		})
 
 		this.ws.on('close', ()=>{
 			this.log('is now closed')
-			this.setStatusError('Server Connection Lost')
+			this.dispatch('disconnected')
 		})
 
 		this.ws.on('message', (message)=>{
-			return new Promise((fulfill, reject)=>{
-				if(message.type === 'heartbeat'){
-					this.log('received message', message)
-				} else {
-					this.info('received message', message)
-				}
-
-				switch(message.type){
-					case 'heartbeat': {
-						//TODO
-						fulfill()
-					}; break;
-
-					case 'game-connection': {
-						if(message.data === true){
-							this.setStatusSuccess('Game connected', 3000)
-						} else {
-							this.setStatusError('Game disconnected')
-						}
-						fulfill()
-					}; break;
-
-					case 'rtt-response': {
-						let rtt = new Date().getTime() - message.data
-						this.log('RoundTripTime:', rtt, 'ms')
-						fulfill(rtt + 'ms')
-					}; break;
-
-					case 'test-timeout': {
-						//ignore so it runs into a timeout
-					}; break;
-
-					case 'sync-players': {
-						this.c2.store.dispatch('setPlayers', message.data)
-						fulfill()
-					}; break;
-
-					default: {
-
-						if(message.type.indexOf('sync-') === 0){
-							let dataname = message.type.substring('sync-'.length)
-
-							this.log('got some sync message',dataname)
-
-							//TODO
-						} else {
-							reject('unsupported request type: ' + message.type)
-						}
-					}
-				}
-			})
+			return this.dispatch('message', message)
 		})
 	}
 
@@ -129,63 +86,5 @@ class C2WebClient {
 				reject(err)
 			})
 		})
-	}
-
-	setStatus(message, clazz, /* optional */hideAfterTime){
-		this.log('setStatus', message)
-		this.c2.store.dispatch('setStatus', {
-			message: message,
-			clazz: clazz
-		})
-
-		if(hideAfterTime){
-			setTimeout(()=>{
-				this.setStatus(undefined, undefined)
-			}, hideAfterTime)
-		}
-	}
-
-	setStatusSuccess(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'success', hideAfterTime)
-	}
-
-	setStatusWarn(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'warn', hideAfterTime)
-	}
-
-	setStatusError(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'error', hideAfterTime)
-	}
-
-	clearStatus(){
-		this.setStatus(undefined, undefined)
-	}
-
-	error(...args){
-		if( this.LOGLEVEL < 1){
-			return
-		}
-		console.error.apply(null, ['C2WebClient Error:'].concat(args))
-	}
-
-	warn(...args){
-		if( this.LOGLEVEL < 2){
-			return
-		}
-		console.warn.apply(null, ['C2WebClient Warn:'].concat(args))
-	}
-
-	info(...args){
-		if( this.LOGLEVEL < 3){
-			return
-		}
-		console.info.apply(null, ['C2WebClient:'].concat(args))
-	}
-
-	log(...args){
-		if( this.LOGLEVEL < 4){
-			return
-		}
-		console.log.apply(null, ['C2WebClient:'].concat(args))
 	}
 }

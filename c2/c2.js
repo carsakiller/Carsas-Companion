@@ -17,6 +17,20 @@ module.exports = class C2 extends C2LoggingUtility {
 		// TODO: only do this when user wants to activate this module
 		this.c2GameServerManager = new C2GameServerManager(loglevel)
 
+		this.c2GameServerManager.on('stdout', (data)=>{
+			this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', data).then((res)=>{
+				this.info('gameserver-stdout: success', res)
+			}).catch((err)=>{
+				this.info('gameserver-stdout: unsuccessful', err)
+			})
+		})
+
+		if(true){
+			setInterval(()=>{
+				this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', 'test ' + new Date().toLocaleString())
+			}, 1000)
+		}
+
 		process.on('unhandledRejection', error => {
 		  this.error(error);
 		});
