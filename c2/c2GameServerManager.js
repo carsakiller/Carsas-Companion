@@ -18,9 +18,6 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 
 		this.autoRestartServer = false
 
-		this.spawnGameServer()
-
-		/*
 		this.isGameServerRunning((err, isRunning)=>{
 			if(!isRunning && this.autoRestartServer){
 				this.spawnGameServer()
@@ -30,14 +27,16 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 		setInterval(()=>{
 			this.checkIfGameServerIsRunning()
 		}, 1000 * 10)
-		*/
 	}
 
 	spawnGameServer(){
 		return new Promise((fulfill, reject)=>{
-			this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'), ['executableDirectory=' + this.executableDirectory, 'executableName=' + this.executableName64], {
-				detached: true
-			})
+			this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'),
+				['executableDirectory=' + this.executableDirectory, 'executableName=' + this.executableName64],
+				{
+					detached: true
+				}
+			)
 
 			this.childProcess.on('spawn', ()=>{
 				this.info('fork process spawned')
@@ -96,12 +95,10 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 
 			if(this.isRunning && !isRunning){
 				this.info('Game Server not running anymore')
-				this.dispatch('game-server-stopped')
 			}
 
 			if(!this.isRunning && isRunning){
 				this.info('Game Server running again')
-				this.dispatch('game-server-started')
 			}
 
 			if(this.isRunning){
@@ -109,6 +106,8 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 			} else {
 				this.log('checkIfGameServerIsRunning: no')
 			}
+
+			this.dispatch('gameserver-state', isRunning)
 
 			this.isRunning = isRunning
 			this.pid = pid

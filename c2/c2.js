@@ -18,12 +18,13 @@ module.exports = class C2 extends C2LoggingUtility {
 		this.c2GameServerManager = new C2GameServerManager(loglevel)
 
 		this.c2GameServerManager.on('stdout', (data)=>{
-			this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', data).then((res)=>{
-				this.info('gameserver-stdout: success', res)
-			}).catch((err)=>{
-				this.info('gameserver-stdout: unsuccessful', err)
-			})
+			this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', data)
 		})
+
+		this.c2GameServerManager.on('gameserver-state', (data)=>{
+			this.c2WebInterface.sendDataTo('all', 'gameserver-state', data)
+		})
+
 
 		if(false){
 			setInterval(()=>{
@@ -31,8 +32,9 @@ module.exports = class C2 extends C2LoggingUtility {
 			}, 1000)
 		}
 
+		// catch any unhandledRejection
 		process.on('unhandledRejection', error => {
-		  this.error(error);
+		  this.error('unhandledRejection', error);
 		});
 
 		// TESTS
@@ -97,11 +99,19 @@ module.exports = class C2 extends C2LoggingUtility {
 		})
 
 		this.c2GameInterface.on('game-connected', ()=>{
-			this.c2WebInterface.sendDataTo('all', 'game-connection', true)
+			this.c2WebInterface.sendDataTo('all', 'game-connection', true).then(()=>{
+
+			}).catch((err)=>{
+
+			})
 		})
 
 		this.c2GameInterface.on('game-disconnected', ()=>{
-			this.c2WebInterface.sendDataTo('all', 'game-connection', false)
+			this.c2WebInterface.sendDataTo('all', 'game-connection', false).then(()=>{
+
+			}).catch((err)=>{
+
+			})
 		})
 	}
 

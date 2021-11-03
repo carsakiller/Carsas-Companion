@@ -118,8 +118,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			}
 
 			if(typeof parsed.serverId === 'number'){
-				this.info('received response to server message', parsed.serverId)
-				this.log(parsed.data)
+				this.log('received response to server message', parsed.serverId)
+				this.debug(parsed.data)
 
 				for(let i in this.pendingMessageResponses){
 					let pm = this.pendingMessageResponses[i]
@@ -137,8 +137,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					}
 				}
 			} else if (typeof parsed.clientId === 'number'){
-				this.info('received new message from webclient #' + client.id, parsed.clientId)
-				this.log(parsed.data)
+				this.log('received new message from webclient #' + client.id, parsed.clientId)
+				this.debug(parsed.data)
 
 				if(typeof this.messageCallback !== 'function'){
 					this.warn('received a message but no messageCallback was set')
@@ -169,8 +169,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 				}
 
 				function answer(success, result){
-					that.info('responding to message from client', parsed.clientId)
-					that.log(success, result)
+					that.log('responding to message from client', parsed.clientId)
+					that.debug(success, result)
 					client.ws.send(JSON.stringify({
 						clientId: parsed.clientId,
 						success: success,
@@ -217,8 +217,8 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 				timeSent: new Date().getTime()
 			})
 
-			this.info(' ->', 'sending data to', client.id)
-			this.log(data)
+			this.log(' ->', 'sending data to', client.id)
+			this.debug(data)
 
 			client.ws.send(JSON.stringify({
 				serverId: myMessageId,

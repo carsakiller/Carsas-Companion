@@ -7,14 +7,9 @@ c2.register.register('Page', {
 c2.register.register('VueComponent', {
 	name: 'gameserver-management',
 	options: {
-		data: function (){
-			return {
-				isGameServerRunningFake: false
-			}
-		},
 		computed: {
 			isGameServerRunning (){
-				return this.isGameServerRunningFake
+				return this.$store.getters['gameserver-state']
 			}
 		},
 		template: `<div class="gameserver_management">
@@ -26,8 +21,6 @@ c2.register.register('VueComponent', {
 				</division>
 
 				<division>
-					<button @click="isGameServerRunningFake = !isGameServerRunningFake">Toggle running</button>
-					<spacer-horizontal/>
 					<gameserver-status/>
 				</division>
 			</module-enableable>
@@ -68,4 +61,13 @@ c2.register.register('MessageHandler', {
 	}
 })
 
+c2.register.register('MessageHandler', {
+	messageType: 'gameserver-state',
+	callback: (data)=>{
+		c2.store.dispatch('set_gameserver-state', data)
+	}
+})
+
 c2.register.register('Storable', 'gameserver-stdout')
+
+c2.register.register('Storable', 'gameserver-state')

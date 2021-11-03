@@ -33,7 +33,7 @@ class C2GameServerProcess extends C2LoggingUtility {
 		this.childProcess.on('spawn', ()=>{
 			this.childProcess.stdout.on('data', (data) => {
 				let str = data.toString()
-				this.debug('Received chunk "', str, '"');
+				this.debug('Received chunk ', str);
 				this.sendToParentProcess('stdout', str)
 			});
 		})

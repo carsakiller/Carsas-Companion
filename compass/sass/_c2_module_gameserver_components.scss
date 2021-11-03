@@ -8,4 +8,14 @@
 		}
 	}
 
+	.gameserver_status {
+
+		textarea {
+			width: 100%;
+			height: 24em;
+			min-height: 5em;
+			font-size: 0.6em;
+			resize: vertical;
+		}
+	}
 }
