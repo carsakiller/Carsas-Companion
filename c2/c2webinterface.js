@@ -1,5 +1,5 @@
-const C2WebSocketHandler = require('./c2websockethandler.js')
-const C2Interface = require('./c2utility.js').C2Interface
+const C2WebSocketHandler = require('./C2WebSocketHandler.js')
+const C2Interface = require('./utility.js').C2Interface
 
 module.exports = class C2WebInterface extends C2Interface {
 

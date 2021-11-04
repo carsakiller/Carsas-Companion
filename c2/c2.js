@@ -1,10 +1,12 @@
-const C2GameInterface = require('./c2gameinterface.js')
-const C2WebInterface = require('./c2webinterface.js')
-const C2Module_Core = require('./c2module_core.js')
-const C2Module_Test = require('./c2module_test.js')
-const C2Module_Gameserver = require('./c2module_gameserver.js')
+const C2GameInterface = require('./C2GameInterface.js')
+const C2WebInterface = require('./C2WebInterface.js')
+const C2Module_Core = require('./C2Module_Core.js')
+const C2Module_Test = require('./C2Module_Test.js')
+const C2Module_Gameserver = require('./C2Module_Gameserver.js')
 
-const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
+const C2LoggingUtility = require('./utility.js').C2LoggingUtility
+
+const gameApp = require('./C2GameWebServer.js')
 
 module.exports = class C2 extends C2LoggingUtility {
 
@@ -13,8 +15,6 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		this.gameMessageHandlers = {}
 		this.webClientMessageHandlers = {}
-
-		let gameApp = require('./c2GameWebServer.js')
 
 		this.c2GameInterface = new C2GameInterface(loglevel, gameApp)
 		this.c2WebInterface = new C2WebInterface(loglevel, app)

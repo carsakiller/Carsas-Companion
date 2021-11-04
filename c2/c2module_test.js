@@ -1,4 +1,4 @@
-const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
+const C2LoggingUtility = require('./utility.js').C2LoggingUtility
 
 module.exports = class C2Module_Test extends C2LoggingUtility {
 	

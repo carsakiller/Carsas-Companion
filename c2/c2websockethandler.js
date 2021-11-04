@@ -1,4 +1,4 @@
-const C2Handler = require('./c2utility.js').C2Handler
+const C2Handler = require('./utility.js').C2Handler
 
 module.exports = class C2WebSocketHandler extends C2Handler {
 

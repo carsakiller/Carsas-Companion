@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const path = require('path');
 
-const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
+const C2LoggingUtility = require('./utility.js').C2LoggingUtility
 
 class C2GameServerProcess extends C2LoggingUtility {
 	
