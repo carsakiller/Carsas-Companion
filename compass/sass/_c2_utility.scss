@@ -390,12 +390,9 @@
 	color: $text-color;
 	position: relative;
 	transition: all 0.2s ease 0s;
-
-	&.serious {
-		font-family: $font-secondary;
-		text-transform: uppercase;
-		letter-spacing: 0.15em;
-	}
+	font-family: $font-secondary;
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
 
 	&.small_button {
 

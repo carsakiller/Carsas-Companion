@@ -394,7 +394,7 @@ class C2Module_Core extends C2LoggingUtility {
 						</extendable-trigger>
 
 						<div class="buttons">
-							<confirm-button @click="remove" :serious="true">Remove</confirm-button>
+							<confirm-button @click="remove">Remove</confirm-button>
 						</div>
 					</div>
 

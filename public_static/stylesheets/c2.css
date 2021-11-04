@@ -2309,50 +2309,47 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   position: relative;
   transition: all 0.2s ease 0s;
-}
-/* line 394, ../../compass/sass/_c2_utility.scss */
-.confirm_button.serious {
   font-family: "Poppins";
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
-/* line 406, ../../compass/sass/_c2_utility.scss */
+/* line 403, ../../compass/sass/_c2_utility.scss */
 .confirm_button.small_button.hovering.confirmed:before {
   opacity: 0;
 }
-/* line 411, ../../compass/sass/_c2_utility.scss */
+/* line 408, ../../compass/sass/_c2_utility.scss */
 .confirm_button.small_button.hovering:not(.confirmed) {
   color: transparent;
 }
-/* line 414, ../../compass/sass/_c2_utility.scss */
+/* line 411, ../../compass/sass/_c2_utility.scss */
 .confirm_button.small_button.hovering:not(.confirmed):before {
   color: #f3f3f3;
 }
-/* line 423, ../../compass/sass/_c2_utility.scss */
+/* line 420, ../../compass/sass/_c2_utility.scss */
 .confirm_button:not(.small_button).hovering {
   padding-left: 2.2em;
 }
-/* line 430, ../../compass/sass/_c2_utility.scss */
+/* line 427, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering:before, .confirm_button.hovering:after {
   opacity: 1;
 }
-/* line 434, ../../compass/sass/_c2_utility.scss */
+/* line 431, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering.confirmed {
   background: #379249 !important;
 }
-/* line 437, ../../compass/sass/_c2_utility.scss */
+/* line 434, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering.confirmed:before {
   content: '\e062';
 }
-/* line 441, ../../compass/sass/_c2_utility.scss */
+/* line 438, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering.confirmed:after {
   opacity: 0;
 }
-/* line 446, ../../compass/sass/_c2_utility.scss */
+/* line 443, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering:not(.confirmed) {
   color: #aaaaaa;
 }
-/* line 451, ../../compass/sass/_c2_utility.scss */
+/* line 448, ../../compass/sass/_c2_utility.scss */
 .confirm_button:before {
   content: '\e061';
   opacity: 0;
@@ -2365,7 +2362,7 @@ table th:last-child, table td:last-child {
   transition: all 0.2s ease 0s;
   z-index: 2;
 }
-/* line 464, ../../compass/sass/_c2_utility.scss */
+/* line 461, ../../compass/sass/_c2_utility.scss */
 .confirm_button:after {
   content: '';
   opacity: 0;
@@ -2379,12 +2376,12 @@ table th:last-child, table td:last-child {
   z-index: 1;
 }
 
-/* line 480, ../../compass/sass/_c2_utility.scss */
+/* line 477, ../../compass/sass/_c2_utility.scss */
 .module_enableable .module_not_enabled {
   padding: 0.5em 1em;
   background: #8d2121;
 }
-/* line 484, ../../compass/sass/_c2_utility.scss */
+/* line 481, ../../compass/sass/_c2_utility.scss */
 .module_enableable .module_not_enabled .name {
   font-size: 1.3em;
   font-weight: 600;

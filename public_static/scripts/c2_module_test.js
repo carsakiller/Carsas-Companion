@@ -174,17 +174,6 @@ class C2Module_Test extends C2LoggingUtility {
 										<span v-else>Not confirmed</span>
 									</test-component>
 
-									<test-component :options="{serious: true}">
-										<confirm-button @click="isConfirmed = !isConfirmed" :serious="true">
-											<span v-if="isConfirmed">Unconfirm</span>
-											<span v-else>Confirm</span>
-										</confirm-button>
-										<br/>
-										<br/>
-										<span v-if="isConfirmed">Confirmed</span>
-										<span v-else>Not confirmed</span>
-									</test-component>
-
 									<test-component :options="{time: 5}">
 										<confirm-button @click="isConfirmed = !isConfirmed" :time="5">
 											<span v-if="isConfirmed">Unconfirm</span>
