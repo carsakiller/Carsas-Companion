@@ -277,7 +277,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			template: `<div class="c2">
 				<error-popup/>
 				<pages :initial-index="initialPage" @page-change="onPageChange">
-					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon" :keep-alife="false">
+					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon">
 						<component :is="page.componentName"/>
 					</page>
 					<status-bar/>

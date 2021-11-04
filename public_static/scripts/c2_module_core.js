@@ -23,7 +23,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.status
 					}
 				},
-				template: `<div class="status_bar" v-show="status.message" :class="status.clazz">
+				template: `<div class="status_bar" v-if="status.message" :class="status.clazz">
 					{{status.message}}
 				</div>`
 			})
@@ -34,7 +34,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.error
 					}
 				},
-				template: `<div class="error_popup" v-show="theError.message">
+				template: `<div class="error_popup" v-if="theError.message">
 					<div class="inner">
 						<p class="title">{{theError.title}}</p>
 						<textarea class="message" cols="30" rows="5" readonly="true" wrap="hard">{{theError.message}}</textarea>

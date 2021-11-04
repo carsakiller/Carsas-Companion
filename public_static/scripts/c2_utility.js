@@ -349,21 +349,6 @@ class C2Utility extends C2LoggingUtility {
 
 			*/
 
-			this.c2.registerComponent('keep-alife', {
-				props: {
-					'keep-alife': {
-						type: Boolean,
-						required: true
-					}
-				},
-				/*
-					template: `
-						<keep-alive v-if="keepAlife"> <slot/> </keep-alive>
-						<slot v-if="!keepAlife"/>`,
-				*/
-				template: `<slot/>`//TODO i don't know why, but <component> seem to be always alive (regardless of vue docs), so this does not work
-			})
-
 			/*
 				Usage:
 
@@ -847,9 +832,6 @@ class C2Utility extends C2LoggingUtility {
 				data: function (){
 					return {
 						isSelected: false,
-						lastPageHeight: 0,
-						lastPageHeightChangeTime: 0,
-						checkPageHeightInterval: undefined
 					}
 				},
 				props: {
@@ -860,42 +842,19 @@ class C2Utility extends C2LoggingUtility {
 					icon: {
 						type: String,
 						required: true
-					},
-					'keep-alife': {
-						type: Boolean,
-						default: true
 					}
 				},
-				template: `<div class="page" v-show="isSelected">
-					<keep-alife :keep-alife="keepAlife">
-						<div class="page_head">
-							<h2>{{title}}</h2>
-						</div>
+				template: `<div class="page" v-if="isSelected">
+					<div class="page_head">
+						<h2>{{title}}</h2>
+					</div>
 
-						<div class="page_body">
-							<slot/>
-						</div>
-					</keep-alife>
+					<div class="page_body">
+						<slot/>
+					</div>
 				</div>`,
 				created: function(){
 					this.$parent.pages.push(this)
-				},
-				mounted: function (){
-					this.checkPageHeightInterval = setInterval(()=>{
-						let newHeight = $(this.$el).height()
-						if(newHeight !== this.lastPageHeight){
-							this.debug('resized')
-							this.lastPageHeight = newHeight
-							this.lastPageHeightChangeTime = Date.now()
-						}
-
-						if(this.lastPageHeightChangeTime > 0 && (Date.now() - this.lastPageHeightChangeTime) > 20){//stop the check when we think the page has fully loaded
-							this.debug('stopped to resize')
-							$(this.$el).find('.page_body').scrollTop(0)
-							clearInterval(this.checkPageHeightInterval)
-							return
-						}
-					}, 5)
 				}
 			})
 
@@ -941,7 +900,7 @@ class C2Utility extends C2LoggingUtility {
 						default: 'Tab'
 					}
 				},
-				template: `<div class="tab" v-show="isSelected">
+				template: `<div class="tab" v-if="isSelected">
 					<slot/>
 				</div>`,
 				created: function(){
