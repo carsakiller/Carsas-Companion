@@ -95,10 +95,12 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 
 			if(this.isRunning && !isRunning){
 				this.info('Game Server not running anymore')
+				this.dispatch('gameserver-state', false)
 			}
 
 			if(!this.isRunning && isRunning){
 				this.info('Game Server running again')
+				this.dispatch('gameserver-state', true)
 			}
 
 			if(this.isRunning){
@@ -106,8 +108,6 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 			} else {
 				this.log('checkIfGameServerIsRunning: no')
 			}
-
-			this.dispatch('gameserver-state', isRunning)
 
 			this.isRunning = isRunning
 			this.pid = pid

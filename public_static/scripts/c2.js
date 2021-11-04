@@ -1,17 +1,14 @@
-class C2 extends C2LoggingUtility {
+class C2 extends C2EventManagerAndLoggingUtility {
 
 	constructor(el){
-		super()
+		super(4)
 
-		this.register = new C2Register(2)
+		this.loglevel = 4
 
-		this.register.createNewRegister('VueComponent')
-
-		this.register.createNewRegister('Page')
-
-		this.register.createNewRegister('MessageHandler')
-
-		this.register.createNewRegister('Storable')
+		this.c2Utility = new C2Utility(this.loglevel, this)
+		this.c2Module_Core = new C2Module_Core(this.loglevel, this)
+		this.c2Module_Test = new C2Module_Test(this.loglevel, this)
+		this.c2Module_Gameserver = new C2Module_Gameserver(this.loglevel, this)
 
 		$(window).on('load', ()=>{
 			this.setup(el)
@@ -19,9 +16,9 @@ class C2 extends C2LoggingUtility {
 	}
 
 	setup(el){
-		console.log('[C2] setup', el)
+		this.log('[C2] setup', el)
 
-		let storeConfig = {
+		this.storeConfig = {
 			state: {
 				localStorage: {},
 
@@ -240,43 +237,9 @@ class C2 extends C2LoggingUtility {
 			}
 		}
 
-		for(let storableName of this.register.getRegister('Storable')){
-			if(!storeConfig.state){
-				storeConfig.state = {}
-			}
+		this.dispatch('can-register-storable')
 
-			if(storeConfig.state[storableName]){
-				this.warn('storable is overwriting existing store state', storableName)
-			}
-
-			storeConfig.state[storableName] = undefined
-
-			if(!storeConfig.mutations){
-				storeConfig.mutations = {}
-			}
-
-			storeConfig.mutations['set_' + storableName] = function (state, data){
-				state[storableName] = data
-			}
-
-			if(!storeConfig.actions){
-				storeConfig.actions = {}
-			}
-
-			storeConfig.actions['set_' + storableName] = function ({ commit }, data){
-				commit('set_' + storableName, data)
-			}
-
-			if(!storeConfig.getters){
-				storeConfig.getters = {}
-			}
-
-			storeConfig.getters[storableName] = function (state){
-				return state[storableName]
-			}
-		}
-
-		this.store = Vuex.createStore(storeConfig)
+		this.store = Vuex.createStore(this.storeConfig)
 
 		$.get({
 			url: '/static/version.txt',
@@ -291,7 +254,7 @@ class C2 extends C2LoggingUtility {
 				})
 			},
 			error: (err)=>{
-				console.error('Error checking version', err)
+				this.error('Error checking version', err)
 				this.showError('Unable to check version.\n\n' + err)
 			},
 			complete: ()=>{
@@ -326,18 +289,14 @@ class C2 extends C2LoggingUtility {
 					localStorage.setItem('lastPageIndex', index)
 				}
 			},
-			mixins: [loggingMixin]
+			mixins: [componentMixin_logging]
 		})
 
 		this.app.use(this.store)
 
-		for(let entry of this.register.getRegister('VueComponent')){
-			this.registerComponent(entry.name, entry.options)
-		}
+		this.dispatch('can-register-component')
 
-		for(let entry of this.register.getRegister('Page')){
-			this.registerPage(entry)
-		}
+		this.dispatch('can-register-page')
 
 		this.app.config.errorHandler = (...args)=>{this.handleVueError.apply(this, args)}
 		this.app.config.warnHandler = (...args)=>{this.handleVueWarning.apply(this, args)}
@@ -346,57 +305,20 @@ class C2 extends C2LoggingUtility {
 
 		this.webclient = new C2WebClient(this)
 
-		this.webclient.on('connected', ()=>{
-			this.setStatusSuccess('Server Connected')
-		})
-
-		this.webclient.on('disconnected', ()=>{
-			this.setStatusError('Server Connection Lost')
-		})
-
-		this.messageHandlers = {}
 		this.webclient.on('message', (...args)=>{return this.handleMessage.apply(this, args)})
 
-		this.registerMessageHandler('heartbeat', (data)=>{
-			//TODO: maybe lock the UI? or at least parts of the UI that interact with the game
-		})
-
-		this.registerMessageHandler('game-connection', (data)=>{
-			if(data === true){
-				this.setStatusSuccess('Game connected', 3000)
-			} else {
-				this.setStatusError('Game disconnected')
-			}
-		})
-
-		this.registerMessageHandler('rtt-response', (data)=>{
-			let rtt = new Date().getTime() - data
-			this.log('RoundTripTime:', rtt, 'ms')
-			return rtt + 'ms'
-		})
-
-		this.registerMessageHandler('test-timeout', (data)=>{
-			return new Promise(()=>{
-				//ignore so it runs into a timeout
-			})
-		})
-
-		this.registerMessageHandler('sync-players', (data)=>{
-			return new Promise((fulfill, reject)=>{
-				this.c2.store.dispatch('setPlayers', data)
-				fulfill()
-			})
-		})
-
-		for(let entry of this.register.getRegister('MessageHandler')){
-			this.registerMessageHandler(entry.messageType, entry.callback)
-		}
+		this.messageHandlers = {}
+		this.dispatch('can-register-messagehandler')
 
 		setTimeout(()=>{
 			$.get('/static/commit.txt', (data)=>{
 				this.store.dispatch('setC2Commit', data)
 			})
 		}, 1000)
+
+		setTimeout(()=>{
+			this.dispatch('setup-done')
+		}, 1)
 	}
 
 	//TODO: rework this to work without vue, because if vue fucks up, we still want to have an error message!
@@ -405,36 +327,6 @@ class C2 extends C2LoggingUtility {
 			title: title,
 			message: message
 		})
-	}
-
-	setStatus(message, clazz, /* optional */hideAfterTime){
-		this.log('setStatus', message)
-		this.store.dispatch('setStatus', {
-			message: message,
-			clazz: clazz
-		})
-
-		if(hideAfterTime){
-			setTimeout(()=>{
-				this.setStatus(undefined, undefined)
-			}, hideAfterTime)
-		}
-	}
-
-	setStatusSuccess(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'success', hideAfterTime)
-	}
-
-	setStatusWarn(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'warn', hideAfterTime)
-	}
-
-	setStatusError(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'error', hideAfterTime)
-	}
-
-	clearStatus(){
-		this.setStatus(undefined, undefined)
 	}
 
 	handleMessage(message){
@@ -469,14 +361,13 @@ class C2 extends C2LoggingUtility {
 		}
 	}
 
-
 	handleVueError(err, vm, info){
-		console.error('[C2]', err, vm, info)
+		this.error('[C2]', err, vm, info)
 		this.showError('' + err + '\n\n' + info)
 	}
 
 	handleVueWarning(msg, vm, trace){
-		console.warn('[C2]', msg, vm, trace)
+		this.warn('[C2]', msg, vm, trace)
 		this.showError('' + msg + '\n\n' + trace)
 	}
 
@@ -484,9 +375,52 @@ class C2 extends C2LoggingUtility {
 		this.setError('An Error has occured (Please contact an admin)', msg)
 	}
 
-	registerComponent (name, options){
-		if(!name){
-			this.error('name is undefined')
+	registerStorable(storableName){
+		if(typeof storableName !== 'string'){
+			this.error('storableName must be a string', storableName)
+			return
+		}
+
+		this.log('registerStorable', storableName)
+
+		if(!this.storeConfig.state){
+			this.storeConfig.state = {}
+		}
+
+		if(this.storeConfig.state[storableName]){
+			this.warn('storable is overwriting existing store state', storableName)
+		}
+
+		this.storeConfig.state[storableName] = undefined
+
+		if(!this.storeConfig.mutations){
+			this.storeConfig.mutations = {}
+		}
+
+		this.storeConfig.mutations['set_' + storableName] = function (state, data){
+			state[storableName] = data
+		}
+
+		if(!this.storeConfig.actions){
+			this.storeConfig.actions = {}
+		}
+
+		this.storeConfig.actions['set_' + storableName] = function ({ commit }, data){
+			commit('set_' + storableName, data)
+		}
+
+		if(!this.storeConfig.getters){
+			this.storeConfig.getters = {}
+		}
+
+		this.storeConfig.getters[storableName] = function (state){
+			return state[storableName]
+		}
+	}
+
+	registerComponent(name, options){
+		if(typeof name !== 'string'){
+			this.error('name must be a string', name)
 			return
 		}
 
@@ -495,23 +429,41 @@ class C2 extends C2LoggingUtility {
 			return
 		}
 
+		this.log('registerComponent', name)
+		this.debug(options)
+
 		// set name if not happened (for logging)
 		if(!options.name){
 			options.name = name
 		}
 
 		// add base mixins
-		options.mixins = [loggingMixin].concat(options.mixins || [])
+		options.mixins = [componentMixin_logging].concat(options.mixins || [])
 
 		this.app.component(name, options)
 	}
 
-	registerPage(page){
-		if(!page){
-			this.error('page is undefined')
+	registerPage(name, icon, componentName){
+		if(typeof name !== 'string'){
+			this.error('name must be a string')
 			return
 		}
-		this.store.dispatch('addPage', page)
+
+		if(typeof icon !== 'string'){
+			this.error('icon must be a string')
+			return
+		}
+
+		if(typeof componentName !== 'string'){
+			this.error('componentName must be a string')
+			return
+		}
+
+		this.store.dispatch('addPage', {
+			name: name,
+			icon: icon,
+			componentName: componentName
+		})
 	}
 
 	/*
@@ -545,10 +497,10 @@ class C2 extends C2LoggingUtility {
 				if(parsed.version === this.store.C2_VERSION){
 					value = parsed
 				} else {
-					console.info('ignoring outdated localStorage.c2')
+					this.info('ignoring outdated localStorage.c2')
 				}
 			} catch (ex){
-				console.warn('failed to parse saved localStorage.c2', ex)
+				this.warn('failed to parse saved localStorage.c2', ex)
 			}
 		}
 
@@ -564,54 +516,4 @@ C2.uuid = function (){
 	return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
 		(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
 	);
-}
-
-
-/*
-	you can register things and later fetch them
-*/
-class C2Register extends C2LoggingUtility {
-	constructor(loglevel){
-		super(loglevel)
-
-		this.registers = {}
-	}
-
-	createNewRegister(registerName){
-		if(typeof registerName !== 'string'){
-			throw new Error('missing registerName')
-		}
-
-		this.info('createNewRegister', registerName)
-
-		this.registers[registerName] = []
-	}
-
-	getRegister(registerName){
-		if(typeof registerName !== 'string'){
-			throw new Error('missing registerName')
-		}
-
-		return this.registers[registerName]
-	}
-
-	register(registerName, data){
-		if(typeof registerName !== 'string'){
-			throw new Error('missing registerName')
-		}
-
-		if(data === undefined){
-			throw new Error('data is undefined')
-		}
-
-		if(!this.registers[registerName]){
-			this.error('register is not defined:', registerName)
-			return
-		}
-
-		this.info('register', registerName)
-		this.log(data)
-
-		this.registers[registerName].push(data)
-	}
 }

@@ -67,7 +67,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 	constructor(url, token){
 		super(4)
 
-		console.log('new WebSock', url)
+		this.log('new WebSock', url)
 
 		this.url = url
 		this.token = token

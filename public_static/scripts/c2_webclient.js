@@ -17,31 +17,6 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 
 		this.ws.on('open', ()=>{
 			this.log('is now open')
-
-			if(false){
-				setTimeout(()=>{
-					ws.send({
-						type: 'rtt',
-						data: new Date().getTime()
-					}).then((res)=>{
-						this.log('rtt response success', res)
-					}).catch((err)=>{
-						this.log('rtt response unsuccessful', err)
-					})
-				}, 1000)
-
-				setTimeout(()=>{
-					ws.send({
-						type: 'test',
-						data: 'hello?'
-					}).then((res)=>{
-						this.log('test response success', res)
-					}).catch((err)=>{
-						this.log('test response unsuccessful', err)
-					})
-				}, 10000)
-			}
-
 			this.dispatch('connected')
 		})
 
@@ -55,7 +30,12 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 		})
 	}
 
+
 	sendCommand(command, data){
+		return this.sendMessage('command-' + command, data)
+	}
+
+	sendMessage(messageType, data){
 		return new Promise((fulfill, reject)=>{
 			let dataString = toString(data)
 
@@ -73,16 +53,16 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 				}
 			}
 
-			this.log('sendCommand', command, dataString )
+			this.log('sendMessage', messageType, dataString )
 
 			this.ws.send({
-				type: 'command-' + command,
+				type: messageType,
 				data: dataString
 			}).then((res)=>{
-				this.log('received response for command', command, res)
+				this.log('received response for', messageType, res)
 				fulfill(res)
 			}).catch((err)=>{
-				this.log('received error for command', command, err)
+				this.log('received error for', messageType, err)
 				reject(err)
 			})
 		})

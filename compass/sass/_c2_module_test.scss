@@ -74,4 +74,63 @@
 			border-top: none;
 		}
 	}
+
+	.test_run {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 0.5em 0.5em;
+
+		.name, .description, .buttons, .test_result {
+			width: 100%;
+			padding: 0.5em 1em;
+			background: $tertiary;
+		}
+
+		.name {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			font-size: 1.2em;
+			font-style: italic;
+
+			button {
+				margin-left: 1em;
+				font-size: 0.6em;
+			}
+		}
+
+		.description {
+			margin-top: 0.1em;
+			font-size: 0.8em;
+		}
+
+		.test_result {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			background: none;
+			border: 0.8em solid $tertiary;
+			border-top: none;
+
+			&.result_success {
+				background: $enabled;
+			}
+
+			&:not(.result_success) {
+				background: $disabled;
+			}
+
+			.test_icon {
+				font-size: 1.5em;
+				margin-right: 1em;
+			}
+
+			.test_message {
+
+			}
+		}
+
+	}
 }

@@ -1,6 +1,8 @@
 const C2GameInterface = require('./c2gameinterface.js')
 const C2WebInterface = require('./c2webinterface.js')
-const C2GameServerManager = require('./c2GameServerManager.js')
+const C2Module_Core = require('./c2module_core.js')
+const C2Module_Test = require('./c2module_test.js')
+const C2Module_Gameserver = require('./c2module_gameserver.js')
 
 const C2LoggingUtility = require('./c2utility.js').C2LoggingUtility
 
@@ -9,89 +11,30 @@ module.exports = class C2 extends C2LoggingUtility {
 	constructor(loglevel, app){
 		super(loglevel)
 
+		this.gameMessageHandlers = {}
+		this.webClientMessageHandlers = {}
+
 		let gameApp = require('./c2GameWebServer.js')
 
 		this.c2GameInterface = new C2GameInterface(loglevel, gameApp)
 		this.c2WebInterface = new C2WebInterface(loglevel, app)
 
-		// TODO: only do this when user wants to activate this module
-		this.c2GameServerManager = new C2GameServerManager(loglevel)
-
-		this.c2GameServerManager.on('stdout', (data)=>{
-			this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', data)
-		})
-
-		this.c2GameServerManager.on('gameserver-state', (data)=>{
-			this.c2WebInterface.sendDataTo('all', 'gameserver-state', data)
-		})
-
-
-		if(false){
-			setInterval(()=>{
-				this.c2WebInterface.sendDataTo('all', 'gameserver-stdout', 'test ' + new Date().toLocaleString())
-			}, 1000)
-		}
+		// TODO: only do this when modules are enabled
+		this.c2Module_Core = new C2Module_Core(loglevel, this)
+		this.c2Module_Test = new C2Module_Test(loglevel, this)
+		this.c2Module_Gameserver = new C2Module_Gameserver(loglevel, this)
 
 		// catch any unhandledRejection
 		process.on('unhandledRejection', error => {
 		  this.error('unhandledRejection', error);
 		});
 
-		// TESTS
-		if(false){
-			setTimeout(()=>{
-				this.c2WebInterface.sendDataTo('all', 'test-timeout', '').then((res)=>{
-					this.info('webclients test-timeout: success', res)
-				}).catch((err)=>{
-					this.info('webclients test-timeout: unsuccessful', err)
-				})
-			}, 5000)
-		}
-
-		if(false){
-			setTimeout(()=>{
-				this.c2GameInterface.sendCommand('test-timeout', '').then((res)=>{
-					this.info('game test-timeout: success', res)
-				}).catch((err)=>{
-					this.info('game test-timeout: unsuccessful', err)
-				})
-			}, 5000)
-		}
-
-		if(false){
-			setTimeout(()=>{//test performance of http transmission
-				let messageSize = 5000
-				let amountOfMessages = 4
-
-				let message = ""
-				for(let i=0;i<messageSize;i++){
-					message += "Y"
-				}
-
-				let beginTime = new Date().getTime()
-
-				let promises = []
-
-				for(let i=0; i<amountOfMessages; i++){
-					promises.push(this.c2GameInterface.sendCommand('test', message))
-				}
-
-				Promise.all(promises).then((res)=>{
-					let endTime = new Date().getTime()
-
-					this.info('Performance Test Result: took', Math.floor((endTime - beginTime) / 100) / 10, 's for',amountOfMessages, 'messages with', messageSize, 'chars each') 
-				}).catch((err)=>{
-					this.error('Performance Test Failed:', err)
-				})
-			}, 1000)
-		}
-
 		this.c2WebInterface.on('message', (...args)=>{
 			return this.handleWebClientMessage.apply(this, args)
 		})
 
 		this.c2WebInterface.on('new-client', (client)=>{
-			this.c2WebInterface.sendDataTo(client, 'game-connection', this.c2GameInterface.isGameAvailable)
+			this.c2WebInterface.sendMessageTo(client, 'game-connection', this.c2GameInterface.isGameAvailable)
 		})
 
 		this.c2GameInterface.on('message', (...args)=>{
@@ -99,7 +42,7 @@ module.exports = class C2 extends C2LoggingUtility {
 		})
 
 		this.c2GameInterface.on('game-connected', ()=>{
-			this.c2WebInterface.sendDataTo('all', 'game-connection', true).then(()=>{
+			this.c2WebInterface.sendMessageTo('all', 'game-connection', true).then(()=>{
 
 			}).catch((err)=>{
 
@@ -107,7 +50,7 @@ module.exports = class C2 extends C2LoggingUtility {
 		})
 
 		this.c2GameInterface.on('game-disconnected', ()=>{
-			this.c2WebInterface.sendDataTo('all', 'game-connection', false).then(()=>{
+			this.c2WebInterface.sendMessageTo('all', 'game-connection', false).then(()=>{
 
 			}).catch((err)=>{
 
@@ -115,91 +58,114 @@ module.exports = class C2 extends C2LoggingUtility {
 		})
 	}
 
+	sendMessageToGame(...args){
+		return this.c2GameInterface.sendMessage.apply(this.c2GameInterface, args)
+	}
+
+	sendMessageToWebClient(...args){
+		return this.c2WebInterface.sendMessageTo.apply(this.c2WebInterface, args)
+	}
+
 	handleWebClientMessage(client, message){
-		this.info('handleWebClientMessage', client, message.type)
+		this.log('handleWebClientMessage client #', client.id, message.type)
 
-		switch(message.type){
-			case 'rtt': {
-				this.c2WebInterface.sendDataTo(client, 'rtt-response', message.data).then((res)=>{
-					this.log('rtt-response success:', res)
-				}).catch((err)=>{
-					this.log('rtt-response unsuccessful:', err)
-				})
+		if(! this.webClientMessageHandlers[message.type] && this.webClientMessageHandlers['*']){
+			message.originalType = message.type
+			message.type = '*'
+		}
 
-				return message.data
-			}; break;
+		if(this.webClientMessageHandlers[message.type]){
+			try {
+				let promiseOrResult = this.webClientMessageHandlers[message.type](client, message.data, message.originalType ? message.originalType : message.type)
 
-			case 'test': {
-				return new Promise((fulfill, reject)=>{
-					this.c2GameInterface.sendCommand('test', message.data).then((res)=>{
-						this.log('test success:', res)
-						fulfill(res)
-					}).catch((err)=>{
-						this.log('test unsuccessful:', err)
-						reject(err)
-					})			
-				})
-			}; break;
-
-			default: {
-
-				if(message.type.startsWith('command-')){
-					return new Promise((fulfill, reject)=>{
-						let commandname = message.type.substring('command-'.length)
-						this.log('(?)', 'executing command:', commandname, message.data)
-						this.c2GameInterface.sendCommand(commandname, message.data).then((res)=>{
-							this.log('command', commandname, 'success:', res)
-							fulfill(res)
-						}).catch((err)=>{
-							this.log('command', commandname, 'unsuccessful:', err)
-							reject(err)
-						})
-					})
+				if(promiseOrResult instanceof Promise){
+					return promiseOrResult
 				} else {
-					this.error('unsupported type by client', message.type)
 					return new Promise((fulfill, reject)=>{
-						reject('unsupported type', message.type)
+						fulfill(promiseOrResult)
 					})
 				}
+			} catch (ex){
+				return new Promise((fulfill, reject)=>{
+					this.error('error calling webclient messagehandler', ex)
+					reject('Error: check server logs')
+				})
 			}
+		} else{
+			this.error('unsupported webclient message type', message.type)
+			return new Promise((fulfill, reject)=>{
+				reject('unsupported webclient message type', message.type)
+			})
 		}
 	}
 
 	handleGameMessage(message){
-		if(message.type === 'heartbeat'){
-			this.log('handleGameMessage', message.type)
-		} else {
-			this.info('handleGameMessage', message.type)
+		this.log('handleGameMessage', message.type)
+
+		if(! this.gameMessageHandlers[message.type] && this.gameMessageHandlers['*']){
+			message.originalType = message.type
+			message.type = '*'
 		}
 
-		switch(message.type){
-			case 'heartbeat': {
-				this.c2WebInterface.sendDataTo('all', 'heartbeat').then((res)=>{
-					this.log('heartbeat success:', res)
-				}).catch((err)=>{
-					this.log('heartbeat unsuccessful:', err)
-				})
-
-				return 'beat'
-			}; break;
-
-			case 'test-performance': {
-				return ''
-			}; break;
-
-			default: {
-
-				if(message.type.startsWith('sync-')){
-					let dataname = message.type.substring('sync-'.length)
-					this.log('(§)', 'syncing data with web clients:', dataname)
-					this.c2WebInterface.sendDataTo('all', message.type, message.data)
-
-					return 'ok'
-				} else {
-					this.error('unsupported type by game', message.type)
-					return 'unsupported type:' + message.type
-				}
+		if(this.gameMessageHandlers[message.type]){
+			if(message.originalType){
+				message.type = message.originalType
 			}
+
+			try {
+				let promiseOrResult = this.gameMessageHandlers[message.type](message.data, message.type)
+
+				if(promiseOrResult instanceof Promise){
+					return promiseOrResult
+				} else {
+					return new Promise((fulfill, reject)=>{
+						fulfill(promiseOrResult)
+					})
+				}
+			} catch (ex){
+				return new Promise((fulfill, reject)=>{
+					reject(promiseOrResult)
+				})
+			}
+		} else{
+			this.error('unsupported game message type', message.type)
+			return new Promise((fulfill, reject)=>{
+				reject('unsupported game message type', message.type)
+			})
 		}
+	}
+
+	/*
+		callback(messageData, messageType)
+
+		you can register for messageType '*' to define a default callback (messageType will still be the original type, not '*')
+	*/
+	registerGameMessageHandler(messageType, callback){
+		if(typeof callback !== 'function'){
+			this.error('callback must be a function (game messageType: ', messageType, ')')
+		}
+
+		if(this.gameMessageHandlers[messageType]){
+			this.warn('overwriting game message handler for', messageType)
+		}
+
+		this.gameMessageHandlers[messageType] = callback
+	}
+
+	/*
+		callback(client, messageData, messageType)
+
+		you can register for messageType '*' to define a default callback (messageType will still be the original type, not '*')
+	*/
+	registerWebClientMessageHandler(messageType, callback){
+		if(typeof callback !== 'function'){
+			this.error('callback must be a function (webclient messageType: ', messageType, ')')
+		}
+
+		if(this.webClientMessageHandlers[messageType]){
+			this.warn('overwriting webclient message handler for', messageType)
+		}
+
+		this.webClientMessageHandlers[messageType] = callback
 	}
 }

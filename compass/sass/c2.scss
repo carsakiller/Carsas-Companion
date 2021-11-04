@@ -165,10 +165,10 @@ table {
 	height: 100%;
 }
 
-@import "_c2_utility_components.scss";
-@import "_c2_module_core_components.scss";
-@import "_c2_module_test_components.scss";
-@import "_c2_module_gameserver_components.scss";
+@import "_c2_utility.scss";
+@import "_c2_module_core.scss";
+@import "_c2_module_test.scss";
+@import "_c2_module_gameserver.scss";
 
 body {
 	font-size: 29px;
