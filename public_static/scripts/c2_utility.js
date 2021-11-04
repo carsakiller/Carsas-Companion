@@ -830,7 +830,7 @@ class C2Utility extends C2LoggingUtility {
 				emits: ['page-change'],
 				methods: {
 					selectPage (i){
-						this.selectedIndex = i
+						this.selectedIndex = (i > this.pages.length - 1) ? 0 : i
 
 						this.pages.forEach((page, index) => {
 					    	page.isSelected = (index === i)
