@@ -7,8 +7,9 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.c2Utility = new C2Utility(this.loglevel, this)
 		this.c2Module_Core = new C2Module_Core(this.loglevel, this)
-		this.c2Module_Test = new C2Module_Test(this.loglevel, this)
+		this.c2Module_Map = new C2Module_Map(this.loglevel, this)
 		this.c2Module_Gameserver = new C2Module_Gameserver(this.loglevel, this)
+		this.c2Module_Test = new C2Module_Test(this.loglevel, this)
 
 		$(window).on('load', ()=>{
 			this.setup(el)
