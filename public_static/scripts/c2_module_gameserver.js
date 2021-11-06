@@ -37,8 +37,8 @@ class C2Module_Gameserver extends C2LoggingUtility {
 					<span v-if="isGameServerRunning" class="state running"><icon :icon="'power'"/> Running</span>
 					<span v-if="!isGameServerRunning" class="state"><icon :icon="'power'"/> Not Running</span>
 
-					<confirm-button v-if="!isGameServerRunning" @click="startServer">Start</confirm-button>
-					<confirm-button v-if="isGameServerRunning" @click="stopServer">Stop</confirm-button>
+					<confirm-button v-if="!isGameServerRunning" @click="startServer" :disabled="isComponentLocked">Start</confirm-button>
+					<confirm-button v-if="isGameServerRunning" @click="stopServer" :disabled="isComponentLocked">Stop</confirm-button>
 				</div>`,
 				methods: {
 					startServer (){
