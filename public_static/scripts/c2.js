@@ -161,7 +161,37 @@ class C2 extends C2EventManagerAndLoggingUtility {
 					orderFood: {
 
 					}
-				}
+				},
+
+				liveVehicles: {
+					1 /* vehicle_id */: {
+						owner: 'x32',//steam_id
+						name: 'Bus',
+						ui_id: 'ui_id',
+						x: 50,
+						y: 30,
+						z: 100
+					}
+				},
+
+				livePlayers: {
+					'x32' /* steam_id */ : {
+						name: 'Pony',
+						roles: {
+							Admin: true
+						},
+						peer_id: 1,
+						x: 40,
+						y: 100,
+						z: 100
+					},
+					'x99': {
+						name: 'aBannedUser',
+						roles: {
+							Owner: true
+						}
+					}
+				},
 			},
 			mutations: {
 				setPlayers (state, players){
@@ -234,6 +264,13 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				},
 				players: state => {
 					return state.players
+				},
+
+				livePlayers: state => {
+					return state.livePlayers
+				},
+				liveVehicles: state => {
+					return state.liveVehicles
 				}
 			}
 		}

@@ -27,10 +27,66 @@ class C2Module_Map extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('map-2d', {
+				data: function (){
+					return {
+						map: undefined,
+						playerMarkers: [],
+						vehicleMarkers: []
+					}
+				},
+				computed: {
+					livePlayers (){
+						return this.$store.getters.livePlayers
+					},
+					liveVehicles (){
+						return this.$store.getters.liveVehicles
+					}
+				},
 				template: `<div class="map_2d">
 				</div>`,
+				methods: {
+					refreshLivePlayers (){
+						this.log('refreshLivePlayers', this.livePlayers)
+
+						for(let marker of this.playerMarkers){
+							map.removeMarker(marker)
+						}
+
+						for(let p of Object.keys(this.livePlayers)){
+							let player = this.livePlayers[p]
+							let marker = this.map.createMarker(player.x, player.y, 'map_player.png', 20, player.name, 'orange')
+							this.playerMarkers.push(marker)
+						}
+
+					},
+					refreshLiveVehicles (){
+						this.log('refreshLiveVehicles', this.liveVehicles)
+
+						for(let marker of this.vehicleMarkers){
+							this.map.removeMarker(marker)
+						}
+
+						for(let v of Object.keys(this.liveVehicles)){
+							let vehicle = this.liveVehicles[v]
+							let marker = this.map.createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 20, vehicle.name, 'blue')
+							this.vehicleMarkers.push(marker)
+						}
+
+					}
+				},
 				mounted: function (){
-					new C2CanvasMap(loglevel, this.$el, '/static/tiles/')
+					this.map = new C2CanvasMap(loglevel, this.$el, '/static/tiles/', '/static/icons/')
+
+					this.refreshLivePlayers()
+					this.refreshLiveVehicles()
+				},
+				watch: {
+					livePlayers (){
+						this.refreshLivePlayers()
+					},
+					liveVehicles (){
+						this.refreshLiveVehicles()
+					}
 				}
 			})
 		})
@@ -51,7 +107,7 @@ class C2Module_Map extends C2LoggingUtility {
 
 class C2CanvasMap extends C2LoggingUtility {
 
-    constructor(loglevel, el, tilesDirectory){
+    constructor(loglevel, el, tilesDirectory, iconsDirectory){
     	super(loglevel)
 
         this.container = $(el)
@@ -145,10 +201,14 @@ class C2CanvasMap extends C2LoggingUtility {
         this.cachedFontLineHeight = this.calcFontLineHeight(this.ctx.font).height
 
         this.mapCanvas = document.createElement('canvas')
-        this.mapCanvas.style = 'background: url("tile_placeholder.png"); position: absolute; top: 0; left: 0; z-index: 1;'
+        this.mapCanvas.style = 'background: url("/static/images/tile_placeholder.png"); position: absolute; top: 0; left: 0; z-index: 1;'
         this.dom.append(this.mapCanvas)
 
         this.tilemanager = new C2TileManager(loglevel, this, tilesDirectory)
+
+        this.iconsDirectory = iconsDirectory
+
+        this.markers = []
 
         window.requestAnimationFrame(()=>{
             this.draw()
@@ -172,8 +232,9 @@ class C2CanvasMap extends C2LoggingUtility {
 
         this.drawMap()
 
-        this.drawMarker(this.canvas.width/4, this.canvas.height/2)
-        this.drawMarker(this.canvas.width/2, this.canvas.height*3/4)
+        for(let m of this.markers){
+        	this.drawMarker(m)
+        }
 
         // crosshair
         this.setStrokeColor('red')
@@ -202,17 +263,47 @@ class C2CanvasMap extends C2LoggingUtility {
         this.ctx.fillText(text, p.x, p.y + this.cachedFontLineHeight)
     }
 
-    drawMarker(absX, absY){
-        let p = this.relativePosition(absX, absY)
-        let size = 10
-        this.setFillColor('cyan')
-        this.ctx.fillRect(p.x - size/2, p.y - size/2, size, size)
+    drawMarker(marker){
+        let p = this.relativePosition(marker.x, marker.y)
+
+        if(marker.iconImageData){
+        	this.ctx.putImageData(marker.iconImageData, p.x - marker.iconWidth / 2, p.y - marker.iconHeight/2)
+        } else {
+        	this.setFillColor(marker.labelColor)
+        	this.ctx.fillRect(p.x - marker.iconWidth/2, p.y - marker.iconHeight/2, marker.iconWidth, marker.iconHeight)
+        }
+
+        if(marker.label){
+        	this.setFillColor(marker.labelColor)
+        	this.drawText({
+        		x: p.x + marker.iconWidth/1.5,
+        		y: p.y - marker.iconHeight/2
+        	}, marker.label)
+    	}
     }
 
     drawMap(){
         this.tilemanager.setPositionAndZoom(this.offset.x, this.offset.y, this.zoomValue)
     }
 
+    createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
+    	let marker = new C2CanvasMapMarker(gpsX, gpsY, this.iconsDirectory + iconImageName,iconWidth, label, labelColor)
+
+    	this.log('createMarker', gpsX, gpsY, iconImageName, label)
+
+    	this.markers.push(marker)
+
+    	return marker
+    }
+
+    removeMarker(marker){
+    	for(let i in this.markers){
+    		if(this.markers[i] === marker){
+    			delete this.markers[i]
+    			return
+    		}
+    	}
+    }
 
     /* please always use this function!! */
     setFont(value){
@@ -312,6 +403,69 @@ class C2CanvasMap extends C2LoggingUtility {
         }
 
         return result;
+    }
+}
+
+class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
+
+	/* events:
+
+		on('click', (pageX, pageY)=>{})
+
+	*/
+
+	constructor(absX, absY, /* optional */ iconImageUrl, /* optional */ iconWidth, /* optional */ label, /* optional */ labelColor){
+		super()
+
+		this.x = absX
+		this.y = absY
+		this.iconImageUrl = iconImageUrl
+		this.iconWidth = iconWidth || 10
+		this.iconHeight = this.iconWidth
+		this.label = label || undefined
+		this.labelColor = labelColor || 'white'
+
+		if(this.iconImageUrl){
+			this.loadImage(this.iconImageUrl)
+		}
+
+	}
+
+	loadImage(url){
+		let image = new Image
+
+        image.onload = ()=>{
+            this.debug('loaded icon image', url)
+            this.iconImage = image
+			this.iconImageData = this.generateIconImageData(this.iconImage)
+        }
+
+        image.onerror = (err)=>{
+            this.error('unable to load icon image', url, err)
+        }
+
+        image.src = url
+	}
+
+	generateIconImageData(image){
+		let canvas = document.createElement('canvas')
+		canvas.width = this.iconWidth
+		this.iconHeight = (image.width / image.height) * this.iconWidth
+		canvas.height = this.iconHeight
+
+        canvas.getContext('2d').drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height)
+
+        return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
+    }
+
+    setPosition(absX, absY){
+    	this.x = absX
+    	this.y = absY
+    }
+
+    setLabel(label, /* optional */ labelColor){
+    	this.label = label
+    	this.labelColor = labelColor || 'white'
     }
 }
 
