@@ -53,6 +53,7 @@ The method then sends that command to the game, if game responds with success, w
 * Rework data syncing (game->browser) to only send necessary data and not e.g. all players
 * module activation: modules are controled via lua addon properties. The lua script transmits those properties to the web server.
 * implement heartbeats for every single module
+* add webserver settings page (settings only for the webserver, e.g. allow external access)
 
 ## Browser
 * preserve selected page, tab, scroll positions
