@@ -115,6 +115,13 @@ let classMixin_EventManager = Base => class extends Base {
 		}
 	}
 
+	/* removes all event listeners for that eventname */
+	off(eventname){
+		if(this.eventListeners[eventname]){
+			delete this.eventListeners[eventname]
+		}
+	}
+
 	/*
 		the first registered event listener can return something and this will be forwarded to the caller of dispatch()
 

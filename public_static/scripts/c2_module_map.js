@@ -126,11 +126,22 @@ class C2CanvasMap extends C2LoggingUtility {
 			background: '#40535f'
 		})
 
+		this.dom.append(
+			$('<div class="zoom_hint" style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; background: #fffa; color: #222; font-size: 2em;">Use <span style="font-weight: 800; margin: 0 1em;">ctrl + scroll</span> to zoom</div>').css({
+				display: 'flex'
+			}).hide()
+		)
+
 		this.dom.appendTo(this.container)
+
+		/* zooming */
+		this.zoomValue = 1
 
 		this.dom.bind('mousewheel DOMMouseScroll', (evt)=>{
 			if(evt.ctrlKey == true){
 				evt.preventDefault();
+				evt.stopImmediatePropagation()
+				this.dom.find('.zoom_hint').hide()
 
 				if(evt.originalEvent instanceof WheelEvent){
 					//chrome
@@ -147,14 +158,31 @@ class C2CanvasMap extends C2LoggingUtility {
 					}
 				}
 
+			} else {
+				this.dom.find('.zoom_hint').fadeIn()
+				setTimeout(()=>{
+					this.dom.find('.zoom_hint').fadeOut()
+				}, 4 * 1000)
 			}
 		});
+
+		/* dragging */
+
+		this.offset = {
+			x: 0,
+			y: 0
+		}
 
 		this.mouseDown =false
 		this.lastMouseDownX = 0
 		this.lastMouseDownY = 0
 
+		this.touchDown = false
+		this.lastTouches = []
+
 		this.dom.on('mousedown', (evt)=>{
+			evt.preventDefault()
+			evt.stopImmediatePropagation()
 			this.mouseDown = true
 			this.lastMouseDownX = evt.pageX
 			this.lastMouseDownY = evt.pageY
@@ -165,21 +193,79 @@ class C2CanvasMap extends C2LoggingUtility {
 				return
 			}
 
+			evt.preventDefault()
+			evt.stopImmediatePropagation()
+
 			this.offset.x -= this.lastMouseDownX - evt.pageX
 			this.offset.y -= this.lastMouseDownY - evt.pageY
 
 			this.lastMouseDownX = evt.pageX
 			this.lastMouseDownY = evt.pageY
+			this.requestDraw()
 		})
 
 		this.dom.on('mouseup', (evt)=>{
+			evt.preventDefault()
+			evt.stopImmediatePropagation()
 			this.mouseDown = false
+			this.lastMouseDownX = 0
+			this.lastMouseDownY = 0
+		})
+
+		this.dom.on('touchstart', (evt)=>{
+			if(evt.touches.length <= 2){
+				evt.preventDefault()
+				evt.stopImmediatePropagation()
+				this.touchDown = true
+				this.lastTouches = evt.touches
+			}
+		})
+
+		this.dom.on('touchmove', (evt)=>{
+			if(!this.touchDown){
+				return
+			}
+
+			if(evt.touches.length === this.lastTouches.length){
+				evt.preventDefault()
+				evt.stopImmediatePropagation()
+
+				if(evt.touches.length === 1){
+					this.offset.x -= this.lastTouches[0].pageX - evt.touches[0].pageX
+					this.offset.y -= this.lastTouches[0].pageY - evt.touches[0].pageY
+				} else if (evt.touches.length === 2){
+					let oldDeltaX = this.lastTouches[0].pageX - this.lastTouches[1].pageX
+					let oldDeltaY = this.lastTouches[0].pageY - this.lastTouches[1].pageY
+					let oldDistance = Math.sqrt(oldDeltaX ** 2 + oldDeltaY ** 2)
+
+					let newDeltaX = evt.touches[0].pageX - evt.touches[1].pageX
+					let newDeltaY = evt.touches[0].pageY - evt.touches[1].pageY
+					let newDistance = Math.sqrt(newDeltaX ** 2 + newDeltaY ** 2)
+
+					this.setZoom(this.zoomValue * (newDistance / oldDistance) )
+				}
+
+				this.lastTouches = evt.touches
+				this.requestDraw()
+			}
+		})
+
+		this.dom.on('touchend touchcancel', (evt)=>{
+			evt.preventDefault()
+			evt.stopImmediatePropagation()
+			this.touchDown = false
+			this.lastTouches = []
 		})
 
 		$(window).on('blur', (evt)=>{
 			this.mouseDown = false
+			this.lastMouseDownX = 0
+			this.lastMouseDownY = 0
+			this.touchDown = false
+			this.lastTouches = []
 		})
 
+		/* markers layer */
 		this.canvas = document.createElement('canvas')
 		this.canvas.style = 'background: transparent; position: relative; z-index: 2;'
 		this.resizeCanvas()
@@ -190,44 +276,66 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.ctx = this.canvas.getContext('2d')
 
-		this.offset = {
-			x: 0,
-			y: 0
-		}
-
-		this.zoomValue = 1
-
-		this.timesBetweenDraws = [0]
-		this.lastDrawTime = performance.now()
-
-		this.ctx.font = "1.5em sans-serif"
+		this.ctx.font = '1.5em sans-serif'
 
 		this.cachedFontLineHeight = this.calcFontLineHeight(this.ctx.font).height
 
+		this.iconsDirectory = iconsDirectory
+
+		this.markers = []
+
+		/* FPS layer */
+		this.timesBetweenDraws = [0]
+		this.lastDrawTime = performance.now()
+
+		this.fpsCanvas = document.createElement('canvas')
+		this.fpsCanvas.style = 'background: transparent; position: absolute; top: 0; left: 0; z-index: 5;'
+		this.fpsCanvas.width = 100
+		this.fpsCanvas.height = 50
+		this.fpsContext = this.fpsCanvas.getContext('2d')
+		this.fpsContext.font = '10px sans-serif'
+		this.dom.append(this.fpsCanvas)
+
+		/* map layer */
 		this.mapCanvas = document.createElement('canvas')
 		this.mapCanvas.style = 'background: url("/static/images/tile_placeholder.png"); position: absolute; top: 0; left: 0; z-index: 1;'
 		this.dom.append(this.mapCanvas)
 
 		this.tilemanager = new C2TileManager(loglevel, this, tilesDirectory)
 
-		this.iconsDirectory = iconsDirectory
+		this.mustDraw = true
 
-		this.markers = []
-
-		window.requestAnimationFrame(()=>{
-			this.draw()
-		})
+		this.queueDraw()
 	}
 
 	resizeCanvas(){
 		this.canvas.width = this.dom.width()
 		this.canvas.height = this.dom.height()
+		this.requestDraw()
 	}
 
+	queueDraw(){
+		window.requestAnimationFrame(()=>{
+			this.draw()
+		})
+	}
+
+	requestDraw(){
+		this.mustDraw = true
+	}
 
 	draw(){
+		this.drawFpsCanvas()
+
+		if(!this.mustDraw){
+			this.queueDraw()
+			return
+		}
+
+		this.mustDraw = false
+
 		this.timesBetweenDraws.push(performance.now())
-		if(this.timesBetweenDraws.length > 10){
+		if(this.timesBetweenDraws.length > 5){
 			this.timesBetweenDraws.splice(0, 1)
 		}
 
@@ -245,13 +353,15 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.drawLine(this.percentagePosition(0.5,0), this.percentagePosition(0.5,1))
 		this.drawLine(this.percentagePosition(0,0.5), this.percentagePosition(1,0.5))
 
-		// fps
-		this.setFillColor('yellow')
-		this.drawText(this.emPositon(0.2,0.2), Math.floor(this.calcFps()) + ' FPS')
+		this.queueDraw()
+	}
 
-		window.requestAnimationFrame(()=>{
-			this.draw()
-		})
+	drawFpsCanvas(){
+		//clear
+		this.fpsContext.clearRect(0, 0, this.fpsCanvas.width, this.fpsCanvas.height)
+
+		this.fpsContext.fillStyle = 'yellow'
+		this.fpsContext.fillText(Math.floor(this.calcFps()) + 'FPS', 1, 1 + 10)
 	}
 
 	drawLine(p1, p2){
@@ -299,9 +409,15 @@ class C2CanvasMap extends C2LoggingUtility {
 	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
 		let marker = new C2CanvasMapMarker(gpsX, gpsY, this.iconsDirectory + iconImageName, iconWidth, label, labelColor)
 
+		marker.on('change', ()=>{
+			this.requestDraw()
+		})
+
 		this.log('createMarker', gpsX, gpsY, iconImageName, iconWidth, label, labelColor)
 
 		this.markers.push(marker)
+
+		this.requestDraw()
 
 		return marker
 	}
@@ -309,7 +425,12 @@ class C2CanvasMap extends C2LoggingUtility {
 	removeMarker(marker){
 		for(let i in this.markers){
 			if(this.markers[i] === marker){
+				this.markers[i].off('change')
+
 				delete this.markers[i]
+
+				this.requestDraw()
+
 				return
 			}
 		}
@@ -372,15 +493,20 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	zoomIn(){
-		this.zoomValue = this.zoomValue * 1.1
+		this.setZoom(this.zoomValue * 1.1)
 	}
 
 	zoomOut(){
-		this.zoomValue = this.zoomValue * 0.9
+		this.setZoom(this.zoomValue * 0.9)
+	}
+
+	setZoom(value){
+		this.zoomValue = value
+		this.requestDraw()
 	}
 
 	calcFps(){
-		let diff = this.timesBetweenDraws[this.timesBetweenDraws.length - 1] - this.timesBetweenDraws[0]
+		let diff = performance.now() - this.timesBetweenDraws[0]
 
 		return this.timesBetweenDraws.length / (diff/1000)
 	}
@@ -422,6 +548,8 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 
 		on('click', (pageX, pageY)=>{})
 
+		on('change', ()=>{})
+
 	*/
 
 	constructor(absX, absY, /* optional */ iconImageUrl, /* optional */ iconWidth, /* optional */ label, /* optional */ labelColor){
@@ -448,6 +576,8 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 			this.debug('loaded icon image', url)
 			this.iconImage = image
 			this.iconImageData = this.generateIconImageData(this.iconImage)
+
+			this.dispatch('change')
 		}
 
 		image.onerror = (err)=>{
@@ -471,11 +601,13 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 	setPosition(absX, absY){
 		this.x = absX
 		this.y = absY
+		this.dispatch('change')
 	}
 
 	setLabel(label, /* optional */ labelColor){
 		this.label = label
 		this.labelColor = labelColor || 'white'
+		this.dispatch('change')
 	}
 }
 
