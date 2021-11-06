@@ -934,7 +934,9 @@ class C2TileManager extends C2LoggingUtility {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
 		for(let tile of this.tiles){
-			this.drawTile(tile, this.generateTileImageData(tile, tile.image))
+			setTimeout(()=>{// when drawing all at the same time, we freeze the UI
+				this.drawTile(tile, this.generateTileImageData(tile, tile.image))
+			}, 1)
 		}
 	}
 
