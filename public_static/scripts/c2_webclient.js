@@ -30,12 +30,7 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 		})
 	}
 
-
-	sendCommand(command, data){
-		return this.sendMessage('command-' + command, data)
-	}
-
-	sendMessage(messageType, data){
+	sendMessage(messageType, data){//TODO: we always encode to lua JSON (e.g. nil insteda of null), we might need to adjust this for edge cases at some point
 		return new Promise((fulfill, reject)=>{
 			let dataString = toString(data)
 

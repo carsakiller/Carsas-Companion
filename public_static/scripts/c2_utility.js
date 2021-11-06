@@ -320,6 +320,30 @@ let componentMixin_lockable = {
 	}
 }
 
+let componentMixin_serverMessage = {
+	mixins: [componentMixin_lockable],
+	methods: {
+		sendServerMessage (messageType, data){
+			return new Promise((fulfill, reject)=>{
+				this.lockComponentUntilSync()
+
+				c2.webclient.sendMessage(messageType, data).then((res)=>{
+					this.log('sending messageType', messageType,'was successful')
+					this.debug('data', data, 'result', res)
+				}).catch((err)=>{
+					this.log('sending messageType', messageType,'failed')
+					this.debug('data', data, 'error', err)
+					this.unlockComponent()
+				})
+			})
+		},
+		sendServerMessageAndWaitForSync (messageType, data){
+			this.lockComponentUntilSync()
+			return this.sendServerMessage(messageType, data)
+		}
+	}
+}
+
 let componentMixin_gameCommand = {
 	mixins: [componentMixin_lockable],
 	methods: {
@@ -327,7 +351,7 @@ let componentMixin_gameCommand = {
 			return new Promise((fulfill, reject)=>{
 				this.lockComponentUntilSync()
 
-				c2.webclient.sendCommand(command, args).then((res)=>{
+				c2.webclient.sendMessage('command-' + command, args).then((res)=>{
 					this.log('executing command', command,'was successful')
 					this.debug('args', args, 'result', res)
 				}).catch((err)=>{

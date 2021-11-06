@@ -13,35 +13,42 @@ class C2Module_Gameserver extends C2LoggingUtility {
 
 		this.c2.on('can-register-component', ()=>{
 			this.c2.registerComponent('gameserver-management', {
+				template: `<div class="gameserver_management">
+					<module-enableable :name="'gameserver'">
+						<division class="controls" :name="'Control GameServer'" :always-extended="true">
+							<gameserver-control/>
+						</division>
+
+						<division :name="'Console Output'" :start-extended="true">
+							<gameserver-status/>
+						</division>
+					</module-enableable>
+				</div>`
+			})
+
+			this.c2.registerComponent('gameserver-control', {
 				computed: {
 					isGameServerRunning (){
 						return this.$store.getters['gameserver-state']
 					}
 				},
-				template: `<div class="gameserver_management">
-					<module-enableable :name="'gameserver'">
-						<division class="controls" :name="'Control GameServer'" :always-extended="true">
-							<confirm-button v-if="!isGameServerRunning" @click="startServer">Start</confirm-button>
-							<confirm-button v-if="isGameServerRunning" @click="restartServer">Restart</confirm-button>
-							<confirm-button v-if="isGameServerRunning" @click="stopServer">Stop</confirm-button>
-						</division>
+				template: `<div class="gameserver_control">
+					<lockable/>
+					<span v-if="isGameServerRunning" class="state running"><icon :icon="'power'"/> Running</span>
+					<span v-if="!isGameServerRunning" class="state"><icon :icon="'power'"/> Not Running</span>
 
-						<division>
-							<gameserver-status/>
-						</division>
-					</module-enableable>
+					<confirm-button v-if="!isGameServerRunning" @click="startServer">Start</confirm-button>
+					<confirm-button v-if="isGameServerRunning" @click="stopServer">Stop</confirm-button>
 				</div>`,
 				methods: {
 					startServer (){
-						alert('not implemented')
-					},
-					restartServer (){
-						alert('not implemented')
+						this.sendServerMessageAndWaitForSync('gameserver-start')
 					},
 					stopServer (){
-						alert('not implemented')
+						this.sendServerMessageAndWaitForSync('gameserver-stop')
 					}
-				}
+				},
+				mixins: [componentMixin_serverMessage]
 			})
 
 			this.c2.registerComponent('gameserver-status', {

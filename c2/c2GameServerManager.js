@@ -3,7 +3,7 @@ const { C2EventManagerAndLoggingUtility } = require('./utility.js')
 const ps = require('ps-node');
 const path = require('path')
 
-module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtility {
+module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtility {
 	
 	constructor(loglevel){
 		super(loglevel)
@@ -31,60 +31,103 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 
 	spawnGameServer(){
 		return new Promise((fulfill, reject)=>{
-			this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'),
-				['executableDirectory=' + this.executableDirectory, 'executableName=' + this.executableName64],
-				{
-					detached: true
+			this.info('spawnGameServer')
+			this.isGameServerRunning((err, isRunning)=>{
+				if(err){
+					reject('error: check server logs')
+					return
 				}
-			)
 
-			this.childProcess.on('spawn', ()=>{
-				this.info('fork process spawned')
+				if(isRunning){
+					reject('GameServer already running')
+					return
+				}
 
-				this.childProcess.unref()
-			})
-
-			this.childProcess.on('close', ()=>{
-				this.info('fork process closed')
-			})
-
-			this.childProcess.on('exit', ()=>{
-				this.info('fork process exited')
-			})
-
-			this.childProcess.on('error', (err)=>{
-				this.err('fork process error', err)
-			})
-
-			this.childProcess.on('message', (message)=>{
-				this.debug('got message from fork process', message)
-
-				switch(message.type){
-					case 'stdout': {
-
-						let str = message.data.toString()
-
-						//fix that the text will not arrive in one nice piece, instead it will arrive as multiple copies in random positions
-						let start = str.indexOf('Server Version')
-						let end = str.indexOf('Server Version', start + 1)
-
-						if(start < 0 || end < 0){
-							return
+				try {
+					this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'),
+						['executableDirectory=' + this.executableDirectory, 'executableName=' + this.executableName64],
+						{
+							detached: true
 						}
+					)
+				} catch (ex){
+					this.error(ex)
+					return reject()
+				}
 
-						let fixed = str.substring(start, end)
+				this.childProcess.on('spawn', ()=>{
+					this.info('fork process spawned')
 
-						if(fixed.trim() === ''){
+					fulfill()
 
+					this.childProcess.unref()
+				})
+
+				this.childProcess.on('close', ()=>{
+					this.info('fork process closed')
+				})
+
+				this.childProcess.on('exit', ()=>{
+					this.info('fork process exited')
+				})
+
+				this.childProcess.on('error', (err)=>{
+					this.err('fork process error', err)
+				})
+
+				this.childProcess.on('message', (message)=>{
+					this.debug('got message from fork process', message)
+
+					switch(message.type){
+						case 'stdout': {
+
+							let str = message.data.toString()
+
+							//fix that the text will not arrive in one nice piece, instead it will arrive as multiple copies in random positions
+							let start = str.indexOf('Server Version')
+							let end = str.indexOf('Server Version', start + 1)
+
+							if(start < 0 || end < 0){
+								return
+							}
+
+							let fixed = str.substring(start, end)
+
+							if(fixed.trim() === ''){
+
+							}
+
+							this.dispatch('stdout', fixed)
+						}; break;
+
+						default: {
+							this.error('fork process sent unsupported message type', message.type)
 						}
-
-						this.dispatch('stdout', fixed)
-					}; break;
-
-					default: {
-						this.error('fork process sent unsupported message type', message.type)
 					}
+				})
+			})
+		})
+	}
+
+	killGameServer(){
+		return new Promise(()=>{
+			this.info('killGameServer')
+			this.isGameServerRunning((err, isRunning, pid)=>{
+				if(err){
+					reject('error: check server logs')
+					return
 				}
+
+				if(!isRunning){
+					reject('GameServer not running')
+					return
+				}
+
+				this.killProcess(pid).then(()=>{
+					fulfill()
+				}).catch(()=>{
+					reject('error check server logs')
+				})
 			})
 		})
 	}
@@ -157,17 +200,16 @@ module.exports = class c2GameServerManager extends C2EventManagerAndLoggingUtili
 		})
 	}
 
-	/*
-		callback(err, sucess)
-	*/
-	killProcess(pid, callback){
-		ps.kill(pid, (err)=>{
-			if(err){
-				this.error('error while killing process', err)
-				callback(err)
-			} else {
-				fulfill(false, true)
-			}
+	killProcess(pid){
+		return new Promise((fulfill, reject)=>{
+			ps.kill(pid, (err)=>{
+				if(err){
+					this.error('error while killing process', err)
+					reject()
+				} else {
+					fulfill()
+				}
+			})
 		})
 	}
 

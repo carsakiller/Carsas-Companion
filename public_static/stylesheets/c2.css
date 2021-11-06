@@ -2707,10 +2707,31 @@ table th:last-child, table td:last-child {
   padding: 1em;
 }
 /* line 6, ../../compass/sass/_c2_module_gameserver.scss */
+.gameserver_management .controls .state {
+  padding: 0.7em 1em;
+  margin-right: 1em;
+  border-radius: 10000px;
+  background-size: 240% 100%;
+  animation: state-background 5s linear infinite;
+}
+/* line 13, ../../compass/sass/_c2_module_gameserver.scss */
+.gameserver_management .controls .state .im:before {
+  position: relative;
+  top: 0.15em;
+}
+/* line 18, ../../compass/sass/_c2_module_gameserver.scss */
+.gameserver_management .controls .state.running {
+  background-image: linear-gradient(to right, #379249 0%, #379249 45%, #87be92 50%, #379249 55%, #379249 100%);
+}
+/* line 22, ../../compass/sass/_c2_module_gameserver.scss */
+.gameserver_management .controls .state:not(.running) {
+  background-image: linear-gradient(to right, #c92f2f 0%, #c92f2f 45%, #df8282 50%, #c92f2f 55%, #c92f2f 100%);
+}
+/* line 28, ../../compass/sass/_c2_module_gameserver.scss */
 .gameserver_management .controls button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 13, ../../compass/sass/_c2_module_gameserver.scss */
+/* line 35, ../../compass/sass/_c2_module_gameserver.scss */
 .gameserver_management .gameserver_status textarea {
   width: 100%;
   height: 24em;
@@ -2719,6 +2740,14 @@ table th:last-child, table td:last-child {
   resize: vertical;
 }
 
+@keyframes state-background {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 /* line 1, ../../compass/sass/_c2_module_test.scss */
 .tests_management {
   padding: 1em;

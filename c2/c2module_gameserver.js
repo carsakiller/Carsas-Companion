@@ -14,12 +14,41 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 			this.c2.sendMessageToWebClient('all', 'gameserver-stdout', data)
 		})
 
-		this.c2GameServerManager.on('gameserver-connected', ()=>{
-			this.c2.sendMessageToWebClient('all', 'gameserver-state', true)
+		this.c2GameServerManager.on('gameserver-state', (state)=>{
+			this.c2.sendMessageToWebClient('all', 'gameserver-state', state)
 		})
 
-		this.c2GameServerManager.on('gameserver-disconnected', (data)=>{
-			this.c2.sendMessageToWebClient('all', 'gameserver-state', false)
+		this.c2.registerWebClientMessageHandler('gameserver-start', (client, data)=>{
+			return new Promise((fulfill, reject)=>{
+				if(!this.clientHasPermission(client)){
+					return reject('You are not allowed to do this')
+				}
+
+				this.c2GameServerManager.spawnGameServer().then(()=>{
+					fulfill()
+				}).catch((err)=>{
+					reject('Unable to start GameServer: ' + err)
+				})
+			})
 		})
+
+		this.c2.registerWebClientMessageHandler('gameserver-stop', (client, data)=>{
+			return new Promise((fulfill, reject)=>{
+				if(!this.clientHasPermission(client)){
+					return reject('You are not allowed to do this')
+				}
+
+				this.c2GameServerManager.killGameServer().then(()=>{
+					fulfill()
+				}).catch((err)=>{
+					reject('Unable to stop game server: ' + err)
+				})
+			})
+		})
+	}
+
+	//TODO
+	clientHasPermission(client){
+		return true
 	}
 }

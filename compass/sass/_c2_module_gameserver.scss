@@ -3,6 +3,28 @@
 
 	.controls {
 
+		.state {
+			padding: 0.7em 1em;
+			margin-right: 1em;
+			border-radius: 10000px;
+			background-size: 240% 100%;
+			animation: state-background 5s linear infinite;
+
+			.im:before {
+				position: relative;
+				top: 0.15em;
+			}
+
+			&.running {
+				background-image: linear-gradient(to right, $enabled 0%, $enabled 45%, tint($enabled, 40%) 50%, $enabled 55%, $enabled 100%);
+			}
+
+			&:not(.running) {
+				background-image: linear-gradient(to right, $disabled 0%, $disabled 45%, tint($disabled, 40%) 50%, $disabled 55%, $disabled 100%);
+			}
+
+		}
+
 		button:not(:last-child) {
 			margin-right: 1em;
 		}
@@ -18,4 +40,13 @@
 			resize: vertical;
 		}
 	}
+}
+
+@keyframes state-background {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }

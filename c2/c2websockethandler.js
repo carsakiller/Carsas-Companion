@@ -40,7 +40,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			let timePassed = new Date().getTime() - pm.timeSent
 
 			if( timePassed > this.PENDING_MESSAGE_RESPONSE_TIMEOUT){
-				this.warn('pending message (', pm.id, ') response from webclient timed out after', this.PENDING_MESSAGE_RESPONSE_TIMEOUT, 'ms')
+				this.warn('pending message (', pm.id, ') response from webclient #' + pm.clientId + ' timed out after', this.PENDING_MESSAGE_RESPONSE_TIMEOUT, 'ms')
 				pm.reject({
 					success: false,
 					result: 'Timeout: WebClient not responding'
@@ -191,7 +191,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		this.error('client #', client.id, client.req.ip, err)
 	}
 
-	handleClose(client){
+	handleClose(client){//TODO: remove all pending messsages for this client
 		this.info('client closed connection: client #', client.id, client.req.ip)
 	}
 
@@ -211,6 +211,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			const myMessageId = this.messageIdCounter++
 
 			this.pendingMessageResponses.push({
+				clientId: client.id,
 				id: myMessageId,
 				fulfill: fulfill,
 				reject: reject,
