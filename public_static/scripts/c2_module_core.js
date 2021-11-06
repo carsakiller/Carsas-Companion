@@ -598,7 +598,7 @@ class C2Module_Core extends C2LoggingUtility {
 				template: `<div class="rule">
 					<lockable/>
 					<p class="text">{{rule}}</p>
-					<confirm-button class="small_button" @click="remove">
+					<confirm-button class="small_button" :mini="true" @click="remove">
 						<span class="im im-minus"/>
 					</confirm-button>
 				</div>`,

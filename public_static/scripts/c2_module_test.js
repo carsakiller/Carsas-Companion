@@ -186,7 +186,15 @@ class C2Module_Test extends C2LoggingUtility {
 									</test-component>
 
 									<test-component :description="'Small version of confirm-button'">
-										<confirm-button class="small_button"><span class="im im-plus"/></confirm-button>
+										<confirm-button class="small_button">Small Button</confirm-button>
+									</test-component>
+
+									<test-component :description="'Mini version of confirm-button'" :options="{mini: true}">
+										<confirm-button :mini="true"><icon :icon="'plus'"/></confirm-button>
+									</test-component>
+
+									<test-component :description="'Small Mini version of confirm-button'" :options="{mini: true}">
+										<confirm-button class="small_button" :mini="true"><icon :icon="'plus'"/></confirm-button>
 									</test-component>
 								</test-component-group>
 

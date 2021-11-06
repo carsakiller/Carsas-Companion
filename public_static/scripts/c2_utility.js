@@ -560,9 +560,13 @@ class C2Utility extends C2LoggingUtility {
 					time: {
 						type: Number,
 						default: 0
+					},
+					mini: {
+						type: Boolean,
+						default: false
 					}
 				},
-				template: `<button :class="['confirm_button', {confirmed: isClickable, hovering: mouseIsHovering}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
+				template: `<button :class="['confirm_button', {'mini_button': mini, confirmed: isClickable, hovering: mouseIsHovering}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
 					<slot/>
 				</button>`,
 				methods: {

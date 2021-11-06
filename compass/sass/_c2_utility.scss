@@ -395,7 +395,12 @@
 	text-transform: uppercase;
 	letter-spacing: 0.15em;
 
-	&.small_button {
+	&.mini_button {
+
+		&:before {
+			left: 50%;
+			transform: translateX(-50%) translateY(-50%);
+		}
 
 		&.hovering {
 
@@ -416,7 +421,7 @@
 		}
 	}
 
-	&:not(.small_button) {
+	&:not(.mini_button) {
 
 		&.hovering {
 			padding-left: 2.2em;
@@ -455,7 +460,6 @@
 		color: $text-color;
 		transform: translateY(-50%);
 		font-family: $font-icon;
-		transition: all 0.2s ease 0s;
 		z-index: 2;
 	}
 
