@@ -21,5 +21,46 @@
 		display: flex;
 		flex-flow: column;
 		flex: 1 1 auto;
+
+		.map_view_info {
+			font-size: 0.8em;
+			position: fixed;
+			z-index: 6;
+			border-radius: 0.2em;
+			background: #000c;
+			color: $text-color;
+
+			& > * {
+				display: flex;
+				flex-direction: row;
+				padding: 0.3em
+			}
+
+			.title {
+				justify-content: space-between;
+				font-size: 1.2em;
+				font-weight: 600;
+				color: shade($text-color, 40%);
+
+				.close {
+					margin-left: 1em;
+					cursor: pointer;
+					color: $text-color;
+					transition: all 0.2s ease 0s;
+
+					&:hover {
+						color: $highlight;
+					}
+				}
+			}
+
+			.player {
+
+			}
+
+			.vehicle {
+
+			}
+		}
 	}
 }

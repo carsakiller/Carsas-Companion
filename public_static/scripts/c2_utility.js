@@ -323,7 +323,7 @@ let componentMixin_lockable = {
 let componentMixin_gameCommand = {
 	mixins: [componentMixin_lockable],
 	methods: {
-		callGameCommandAndWaitForSync (command, args){
+		callGameCommand (command, args){
 			return new Promise((fulfill, reject)=>{
 				this.lockComponentUntilSync()
 
@@ -336,6 +336,10 @@ let componentMixin_gameCommand = {
 					this.unlockComponent()
 				})
 			})
+		},
+		callGameCommandAndWaitForSync (command, args){
+			this.lockComponentUntilSync()
+			return this.callGameCommand(command, args)
 		}
 	}
 }

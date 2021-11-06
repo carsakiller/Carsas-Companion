@@ -31,7 +31,12 @@ class C2Module_Map extends C2LoggingUtility {
 					return {
 						map: undefined,
 						playerMarkers: [],
-						vehicleMarkers: []
+						vehicleMarkers: [],
+
+						currentInfoComponent: undefined,
+						currentInfoData: undefined,
+						currentInfoDataId: undefined,
+						currentInfoStyle: undefined
 					}
 				},
 				computed: {
@@ -43,6 +48,7 @@ class C2Module_Map extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="map_2d">
+					<component v-if="currentInfoComponent" :is="currentInfoComponent" :data="currentInfoData" :data-id="currentInfoDataId" :style="currentInfoStyle" @close="hideInfo"/>
 				</div>`,
 				methods: {
 					refreshLivePlayers (){
@@ -57,6 +63,11 @@ class C2Module_Map extends C2LoggingUtility {
 							if(player.x && player.y){
 								let marker = this.map.createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
 								this.playerMarkers.push(marker)
+
+								marker.on('click', (pos)=>{
+									this.log('clicked player marker', player)
+									this.clickPlayer(player, p, pos.x, pos.y)
+								})
 							}
 						}
 
@@ -73,9 +84,34 @@ class C2Module_Map extends C2LoggingUtility {
 							if(vehicle.x && vehicle.y){
 								let marker = this.map.createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
 								this.vehicleMarkers.push(marker)
+
+								marker.on('click', (pos)=>{
+									this.log('clicked vehicle marker', vehicle)
+									this.clickVehicle(vehicle, v, pos.x, pos.y)
+								})
 							}
 						}
 
+					},
+					showInfo (type, data, dataId, pageX, pageY){
+						this.log('showInfo', type)
+						this.debug(data, pageX, pageY)
+						this.currentInfoComponent = 'map-view-info-' + type
+						this.currentInfoData = data
+						this.currentInfoDataId = dataId
+						this.currentInfoStyle = 'top: ' + pageY +'px; left: ' + pageX + 'px;'
+					},
+					hideInfo (){
+						this.log('hideInfo')
+						this.currentInfoComponent = undefined
+						this.currentInfoData = undefined
+						this.currentInfoStyle = undefined
+					},
+					clickPlayer (player, id, pageX, pageY){
+						this.showInfo('player', player, id, pageX, pageY)
+					},
+					clickVehicle (vehicle, id, pageX, pageY){
+						this.showInfo('vehicle', vehicle, id, pageX, pageY)
 					}
 				},
 				mounted: function (){
@@ -92,6 +128,90 @@ class C2Module_Map extends C2LoggingUtility {
 						this.refreshLiveVehicles()
 					}
 				}
+			})
+
+			this.c2.registerComponent('map-view-info', {
+				emits: ['close'],
+				props: {
+					title: {
+						type: String,
+						required: true
+					}
+				},
+				template: `<div class="map_view_info">
+					<div class="title">{{title}}<icon :icon="'x-mark'" class="close" @click="$emit('close')"/></div>
+					<slot/>
+				</div>`
+			})
+
+			this.c2.registerComponent('map-view-info-player', {
+				emits: ['close'],
+				props: {
+					data: {
+						type: Object,
+						required: true
+					},
+					'data-id': {
+						required: true
+					}
+				},
+				template: `<map-view-info class="player" :title="'Player'" @close="$emit('close')">
+					<div>Name: {{data.name}}</div>
+					<div>GPS: ({{data.x}}, {{data.y}})</div>
+					<div>Altitude: {{data.z}}</div>
+					<div>Peer Id: {{data.peer_id}}</div>
+					<div>SteamId: <steamid :steamid="dataId"/></div>
+					<div><confirm-button class="small_button" @click="kick">Kick</confirm-button></div>
+					<div><confirm-button class="small_button" @click="ban" :time="2">Ban</confirm-button></div>
+				</map-view-info>`,
+				methods: {
+					kick (){
+						//TODO implement (requires new command)
+						//this.callGameCommand('kickPlayer', this.dataId)
+						alert('not implemented')
+						this.$emit('close')
+					},
+					ban (){
+						this.callGameCommand('banPlayer', this.dataId)
+						this.$emit('close')
+					}
+				},
+				mixins: [componentMixin_gameCommand]
+			})
+
+			this.c2.registerComponent('map-view-info-vehicle', {
+				emits: ['close'],
+				props: {
+					data: {
+						type: Object,
+						required: true
+					},
+					'data-id': {
+						required: true
+					}
+				},
+				computed: {
+					ownerName (){
+						return this.$store.state.players[this.data.owner] ? this.$store.state.players[this.data.owner].name : this.data.owner
+					}
+				},
+				template: `<map-view-info class="vehicle" :title="'Vehicle'" @close="$emit('close')">
+					<div>Name: {{data.name}}</div>
+					<div>GPS: ({{data.x}}, {{data.y}})</div>
+					<div>Altitude: {{data.z}}</div>
+					<div>Owner: {{ownerName}}</div>
+					<div>Vehicle Id: {{dataId}}</div>
+					<div><confirm-button class="small_button" @click="despawn">Despawn</confirm-button></div>
+				</map-view-info>`,
+				methods: {
+					despawn (){
+						//TODO implement
+						//this.callGameCommand()
+						alert('not implemented')
+						this.$emit('close')
+					}
+				},
+				mixins: [componentMixin_gameCommand]
 			})
 		})
 
@@ -134,6 +254,11 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.dom.appendTo(this.container)
 
+		this.offset = {// offset for center of the map (of the canvas)
+			x: 0,
+			y: 0
+		}
+
 		/* zooming */
 		this.zoomValue = 1
 
@@ -168,7 +293,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		/* dragging */
 
-		this.offset = {
+		this.dragOffset = {
 			x: 0,
 			y: 0
 		}
@@ -196,8 +321,8 @@ class C2CanvasMap extends C2LoggingUtility {
 			evt.preventDefault()
 			evt.stopImmediatePropagation()
 
-			this.offset.x -= this.lastMouseDownX - evt.pageX
-			this.offset.y -= this.lastMouseDownY - evt.pageY
+			this.dragOffset.x -= this.unzoom(this.lastMouseDownX - evt.pageX)
+			this.dragOffset.y -= this.unzoom(this.lastMouseDownY - evt.pageY)
 
 			this.lastMouseDownX = evt.pageX
 			this.lastMouseDownY = evt.pageY
@@ -231,8 +356,8 @@ class C2CanvasMap extends C2LoggingUtility {
 				evt.stopImmediatePropagation()
 
 				if(evt.touches.length === 1){
-					this.offset.x -= this.lastTouches[0].pageX - evt.touches[0].pageX
-					this.offset.y -= this.lastTouches[0].pageY - evt.touches[0].pageY
+					this.dragOffset.x -= this.unzoom(this.lastTouches[0].pageX - evt.touches[0].pageX)
+					this.dragOffset.y -= this.unzoom(this.lastTouches[0].pageY - evt.touches[0].pageY)
 				} else if (evt.touches.length === 2){
 					let oldDeltaX = this.lastTouches[0].pageX - this.lastTouches[1].pageX
 					let oldDeltaY = this.lastTouches[0].pageY - this.lastTouches[1].pageY
@@ -263,6 +388,32 @@ class C2CanvasMap extends C2LoggingUtility {
 			this.lastMouseDownY = 0
 			this.touchDown = false
 			this.lastTouches = []
+		})
+
+		/* clicking markers */
+		this.dom.bind('click', (evt)=>{
+			evt.preventDefault()
+			evt.stopImmediatePropagation()
+
+			let p = {
+				x: evt.offsetX,
+				y: evt.offsetY
+			}
+
+			for(let m of Object.keys(this.markers).reverse()){
+				let marker = this.markers[m]
+				let markerPos = this.relativePosition(marker.x, marker.y)
+				if(p.x >= markerPos.x - marker.iconWidth/2 && p.x <= markerPos.x + marker.iconWidth/2
+					&& p.y >= markerPos.y - marker.iconHeight/2 && p.y <= markerPos.y + marker.iconHeight/2){
+
+					marker.dispatch('click', {
+						x: evt.pageX,
+						y: evt.pageY
+					})
+
+					return
+				}
+			}
 		})
 
 		/* markers layer */
@@ -311,6 +462,10 @@ class C2CanvasMap extends C2LoggingUtility {
 	resizeCanvas(){
 		this.canvas.width = this.dom.width()
 		this.canvas.height = this.dom.height()
+		this.offset = {
+			x: this.canvas.width / 2,
+			y: this.canvas.height / 2
+		}
 		this.requestDraw()
 	}
 
@@ -403,7 +558,15 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	drawMap(){
-		this.tilemanager.setPositionAndZoom(this.offset.x, this.offset.y, this.zoomValue)
+		let offset = this.relativePosition(0,0)
+		this.tilemanager.setPositionAndZoom(offset.x, offset.y, this.zoomValue)
+	}
+
+	totalOffset(){
+		return {
+			x: this.offset.x + this.dragOffset.x,
+			y: this.offset.y + this.dragOffset.y
+		}
 	}
 
 	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
@@ -458,19 +621,19 @@ class C2CanvasMap extends C2LoggingUtility {
 		}
 	}
 
-	/* from top left, depending on offset, zoom and canvas size. 0,0 is top left 0.5,1 is bottom center */
+	/* from top left, depending on offset, zoom and canvas size. 0,0 is top left canvas.width/2,canvas.height is bottom center */
 	relativePosition(x,y){
 		return {
-			x: this.zoom(x) + this.offset.x,
-			y: this.zoom(y) + this.offset.y
+			x: this.zoom(x + this.dragOffset.x) + this.offset.x,
+			y: this.zoom(y + this.dragOffset.y) + this.offset.y
 		}
 	}
 
 	/* inverts relativePosition() */
 	absolutePosition(x,y){
 		return {
-			x: this.unzoom(x - this.offset.x),
-			y: this.unzoom(y - this.offset.y)
+			x: this.unzoom(x - this.offset.x) - this.dragOffset.x,
+			y: this.unzoom(y - this.offset.y) - this.dragOffset.y
 		}
 	}
 
@@ -660,7 +823,7 @@ class C2TileManager extends C2LoggingUtility {
 		this.tileCanvas.style = 'background: transparent; display: none; position: absolute; bottom: 0; right: 0; z-index: 3;'
 		canvasMap.dom.append(this.tileCanvas)
 
-		this.offsetCanvas = {
+		this.canvasOffset = {
 			x: 0,
 			y: 0
 		}
@@ -689,14 +852,14 @@ class C2TileManager extends C2LoggingUtility {
 		}, 50)
 	}
 
-	setPositionAndZoom(x,y, zoom){
+	setPositionAndZoom(offsetX,offsetY, zoom){
 		//this.debug('setPositionAndZoom', x, y, zoom)
 
 		$(this.canvas).css({
 			width: zoom * this.canvas.width,
 			height: zoom * this.canvas.height,
-			left: x + this.offsetCanvas.x,
-			top: y + this.offsetCanvas.y
+			left: offsetX + this.canvasOffset.x / zoom,
+			top: offsetY + this.canvasOffset.y / zoom
 		})
 	}
 
@@ -756,8 +919,8 @@ class C2TileManager extends C2LoggingUtility {
 	drawTile(tile, imageData){
 
 
-		let x = tile.x + this.offsetCanvas.x
-		let y = tile.y + this.offsetCanvas.y
+		let x = tile.x + this.canvasOffset.x
+		let y = tile.y + this.canvasOffset.y
 
 
 		this.debug('drawTile', tile, x, y)
@@ -778,10 +941,10 @@ class C2TileManager extends C2LoggingUtility {
 	/* checks if tile can be fitted into the canvas. If not, it will adjist the canvas */
 	checkTileBoundaries(x, y, width, height){
 		let overflow = {
-			left: Math.max(0, - x - this.offsetCanvas.x),
-			top: Math.max(0, - y - this.offsetCanvas.y),
-			right: Math.max(0, x + width + this.offsetCanvas.x - this.canvas.width),
-			bottom: Math.max(0,  y + height + this.offsetCanvas.y - this.canvas.height)
+			left: Math.max(0, - x - this.canvasOffset.x),
+			top: Math.max(0, - y - this.canvasOffset.y),
+			right: Math.max(0, x + width + this.canvasOffset.x - this.canvas.width),
+			bottom: Math.max(0,  y + height + this.canvasOffset.y - this.canvas.height)
 		}
 
 		this.debug('checkTileBoundaries', x, y, width, height, overflow)
@@ -790,11 +953,11 @@ class C2TileManager extends C2LoggingUtility {
 		let mustResizeCanvas = overflow.right > 0 || overflow.bottom > 0
 
 		if(mustRecreateCanvas){
-			this.offsetCanvas.x += overflow.left
-			this.offsetCanvas.y += overflow.top
+			this.canvasOffset.x += overflow.left
+			this.canvasOffset.y += overflow.top
 			this.canvas.width += overflow.right
 			this.canvas.height += overflow.bottom
-			this.log('mustRecreateCanvas to', this.canvas.width, this.canvas.height, this.offsetCanvas.x, this.offsetCanvas.y)
+			this.log('mustRecreateCanvas to', this.canvas.width, this.canvas.height, this.canvasOffset.x, this.canvasOffset.y)
 		} else if(mustResizeCanvas){
 			this.canvas.width += overflow.right
 			this.canvas.height += overflow.bottom

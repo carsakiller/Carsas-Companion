@@ -2664,6 +2664,39 @@ table th:last-child, table td:last-child {
   flex-flow: column;
   flex: 1 1 auto;
 }
+/* line 25, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .map_view_info {
+  font-size: 0.8em;
+  position: fixed;
+  z-index: 6;
+  border-radius: 0.2em;
+  background: #000c;
+  color: #f3f3f3;
+}
+/* line 33, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .map_view_info > * {
+  display: flex;
+  flex-direction: row;
+  padding: 0.3em;
+}
+/* line 39, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .map_view_info .title {
+  justify-content: space-between;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #929292;
+}
+/* line 45, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .map_view_info .title .close {
+  margin-left: 1em;
+  cursor: pointer;
+  color: #f3f3f3;
+  transition: all 0.2s ease 0s;
+}
+/* line 51, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .map_view_info .title .close:hover {
+  color: #e66200;
+}
 
 /* line 1, ../../compass/sass/_c2_module_gameserver.scss */
 .gameserver_management {
