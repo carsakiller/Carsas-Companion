@@ -870,6 +870,11 @@ class C2Utility extends C2LoggingUtility {
 				</div>`,
 				created: function(){
 					this.$parent.pages.push(this)
+				},
+				mounted: function(){
+					setTimeout(()=>{
+						$(this.$el).find('.page_body').scrollTop(0)
+					},1)
 				}
 			})
 
