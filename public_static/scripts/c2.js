@@ -168,7 +168,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 						owner: 'x32',//steam_id
 						name: 'Bus',
 						ui_id: 'ui_id',
-						x: 50,
+						x: 300,
 						y: 30,
 						z: 100
 					}
@@ -181,7 +181,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 							Admin: true
 						},
 						peer_id: 1,
-						x: 40,
+						x: 400,
 						y: 100,
 						z: 100
 					},

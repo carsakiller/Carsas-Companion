@@ -54,8 +54,10 @@ class C2Module_Map extends C2LoggingUtility {
 
 						for(let p of Object.keys(this.livePlayers)){
 							let player = this.livePlayers[p]
-							let marker = this.map.createMarker(player.x, player.y, 'map_player.png', 20, player.name, 'orange')
-							this.playerMarkers.push(marker)
+							if(player.x && player.y){
+								let marker = this.map.createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
+								this.playerMarkers.push(marker)
+							}
 						}
 
 					},
@@ -68,8 +70,10 @@ class C2Module_Map extends C2LoggingUtility {
 
 						for(let v of Object.keys(this.liveVehicles)){
 							let vehicle = this.liveVehicles[v]
-							let marker = this.map.createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 20, vehicle.name, 'blue')
-							this.vehicleMarkers.push(marker)
+							if(vehicle.x && vehicle.y){
+								let marker = this.map.createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
+								this.vehicleMarkers.push(marker)
+							}
 						}
 
 					}
@@ -264,7 +268,13 @@ class C2CanvasMap extends C2LoggingUtility {
     }
 
     drawMarker(marker){
+    	if(typeof marker.x !== 'number' || typeof marker.y !== 'number'){
+    		return
+    	}
+
         let p = this.relativePosition(marker.x, marker.y)
+
+        this.debug('drawMarker', p, marker)
 
         if(marker.iconImageData){
         	this.ctx.putImageData(marker.iconImageData, p.x - marker.iconWidth / 2, p.y - marker.iconHeight/2)
@@ -287,9 +297,9 @@ class C2CanvasMap extends C2LoggingUtility {
     }
 
     createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
-    	let marker = new C2CanvasMapMarker(gpsX, gpsY, this.iconsDirectory + iconImageName,iconWidth, label, labelColor)
+    	let marker = new C2CanvasMapMarker(gpsX, gpsY, this.iconsDirectory + iconImageName, iconWidth, label, labelColor)
 
-    	this.log('createMarker', gpsX, gpsY, iconImageName, label)
+    	this.log('createMarker', gpsX, gpsY, iconImageName, iconWidth, label, labelColor)
 
     	this.markers.push(marker)
 
