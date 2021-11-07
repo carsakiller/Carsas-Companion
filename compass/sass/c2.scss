@@ -14,7 +14,7 @@ body {
 	}
 }
 
-button, .small_button {
+button {
 	display: inline-flex;
 	flex-direction: row;
 	justify-content: center;
@@ -49,6 +49,12 @@ button, .small_button {
 	&:focus {
 		border-color: $highlight;
 	}
+
+	&:disabled {
+		cursor: not-allowed;
+		color: shade($text-color, 40%);
+		background: #9996;
+	}
 }
 
 .list {
@@ -78,6 +84,12 @@ textarea, input {
 
 	&:focus {
 		border-color: $highlight;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		background: tint($text-edit-background, 20%);
+		color: shade($text-edit-foreground, 40%);
 	}
 }
 

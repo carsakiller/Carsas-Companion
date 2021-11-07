@@ -599,6 +599,10 @@ class C2Utility extends C2LoggingUtility {
 							return
 						}
 
+						if($(this.$el).prop('disabled')){
+							return
+						}
+
 						this.mouseIsHovering = true
 						this.timeHoverStarted = Date.now()
 

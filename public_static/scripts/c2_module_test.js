@@ -150,6 +150,21 @@ class C2Module_Test extends C2LoggingUtility {
 										<icon :icon="'users'"/>
 									</test-component>
 								</test-component-group>
+
+								<test-component-group :title="'input'" :description="'Different inputs.'">
+									<test-component>
+										<input type="number"/>
+										<br/>
+										<br/>
+										<input type="text"/>
+									</test-component>
+								</test-component-group>
+
+								<test-component-group :title="'textarea'">
+									<test-component>
+										<textarea cols="20" rows="5"/>
+									</test-component>
+								</test-component-group>
 							</tab>
 
 

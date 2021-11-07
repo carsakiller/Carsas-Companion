@@ -261,6 +261,25 @@
 			&:focus + span:before {
 				border-color: $highlight !important;
 			}
+
+			&:disabled + span {
+				cursor: not-allowed;
+
+				&:before {
+					background-color: shade($disabled, 50%);
+				}
+
+				&:after {
+					background: shade($text-color, 50%);
+				}
+			}
+
+			&:disabled:checked + span {
+
+				&:before {
+					background-color: shade($enabled, 50%);
+				}
+			}
 		}
 
 		.checkbox_slider {
