@@ -153,9 +153,9 @@ class C2Module_Core extends C2LoggingUtility {
 						<div class="gap"/>
 
 						<div class="buttons">
-							<confirm-button v-if="!isBanned" v-on:click.stop="kick">Kick</confirm-button>
-							<confirm-button v-if="!isBanned" v-on:click.stop="ban" :time="2">Ban</confirm-button>
-							<confirm-button v-else v-on:click.stop="unban">Unban</confirm-button>
+							<confirm-button v-if="!isBanned" @click.stop="kick" :disabled="isComponentLocked">Kick</confirm-button>
+							<confirm-button v-if="!isBanned" @click.stop="ban" :time="2" :disabled="isComponentLocked">Ban</confirm-button>
+							<confirm-button v-else @click.stop="unban" :disabled="isComponentLocked">Unban</confirm-button>
 						</div>
 					</div>
 
@@ -220,8 +220,8 @@ class C2Module_Core extends C2LoggingUtility {
 					<lockable/>
 					<span class="name">{{roleName}}</span>
 
-					<button class="small_button" v-if="hasRole" v-on:click.stop="revokeRole"><span class="im im-minus"></span></button>
-					<button class="small_button" v-else v-on:click.stop="giveRole"><span class="im im-plus"></span></button>
+					<button class="small_button" v-if="hasRole" @click.stop="revokeRole" :disabled="isComponentLocked"><span class="im im-minus"></span></button>
+					<button class="small_button" v-else @click.stop="giveRole" :disabled="isComponentLocked"><span class="im im-plus"></span></button>
 				</div>`,
 				methods: {
 					giveRole () {
@@ -282,14 +282,15 @@ class C2Module_Core extends C2LoggingUtility {
 					<div class="gap"/>
 
 					<div class="buttons">
-						<confirm-button @click="despawn">Despawn</confirm-button>
+						<confirm-button @click="despawn" :disabled="isComponentLocked">Despawn</confirm-button>
 					</div>
 				</div>`,
 				methods: {
 					despawn (){
 						alert('not implemented')
 					}
-				}
+				},
+				mixins: [componentMixin_gameCommand]
 			})
 
 			/*
@@ -311,8 +312,8 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="roles_management">
 					<division class="new_role_container" :startExtended="true">
-						<input v-model="newRoleText" placeholder="New Role Name"/>
-						<button @click="addNewRole">Add new Role</button>
+						<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
+						<button @click="addNewRole" :disabled="isComponentLocked">Add new Role</button>
 					</division>
 					<role-list :roles="roles"/>
 				</div>`,
@@ -394,14 +395,14 @@ class C2Module_Core extends C2LoggingUtility {
 						</extendable-trigger>
 
 						<div class="buttons">
-							<confirm-button @click="remove">Remove</confirm-button>
+							<confirm-button @click="remove" :disabled="isComponentLocked">Remove</confirm-button>
 						</div>
 					</div>
 
 					<extendable-body class="role_body" :showShadow="true">
 						<tabs>
 							<tab :title="'Members'">
-								<button class="add_member" @click="addMember">
+								<button class="add_member" @click="addMember" :disabled="isComponentLocked">
 									<span class="im im-plus"/>
 								</button>
 								<member-list :members="role.members"/>
@@ -440,9 +441,9 @@ class C2Module_Core extends C2LoggingUtility {
 
 					<lockable/>
 
-					<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onRequirementChange">isAdmin</toggleable-element>
+					<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onRequirementChange" :disabled="isComponentLocked">isAdmin</toggleable-element>
 					<spacer-horizontal/>
-					<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onRequirementChange">isAuth</toggleable-element>
+					<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onRequirementChange" :disabled="isComponentLocked">isAuth</toggleable-element>
 				</div>`,
 				methods: {
 					onRequirementChange (name, value){
@@ -487,7 +488,7 @@ class C2Module_Core extends C2LoggingUtility {
 				inject: ['roleName'],
 				template: `<div class="command">
 					<lockable/>
-					<toggleable-element :initial-value="isCommand" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+					<toggleable-element :initial-value="isCommand" :on-value-change="onCommandChange" :disabled="isComponentLocked">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
 					onCommandChange (name, value){
@@ -523,7 +524,7 @@ class C2Module_Core extends C2LoggingUtility {
 					<spacer-vertical/>
 					<span class="name">{{getPlayer() ? getPlayer().name : 'Unknown'}}</span>
 					<spacer-vertical/>
-					<button class="small_button im im-minus" @click="removeMember()"></button>
+					<button class="small_button im im-minus" @click="removeMember()" :disabled="isComponentLocked"></button>
 				</div>`,
 				methods: {
 					getPlayer (){
@@ -555,8 +556,8 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="rules_management">
 					<division class="new_rule_container" :startExtended="true">
-						<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5"/>
-						<button @click="addNewRule">Add new Rule</button>
+						<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5" :disabled="isComponentLocked"/>
+						<button @click="addNewRule" :disabled="isComponentLocked">Add new Rule</button>
 					</division>
 					<rule-list :rules="rules"/>
 				</div>`,
@@ -598,7 +599,7 @@ class C2Module_Core extends C2LoggingUtility {
 				template: `<div class="rule">
 					<lockable/>
 					<p class="text">{{rule}}</p>
-					<confirm-button class="small_button" :mini="true" @click="remove">
+					<confirm-button class="small_button" :mini="true" @click="remove" :disabled="isComponentLocked">
 						<span class="im im-minus"/>
 					</confirm-button>
 				</div>`,
@@ -680,7 +681,7 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerComponent('preference-bool', {
 				inject: ['preference', 'preferenceName'],
-				template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :on-value-change="preferenceChanged"/>`,
+				template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :on-value-change="preferenceChanged" :disabled="isComponentLocked"/>`,
 				methods: {
 					preferenceChanged (name, value){
 						this.callGameCommandAndWaitForSync('setPref', [this.preferenceName, value])
@@ -697,9 +698,9 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['preference', 'preferenceName'],
 				template: `<div class="preference_string">
-					<textarea v-model="val" cols="30" rows="5"/>
+					<textarea v-model="val" cols="30" rows="5" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
-					<button @click="update">Update</button>
+					<button @click="update" :disabled="isComponentLocked">Update</button>
 				</div>`,
 				created: function (){
 					this.val = this.preference.value
@@ -720,9 +721,9 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['preference', 'preferenceName'],
 				template: `<div class="preference_number">
-					<input type="number" v-model="val"/>
+					<input type="number" v-model="val" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
-					<button @click="update">Update</button>
+					<button @click="update" :disabled="isComponentLocked">Update</button>
 				</div>`,
 				created: function (){
 					this.val = this.preference.value
@@ -743,9 +744,9 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['preference', 'preferenceName'],
 				template: `<div class="preference_table">
-					<textarea type="number" v-model="val" cols="30" rows="5"/>
+					<textarea type="number" v-model="val" cols="30" rows="5" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
-					<button @click="update">Update</button>
+					<button @click="update" :disabled="isComponentLocked">Update</button>
 				</div>`,
 				created: function (){
 					this.val = JSON.stringify(this.preference.value)
@@ -825,7 +826,7 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerComponent('gamesetting-bool', {
 				inject: ['gamesetting', 'gamesettingName'],
-				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged"/>`,
+				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged" :disabled="isComponentLocked"/>`,
 				methods: {
 					gamesettingChanged (name, value){
 						this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, value])
@@ -842,9 +843,9 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['gamesetting', 'gamesettingName'],
 				template: `<div class="gamesetting_number">
-					<input type="number" v-model="val"/>
+					<input type="number" v-model="val" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
-					<button @click="update">Update</button>
+					<button @click="update" :disabled="isComponentLocked">Update</button>
 				</div>`,
 				created: function (){
 					this.val = this.gamesetting

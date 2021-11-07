@@ -14,16 +14,11 @@ class C2Module_Map extends C2LoggingUtility {
 				template: `<div class="map_view" style="height: 100%; width: 100%">
 					<module-enableable :name="'map'" style="height: 100%; width: 100%">
 						<div class="controls">
-							<button>Test</button>
+
 						</div>
 						<map-2d/>
 					</module-enableable>
-				</div>`,
-				methods: {
-					toggleStateChange (name, val){
-						this.toggleState = val
-					}
-				}
+				</div>`
 			})
 
 			this.c2.registerComponent('map-2d', {
@@ -161,8 +156,8 @@ class C2Module_Map extends C2LoggingUtility {
 					<div>Altitude: {{data.z}}</div>
 					<div>Peer Id: {{data.peer_id}}</div>
 					<div>SteamId: <steamid :steamid="dataId"/></div>
-					<div><confirm-button class="small_button" @click="kick">Kick</confirm-button></div>
-					<div><confirm-button class="small_button" @click="ban" :time="2">Ban</confirm-button></div>
+					<div><confirm-button class="small_button" @click="kick" :disabled="isComponentLocked">Kick</confirm-button></div>
+					<div><confirm-button class="small_button" @click="ban" :time="2" :disabled="isComponentLocked">Ban</confirm-button></div>
 				</map-view-info>`,
 				methods: {
 					kick (){
@@ -201,7 +196,7 @@ class C2Module_Map extends C2LoggingUtility {
 					<div>Altitude: {{data.z}}</div>
 					<div>Owner: {{ownerName}}</div>
 					<div>Vehicle Id: {{dataId}}</div>
-					<div><confirm-button class="small_button" @click="despawn">Despawn</confirm-button></div>
+					<div><confirm-button class="small_button" @click="despawn" :disabled="isComponentLocked">Despawn</confirm-button></div>
 				</map-view-info>`,
 				methods: {
 					despawn (){

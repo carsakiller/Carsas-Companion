@@ -42,7 +42,7 @@ class C2Module_Gameserver extends C2LoggingUtility {
 				</div>`,
 				methods: {
 					startServer (){
-						this.sendServerMessageAndWaitForSync('gameserver-start')
+						this.sendServerMessageAndWaitForSync('gameserver-start')//todo: this will get unlocked when any gameserver-state update arrives! bad!
 					},
 					stopServer (){
 						this.sendServerMessageAndWaitForSync('gameserver-stop')
