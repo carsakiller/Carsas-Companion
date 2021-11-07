@@ -506,6 +506,54 @@ class C2Utility extends C2LoggingUtility {
 				}
 			})
 
+
+let componentMixin_disabledWhenAnyParentLocked = {
+	data: function (){
+		return {
+			oldValue: false,
+			disabledCount: 0
+		}
+	},
+	computed: {
+		isDisabled (){
+			return this.disabledCount > 0
+		}
+	},
+	methods: {
+		checkIfAnyParentIsLocked (){
+			return searchForLockedParentRecursively(this, this.$parent)
+
+			function searchForLockedParentRecursively(me, node){
+				if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
+					return true
+				} else if (node) {
+					return searchForLockedParentRecursively(me, node.$parent)
+				}
+				return false
+			}
+		},
+		disable (){
+			this.disabledCount++
+		},
+		enable (){
+			this.disabledCount--
+		}
+	},
+	mounted (){
+		setInterval(()=>{
+			let newValue = this.checkIfAnyParentIsLocked()
+			if(newValue !== this.oldValue){
+				if(newValue){
+					this.disable()
+				} else {
+					this.enable()
+				}
+				this.oldValue = newValue
+			}
+		}, 100)
+	}
+}
+
 			/*
 				Usage:
 
@@ -515,51 +563,15 @@ class C2Utility extends C2LoggingUtility {
 
 			*/
 			this.c2.registerComponent('disabled-when-any-parent-locked', {
-				data: function (){
-					return {
-						oldValue: false,
-						disabledCount: 0
-					}
-				},
-				computed: {
-					isDisabled (){
-						return this.disabledCount > 0
-					}
-				},
 				template: `<slot :is-disabled="isDisabled"/>`,
-				methods: {
-					checkIfAnyParentIsLocked (){
-						return searchForLockedParentRecursively(this, this.$parent)
+				mixins: [componentMixin_disabledWhenAnyParentLocked]
+			})
 
-						function searchForLockedParentRecursively(me, node){
-							if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
-								return true
-							} else if (node) {
-								return searchForLockedParentRecursively(me, node.$parent)
-							}
-							return false
-						}
-					},
-					disable (){
-						this.disabledCount++
-					},
-					enable (){
-						this.disabledCount--
-					}
-				},
-				mounted (){
-					setInterval(()=>{
-						let newValue = this.checkIfAnyParentIsLocked()
-						if(newValue !== this.oldValue){
-							if(newValue){
-								this.disable()
-							} else {
-								this.enable()
-							}
-							this.oldValue = newValue
-						}
-					}, 100)
-				}
+			this.c2.registerComponent('lockable-button', {
+				template: `<button :disabled="isDisabled">
+					<slot/>
+				</button>`,
+				mixins: [componentMixin_disabledWhenAnyParentLocked]
 			})
 
 			this.c2.registerComponent('confirm-button', {
@@ -590,7 +602,7 @@ class C2Utility extends C2LoggingUtility {
 						default: false
 					}
 				},
-				template: `<button :class="['confirm_button', {'mini_button': mini, confirmed: isClickable, hovering: mouseIsHovering}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
+				template: `<button :disabled="isDisabled" :class="['confirm_button', {'mini_button': mini, confirmed: isClickable, hovering: mouseIsHovering}]" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :style="style">
 					<slot/>
 				</button>`,
 				methods: {
@@ -652,7 +664,8 @@ class C2Utility extends C2LoggingUtility {
 					} else {
 						this.timeToFill = this.time
 					}
-				}
+				},
+				mixins: [componentMixin_disabledWhenAnyParentLocked]
 			})
 
 			this.c2.registerComponent('loading-spinner', {

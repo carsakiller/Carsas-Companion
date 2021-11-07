@@ -433,9 +433,17 @@ class C2Module_Test extends C2LoggingUtility {
 			this.c2.registerComponent('test-example-disabled-when-any-parent-locked-child', {
 				template: `<div style="background: #65075D; padding: 1em;">
 					<disabled-when-any-parent-locked v-slot="disabledProps">
-						<input :disabled="disabledProps.isDisabled" :value="'test'">
 						<span v-if="disabledProps.isDisabled">disabled</span>
 						<span v-else>enabled</span>
+						<br/>
+						<br/>
+						<input :disabled="disabledProps.isDisabled" :value="'test'">
+						<br/>
+						<br/>
+						<confirm-button>Confirm</confirm-button>
+						<br/>
+						<br/>
+						<lockable-button>Press</lockable-button>
 					</disabled-when-any-parent-locked>
 				</div>`
 			})
