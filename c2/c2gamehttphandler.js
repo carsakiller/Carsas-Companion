@@ -210,13 +210,14 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		}
 	}
 
-	sendCommandToGame(command, content){
+	sendCommandToGame(token, command, content){
 		return new Promise((fulfill, reject)=>{
 
 			const myCommandId = this.commandIdCounter++;
 
 			this.commandsToTransferToGame.push({
 				id: myCommandId,
+				token: token,
 				command: command,
 				content: content
 			})

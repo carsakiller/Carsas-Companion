@@ -108,12 +108,9 @@ module.exports = class C2 extends C2LoggingUtility {
 		}
 
 		if(this.gameMessageHandlers[message.type]){
-			if(message.originalType){
-				message.type = message.originalType
-			}
-
+			let promiseOrResult
 			try {
-				let promiseOrResult = this.gameMessageHandlers[message.type](message.data, message.type)
+				promiseOrResult = this.gameMessageHandlers[message.type](message.data, message.originalType ? message.originalType : message.type)
 
 				if(promiseOrResult instanceof Promise){
 					return promiseOrResult
@@ -124,7 +121,7 @@ module.exports = class C2 extends C2LoggingUtility {
 				}
 			} catch (ex){
 				return new Promise((fulfill, reject)=>{
-					reject(promiseOrResult)
+					reject(ex)
 				})
 			}
 		} else{

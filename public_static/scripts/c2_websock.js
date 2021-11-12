@@ -167,7 +167,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 						answer(true, result)
 					}).catch((err)=>{
 						this.error('Error in message callback promise:', err)
-						anser(false, 'Error: check browser logs')
+						answer(false, 'Error: check browser logs')
 					})
 				} else {
 					answer(true, undefined)

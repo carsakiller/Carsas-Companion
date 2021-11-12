@@ -59,7 +59,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		})
 	}
 	
-	sendMessage(messageType, data){
+	sendMessage(token, messageType, data){
 		if(!this.isGameAvailable){
 			return new Promise((fulfill, reject)=>{
 				reject('Game not available')
@@ -69,7 +69,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		this.info(' ->', 'sending messageType', messageType)
 		this.log(data)
 		return new Promise((fulfill, reject)=>{
-			this.c2GameHttpHandler.sendCommand(messageType, data).then((res)=>{
+			this.c2GameHttpHandler.sendCommandToGame(token, messageType, data).then((res)=>{
 				this.info('received result from messageType ', messageType, res)
 
 				fulfill(res)

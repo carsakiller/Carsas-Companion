@@ -29,7 +29,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 
 		// FRONTEND -> GAME TEST (triggered by webclient), just proxying)
 		this.c2.registerWebClientMessageHandler('test-performance-frontend-game', (client, data)=>{
-			return this.c2.sendMessageToGame('test-performance-frontend-game', data)
+			return this.c2.sendMessageToGame(undefined, 'test-performance-frontend-game', data)
 		})
 
 
@@ -48,7 +48,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 
 			if(false){
 				setTimeout(()=>{
-					this.c2.sendMessageToGame('test-timeout', '').then((res)=>{
+					this.c2.sendMessageToGame(undefined, 'test-timeout', '').then((res)=>{
 						this.info('game test-timeout: success', res)
 					}).catch((err)=>{
 						this.info('game test-timeout: unsuccessful', err)
@@ -71,7 +71,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 					let promises = []
 
 					for(let i=0; i<amountOfMessages; i++){
-						promises.push(this.c2.sendMessageToGame('test', message))
+						promises.push(this.c2.sendMessageToGame(undefined, 'test', message))
 					}
 
 					Promise.all(promises).then((res)=>{
@@ -90,7 +90,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 		return new Promise((fulfill, reject)=>{
 			let start = Date.now()
 
-			this.c2.sendMessageToGame(testName, start).then((data)=>{
+			this.c2.sendMessageToGame(undefined, testName, start).then((data)=>{
 				let parsed = JSON.parse(data)
 
 				if(parsed !== start){

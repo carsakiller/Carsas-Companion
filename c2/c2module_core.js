@@ -12,7 +12,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				return new Promise((fulfill, reject)=>{
 					let commandname = messageType.substring('command-'.length)
 					this.log('(?)', 'executing command:', commandname, data)
-					this.c2.sendMessageToGame(commandname, data).then((res)=>{
+					this.c2.sendMessageToGame(client.token, messageType, data).then((res)=>{
 						this.log('command', commandname, 'success:', res)
 						fulfill(res)
 					}).catch((err)=>{
@@ -30,6 +30,26 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerGameMessageHandler('heartbeat', (data)=>{
 			// ne need to do anything
+		})
+
+		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
+			if(messageType.startsWith('sync-')){
+				return new Promise((fulfill, reject)=>{
+					let syncname = messageType.substring('sync-'.length)
+					this.log('(%)', 'syncing', syncname, data)
+					this.c2.sendMessageToWebClient('all', messageType, data).then((res)=>{
+						this.log('sync', syncname, 'success:', res)
+					}).catch((err)=>{
+						this.log('sync', syncname, 'unsuccessful:', err)
+					})
+					fulfill(res)
+				})
+			} else {
+				this.error('unsupported type by game', messageType)
+				return new Promise((fulfill, reject)=>{
+					reject('unsupported type', message.type)
+				})
+			}
 		})
 	}
 }
