@@ -379,7 +379,7 @@ class C2Module_Core extends C2LoggingUtility {
 						let ret = []
 
 						for(let steamid of Object.keys(this.$store.getters.players)){
-							if(! this.members.includes(steamid)){
+							if(! this.members[steamid]){
 								ret.push(steamid)
 							}
 						}
@@ -501,12 +501,12 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('member-list', {
 				props: {
 					members: {
-						type: Array,
+						type: Object,
 						required: true
 					}
 				},
 				template: `<div class="list member_list">
-					<member v-for="steamid of members" :key="steamid" :steamid="steamid"/>
+					<member v-for="val, steamid of members" :key="steamid" :steamid="steamid"/>
 				</div>`
 			})
 
@@ -515,8 +515,7 @@ class C2Module_Core extends C2LoggingUtility {
 					steamid: {
 						type: String,
 						required: true
-					}
-				},
+					}			},
 				inject: ['roleName'],
 				template: `<div class="member">
 					<lockable/>

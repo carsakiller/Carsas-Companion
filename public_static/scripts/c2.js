@@ -73,9 +73,9 @@ class C2 extends C2EventManagerAndLoggingUtility {
 						},
 						admin: true,
 						auth: true,
-						members: [
-							'x64'
-						]
+						members: {
+							'x64': true
+						}
 					},
 					Admin: {
 						commands: {
@@ -83,9 +83,9 @@ class C2 extends C2EventManagerAndLoggingUtility {
 						},
 						admin: true,
 						auth: true,
-						members: [
-							'x32'
-						]
+						members: {
+							'x32': true
+						}
 					},
 					Friends: {
 						commands: {
@@ -93,10 +93,10 @@ class C2 extends C2EventManagerAndLoggingUtility {
 						},
 						admin: false,
 						auth: true,
-						members: [
-							'x32',
-							'x99'
-						]
+						members: {
+							'x32': true,
+							'x99': true
+						}
 					}
 				},
 
