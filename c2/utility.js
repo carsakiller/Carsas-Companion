@@ -100,7 +100,7 @@ let mixin_LoggingUtility = Base => class extends Base {
 	}
 
 	debug(...args){
-		if(this.loglevel < 4){
+		if(this.loglevel < 5){
 			return
 		}
 		console.log.apply(null, [
@@ -175,13 +175,13 @@ class C2EventManager extends mixin_EventManager(C2BaseClass) {
 	}
 }
 
-class C2EventManagerAndLoggingUtility extends mixin_EventManager(mixin_LoggingUtility(C2BaseClass)) {
+class C2EventManagerAndLoggingUtility extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
 	constructor(){
 		super()
 	}
 }
 
-class C2Handler extends mixin_EventManager(mixin_LoggingUtility(C2BaseClass)) {
+class C2Handler extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
 
 	constructor(loglevel){
 		super(loglevel)
