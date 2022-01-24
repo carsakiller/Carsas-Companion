@@ -133,4 +133,43 @@
 		}
 
 	}
+
+	.run_custom_command {
+
+		.command_input {
+			div {
+				margin-bottom: 0.8em;
+
+				label {
+					margin-right: 0.8em;
+				}
+			}
+		}
+
+		.command_result {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			background: none;
+			margin-top: 0.8em;
+			padding: 0.8em;
+
+			&.result_success {
+				background: $enabled;
+			}
+
+			&:not(.result_success) {
+				background: $disabled;
+			}
+
+			.result_icon {
+				font-size: 1.5em;
+				margin-right: 1em;
+			}
+
+			.result_message {
+
+			}
+		}
+	}
 }

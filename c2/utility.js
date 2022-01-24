@@ -39,9 +39,8 @@ let mixin_LoggingUtility = Base => class extends Base {
 			this.CONSOLE_COLORS[key] = '\x1b' + this.CONSOLE_COLORS[key]
 		}
 
-		this.loglevel = 4
 		let loglevelValue = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
-		this.loglevel =loglevelValue
+		this.loglevel = loglevelValue
 		this.log("loglevel", loglevelValue)
 	}
 

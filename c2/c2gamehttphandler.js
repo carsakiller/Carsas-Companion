@@ -71,7 +71,9 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				this.lastPacketTimes.pop()
 			}
 
-			let data = req.query.data;
+			let url = req.originalUrl
+			let params = new URLSearchParams(url.substring(url.indexOf('?')+1))
+			let data = params.get('data');
 			let parsed
 			try {
 				parsed = JSON.parse(data);
@@ -91,7 +93,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				this.warn('packetPart count is duplicate, will corrupt existing packet parts!')
 			}
 			
-			omt[parsed.packetPart] = parsed.data;
+			omt[parsed.packetPart] = parsed.data ? parsed.data : '';
 
 			if(parsed.morePackets === 0){
 				omt.max = parsed.packetPart
@@ -104,7 +106,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 			if(maxPartsKnown){
 				allPartsArrived = true
 				for(let i = 1; i<=omt.max; i++){
-					if(!omt[i]){
+					if(omt[i] === undefined){
 						allPartsArrived = false
 					}
 				}
@@ -125,7 +127,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				let content = ""
 
 				for(let i = 1; i<=omt.max; i++){
-					if(omt[i]){
+					if(omt[i] !== undefined){
 						content += omt[i]
 					} else {
 						this.warn('missing content part:', i)
@@ -152,7 +154,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				}
 
 				if(parsed.type === 'command-response'){
-					let result = this.handleCommandResponse(parsed.commandId, parsedContent)
+					let result = this.handleCommandResponse(parsed.commandId, parsedContent, parsed.statusMessage)
 					answer(result === 'ok', 'ok')
 				} else {
 
@@ -193,8 +195,8 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 			    	resp.commandContent = nextCommand.content;
 			    }
 
-			    if(ignoreHasMoreCommands !== true && that.getNextCommandToTransfer.length > 0){
-			    	that.log("pendingCommandResponses", that.getNextCommandToTransfer.length)
+			    if(ignoreHasMoreCommands !== true && that.commandsToTransferToGame.length > 0){
+			    	that.log("pendingCommandResponses", that.commandsToTransferToGame.length)
 			    	resp.hasMoreCommands = true
 			    }
 
@@ -261,7 +263,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		})
 	}
 
-	handleCommandResponse(commandId, content){
+	handleCommandResponse(commandId, content, /* optional */ statusMessage){
 
 		this.info('handleCommandResponse', commandId)
 
@@ -274,7 +276,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				this.pendingCommandResponses.splice(i,1);
 
 				if(content === 'ok'){
-					p.fulfill(content)
+					p.fulfill(statusMessage)
 				} else {
 					p.reject(content)
 				}

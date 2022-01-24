@@ -134,10 +134,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 					test_number: 5
 				},
 
-				bannedplayers: {
-					"x99": "x64"
-				},
-
 				logs: [
 					{
 						time: new Date().getTime(),
@@ -150,18 +146,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 						message: 'loading lasers'
 					}
 				],
-
-				allCommands: {
-					ban: {
-
-					},
-					unban : {
-
-					},
-					orderFood: {
-
-					}
-				},
 
 				liveVehicles: {
 					1 /* vehicle_id */: {
@@ -277,6 +261,9 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.dispatch('can-register-storable')
 
+		this.syncables = []
+		this.dispatch('can-register-syncable')
+
 		this.store = Vuex.createStore(this.storeConfig)
 
 		$.get({
@@ -346,6 +333,14 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.webclient.on('message', (...args)=>{return this.handleMessage.apply(this, args)})
 
 		this.messageHandlers = {}
+
+		for(let syncable of this.syncables){
+			this.registerMessageHandler('sync-' + syncable, data => {
+				this.log(`got ${syncable} sync`, data)
+				this.store.commit('set_' + syncable, data)
+			})
+		}
+
 		this.dispatch('can-register-messagehandler')
 
 		setTimeout(()=>{
@@ -460,6 +455,12 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.storeConfig.getters[storableName] = function (state){
 			return state[storableName]
 		}
+	}
+
+	// creates a storable and a message handler with "sync-[syncableName]"
+	registerSyncable(syncableName){
+		this.registerStorable(syncableName)
+		this.syncables.push(syncableName)
 	}
 
 	registerComponent(name, options){

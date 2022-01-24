@@ -271,6 +271,15 @@ class C2Module_Test extends C2LoggingUtility {
 									<test-run :name="'test-performance-frontend-game'" :type="'remote'"/>
 								</division>
 							</tab>
+
+
+
+
+							<tab :title="'Test Custom commands'">
+								<division :name="'Run custom command'" :always-extended="true">
+									<run-custom-command/>
+								</division>
+							</tab>
 						</tabs>
 					</module-enableable>
 				</div>`,
@@ -528,6 +537,61 @@ class C2Module_Test extends C2LoggingUtility {
 					setTestResult (success, message){
 						this.testSuccess = success
 						this.testMessage = message
+					}
+				},
+				mixins: [componentMixin_lockable]
+			})
+
+			/*
+
+				GAME COMMAND COMPONENTS - run a game command and show the result
+
+			*/
+
+			this.c2.registerComponent('run-custom-command', {
+				data: function (){
+					return {
+						rawCommand: '',
+						rawArgs: '',
+						resultSuccess: undefined,
+						resultMessage: undefined
+					}
+				},
+				template: `<div class="run_custom_command">
+					<lockable/>
+
+					<div class="command_input">
+						<div>
+							<label>Command</label>
+							<input type="text" v-model="rawCommand"/>
+						</div>
+						<div>
+							<label>Arguments</label>
+							<input type="text" v-model="rawArgs"/>
+						</div>
+						<button @click="runCustomCommand">Execute ingame</button>
+					</div>
+
+					<div v-if="resultSuccess !== undefined" :class="['command_result', {result_success: resultSuccess}]">
+						<icon v-if="resultSuccess" class="result_icon" :icon="'check-mark-circle'"/>
+						<icon v-else class="result_icon" :icon="'x-mark-circle'"/>
+						<p class="result_message">{{resultMessage}}</p>
+					</div>
+				</div>`,
+				methods: {
+					runCustomCommand (){
+						this.log('runCustomCommand', this.rawCommand)
+						this.setResult(undefined, undefined)
+						this.lockComponent()
+
+						that.c2.webclient.sendMessage('command-run-custom-command', this.rawCommand + ';DELIM;' + this.rawArgs)
+						.then(res => this.setResult(true, res))
+						.catch(err => this.setResult(false, err))
+						.finally(_ => this.unlockComponent())
+					},
+					setResult (success, message){
+						this.resultSuccess = success
+						this.resultMessage = message
 					}
 				},
 				mixins: [componentMixin_lockable]

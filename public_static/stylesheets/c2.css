@@ -2903,6 +2903,36 @@ table th:last-child, table td:last-child {
   font-size: 1.5em;
   margin-right: 1em;
 }
+/* line 140, ../../compass/sass/_c2_module_test.scss */
+.tests_management .run_custom_command .command_input div {
+  margin-bottom: 0.8em;
+}
+/* line 143, ../../compass/sass/_c2_module_test.scss */
+.tests_management .run_custom_command .command_input div label {
+  margin-right: 0.8em;
+}
+/* line 149, ../../compass/sass/_c2_module_test.scss */
+.tests_management .run_custom_command .command_result {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: none;
+  margin-top: 0.8em;
+  padding: 0.8em;
+}
+/* line 157, ../../compass/sass/_c2_module_test.scss */
+.tests_management .run_custom_command .command_result.result_success {
+  background: #379249;
+}
+/* line 161, ../../compass/sass/_c2_module_test.scss */
+.tests_management .run_custom_command .command_result:not(.result_success) {
+  background: #c92f2f;
+}
+/* line 165, ../../compass/sass/_c2_module_test.scss */
+.tests_management .run_custom_command .command_result .result_icon {
+  font-size: 1.5em;
+  margin-right: 1em;
+}
 
 /* line 186, ../../compass/sass/c2.scss */
 body {

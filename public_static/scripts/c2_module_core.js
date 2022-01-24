@@ -5,9 +5,15 @@ class C2Module_Core extends C2LoggingUtility {
 
 		this.c2 = c2
 
-		this.c2.on('can-register-storable', ()=>{
-			//TODO remove the manually set stuff (e.g. players) and replace it with the registerStorable()
+		this.c2.on('can-register-syncable', ()=>{
+			this.c2.registerSyncable('players')
+			this.c2.registerSyncable('vehicles')
+			this.c2.registerSyncable('rules')
+			this.c2.registerSyncable('roles')
+			this.c2.registerSyncable('gamesettings')
+			this.c2.registerSyncable('preferences')
 		})
+
 
 		this.c2.on('can-register-component', ()=>{
 
@@ -94,7 +100,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="players_management">
-					<player-list v-bind:players="players"/>
+					<player-list v-if="players" v-bind:players="players"/>
 				</div>`
 			})
 
@@ -113,10 +119,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('player', {
 				computed: {
 					isBanned (){
-						return !!this.bannedPlayers[this.steamid]
-					},
-					bannedPlayers (){
-						return this.$store.state.bannedplayers
+						return !!this.player.banned
 					}
 				},
 				props: {
@@ -635,7 +638,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list preference_list">
-					<preference v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
+					<preference v-if="preferences" v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
 					<spacer-horizontal/>
 				</div>`
 			})
@@ -771,7 +774,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="gamesettings_management">
-					<gamesetting-list :gamesettings="gamesettings"/>
+					<gamesetting-list v-if="gamesettings" :gamesettings="gamesettings"/>
 				</div>`
 			})
 
@@ -917,13 +920,16 @@ class C2Module_Core extends C2LoggingUtility {
 				//TODO: maybe lock the UI? or at least parts of the UI that interact with the game
 			})
 
-			this.c2.registerMessageHandler('game-connection', (data)=>{
+			this.c2.registerMessageHandler('game-connection', data => {
 				if(data === true){
 					this.setStatusSuccess('Game connected', 3000)
+
+					this.syncAllData()
 				} else {
 					this.setStatusError('Game disconnected')
 				}
 			})
+
 		})
 
 		this.c2.on('setup-done', ()=>{
@@ -936,6 +942,12 @@ class C2Module_Core extends C2LoggingUtility {
 				this.setStatusError('Server Connection Lost')
 			})
 		})
+	}
+
+	syncAllData(){
+		this.c2.webclient.sendMessage('command-sync-all')
+		.then(_ => this.log('started sync all ...'))
+		.catch(err => this.error('error while syncing all', err))
 	}
 
 	// TODO: rework this to use registerStorable()

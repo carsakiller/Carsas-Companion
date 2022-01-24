@@ -23,7 +23,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			} else {
 				this.error('unsupported type by client', messageType)
 				return new Promise((fulfill, reject)=>{
-					reject('unsupported type', message.type)
+					reject('unsupported type: ' + messageType)
 				})
 			}
 		})
@@ -34,20 +34,22 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
 			if(messageType.startsWith('sync-')){
+				this.log("\n\nSYNC\n\n")
 				return new Promise((fulfill, reject)=>{
 					let syncname = messageType.substring('sync-'.length)
 					this.log('(%)', 'syncing', syncname, data)
 					this.c2.sendMessageToWebClient('all', messageType, data).then((res)=>{
 						this.log('sync', syncname, 'success:', res)
+						fulfill()
 					}).catch((err)=>{
 						this.log('sync', syncname, 'unsuccessful:', err)
+						reject(err)
 					})
-					fulfill(res)
 				})
 			} else {
 				this.error('unsupported type by game', messageType)
 				return new Promise((fulfill, reject)=>{
-					reject('unsupported type', message.type)
+					reject('unsupported type: ' + messageType)
 				})
 			}
 		})

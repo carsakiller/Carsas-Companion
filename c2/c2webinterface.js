@@ -65,7 +65,9 @@ module.exports = class C2WebInterface extends C2Interface {
 			for(let cT of clientOrClients){
 				promises.push(this.c2WebSocketHandler.sendToClientToken(cT, dataToSend))
 			}
-			return Promise.all(promises)
+			return new Promise((resolve, reject)=>{
+				Promise.all(promises).finally(resolve)
+			})
 		} else if(typeof clientOrClients === 'string'){
 			this.info(' ->', 'sending data to', clientOrClients, messageType)
 			this.log(data)

@@ -14,7 +14,7 @@ You can also trigger it manually by doing a checkout on the current select branc
 
 ## Coding
 * command line tool 1 : `cd compass & compass watch`
-* command line tool 2 : `nodemon`
+* command line tool 2 : `nodemon` or `nodemon --trace-warnings`
 
 ### Upgrading the version
 Just edit the file `public_static/version.txt`
