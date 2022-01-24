@@ -71,17 +71,27 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				this.lastPacketTimes.pop()
 			}
 
-			let url = req.originalUrl
+			let url
+			try {
+				url = decodeURI(req.originalUrl)
+			} catch (ex){
+				this.log('user uri bad format', ex, req.originalUrl)
+				return res.json({
+					success: false,
+					result: 'bad uri format'
+				})
+			}
 			let params = new URLSearchParams(url.substring(url.indexOf('?')+1))
-			let data = params.get('data');
+			let data = params.get('data')
 			let parsed
 			try {
 				parsed = JSON.parse(data);
 			} catch (ex){
 				this.log('user json has bad format', data, ex)
 				return res.json({
-					result: false
-				});
+					success: false,
+					result: 'json syntax error'
+				})
 			}
 
 			if(!this.ongoingMessageTransfers[parsed.packetId]){

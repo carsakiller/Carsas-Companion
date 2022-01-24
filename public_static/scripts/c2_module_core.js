@@ -12,6 +12,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerSyncable('roles')
 			this.c2.registerSyncable('gamesettings')
 			this.c2.registerSyncable('preferences')
+			this.c2.registerSyncable('commands')
 		})
 
 
@@ -101,6 +102,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="players_management">
 					<player-list v-if="players" v-bind:players="players"/>
+					<span v-else>No players</span>
 				</div>`
 			})
 
@@ -120,6 +122,23 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					isBanned (){
 						return !!this.player.banned
+					},
+					bannedBy (){
+						return this.isBanned ? this.player.banned : ''
+					},
+					playerRoles (){
+						let roles = this.$store.state.roles
+						if(!roles){
+							return undefined
+						}
+
+						let myRoles = {}
+						for(let roleName of Object.keys(roles)){
+							let role = roles[roleName]
+							myRoles[role.name] = !!role.members[this.steamid]
+						}
+
+						return myRoles
 					}
 				},
 				props: {
@@ -138,7 +157,7 @@ class C2Module_Core extends C2LoggingUtility {
 						steamid: this.steamid
 					}
 				},
-				template: `<extendable v-slot="extendableProps" class="player" key="{{player.id}}" :class="[{is_banned: isBanned}]">
+				template: `<extendable v-slot="extendableProps" class="player" key="{{player.steamID}}" :class="[{is_banned: isBanned}]">
 
 					<lockable-by-parent/>
 
@@ -163,13 +182,13 @@ class C2Module_Core extends C2LoggingUtility {
 					</div>
 
 					<extendable-body class="body" :showShadow="true">
-						<p v-if="player.banned">Player was banned by <steamid :steamid="banned[steamid]"/>.</p>
+						<p v-if="isBanned">Player was banned by <steamid :steamid="bannedBy"/>.</p>
 
 						<spacer-horizontal/>
 
 						<tabs>
 							<tab :title="'Roles'">
-								<player-role v-for="(hasRole, roleName) in player.roles" :hasRole="hasRole" :roleName="roleName" :key="roleName"/>
+								<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :key="roleName"/>
 							</tab>
 						</tabs>
 					</extendable-body>
@@ -196,7 +215,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="player_state">
-					<span class="id" v-if="player.peer_id">{{player.peer_id}}</span>
+					<span class="id" v-if="player.peerID">{{player.peerID}}</span>
 					<span class="offline im im-power" v-else></span>
 				</div>`
 			})
@@ -228,10 +247,10 @@ class C2Module_Core extends C2LoggingUtility {
 				</div>`,
 				methods: {
 					giveRole () {
-						this.callGameCommandAndWaitForSync('giveRole', [this.steamid, this.roleName])
+						this.callGameCommandAndWaitForSync('giveRole', [this.roleName, this.steamid])
 					},
 					revokeRole () {
-						this.callGameCommandAndWaitForSync('revokeRole', [this.steamid, this.roleName])
+						this.callGameCommandAndWaitForSync('revokeRole', [this.roleName, this.steamid])
 					}
 				},
 				mixins: [componentMixin_gameCommand]
@@ -250,7 +269,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="vehicles_management">
-					<vehicle-list :vehicles="vehicles"/>
+					<vehicle-list v-if="vehicles" :vehicles="vehicles"/>
+					<span v-else>No vehicles</span>
 				</div>`
 			})
 
@@ -267,6 +287,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('vehicle', {
+				computed: {
+					ownerName (){
+						return this.$store.state.players && this.$store.state.players[this.vehicle.owner] && this.$store.state.players[this.vehicle.owner].name || '?'
+					}
+				},
 				props: {
 					vehicle: {
 						type: Object,
@@ -280,7 +305,7 @@ class C2Module_Core extends C2LoggingUtility {
 				template: `<div class="vehicle">
 					<span class="id">{{vehicleId}}</span>
 					<span class="name">{{vehicle.name}}</span>
-					<span class="owner">{{vehicle.owner}}</span>
+					<span class="owner">{{ownerName}}</span>
 
 					<div class="gap"/>
 
@@ -318,7 +343,8 @@ class C2Module_Core extends C2LoggingUtility {
 						<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
 						<lockable-button @click="addNewRole">Add new Role</lockable-button>
 					</division>
-					<role-list :roles="roles"/>
+					<role-list v-if="roles" :roles="roles"/>
+					<span v-else>No roles</span>
 				</div>`,
 				methods: {
 					addNewRole (){
@@ -370,7 +396,7 @@ class C2Module_Core extends C2LoggingUtility {
 						}
 
 						//the commands the role has NO access to
-						for(let commandName of Object.keys(this.$store.state.allCommands)){
+						for(let commandName of this.$store.state.commands || []){
 							if(!ret[commandName]){
 								ret[commandName] = false
 							}
@@ -381,8 +407,8 @@ class C2Module_Core extends C2LoggingUtility {
 					playersThatAreNotAMember (){//TODO: show that in a popup so one can select it
 						let ret = []
 
-						for(let steamid of Object.keys(this.$store.getters.players)){
-							if(! this.members[steamid]){
+						for(let steamid of Object.keys(this.$store.state.players)){
+							if(! this.role.members[steamid]){
 								ret.push(steamid)
 							}
 						}
@@ -472,7 +498,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list command_list">
-					<command v-for="(isCommand, commandName, index) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
+					<command v-for="(isCommand, commandName) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
 					<spacer-horizontal/>
 				</div>`
 			})
@@ -561,7 +587,8 @@ class C2Module_Core extends C2LoggingUtility {
 						<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5" :disabled="isComponentLocked"/>
 						<lockable-button @click="addNewRule">Add new Rule</lockable-button>
 					</division>
-					<rule-list :rules="rules"/>
+					<rule-list v-if="rules" :rules="rules"/>
+					<span v-else>No rules</span>
 				</div>`,
 				methods: {
 					addNewRule (){
@@ -626,7 +653,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="preferences_management">
-					<preference-list :preferences="preferences"/>
+					<preference-list v-if="preferences" :preferences="preferences"/>
+					<span v-else>No preferences</span>
 				</div>`
 			})
 
@@ -775,6 +803,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="gamesettings_management">
 					<gamesetting-list v-if="gamesettings" :gamesettings="gamesettings"/>
+					<span v-else>No gamesettings</span>
 				</div>`
 			})
 
@@ -873,7 +902,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="logs_management">
-					<log-list v-bind:logs="logs"></log-list>
+					<log-list v-if="logs" :logs="logs"></log-list>
+					<span v-else>No logs</span>
 				</div>`
 			})
 
