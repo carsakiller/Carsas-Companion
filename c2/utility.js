@@ -41,8 +41,8 @@ let mixin_LoggingUtility = Base => class extends Base {
 
 		this.loglevel = 4
 		let loglevelValue = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
-		this.log("loglevel", loglevelValue)
 		this.loglevel =loglevelValue
+		this.log("loglevel", loglevelValue)
 	}
 
 	colorizeConsole(text, color){
@@ -113,8 +113,8 @@ let mixin_LoggingUtility = Base => class extends Base {
 
 let mixin_EventManager = Base => class extends Base {
 
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 		this.eventListeners = {}
 	}
 
@@ -158,27 +158,16 @@ class C2BaseClass {
 	//nothing
 }
 
-
-
-
-
-
 class C2LoggingUtility extends mixin_LoggingUtility(C2BaseClass) {
-	constructor(loglevel){
-		super(loglevel)
-	}
+
 }
 
 class C2EventManager extends mixin_EventManager(C2BaseClass) {
-	constructor(){
-		super()
-	}
+
 }
 
 class C2EventManagerAndLoggingUtility extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
-	constructor(){
-		super()
-	}
+
 }
 
 class C2Handler extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
@@ -201,9 +190,6 @@ class C2Handler extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
 
 class C2Interface extends mixin_LoggingUtility(mixin_EventManager(C2BaseClass)) {
 
-	constructor(loglevel){
-		super(loglevel)
-	}
 }
 
 

@@ -78,7 +78,9 @@ module.exports = class C2WebInterface extends C2Interface {
 			return this.c2WebSocketHandler.sendToClient(clientOrClients, dataToSend)
 		} else {
 			this.error('unsupported clientOrClients type!', clientOrClients)
-			return reject('unsupported clientOrClients type!')
+			return new Promise((fulfill, reject)=>{
+				reject('unsupported clientOrClients type!')
+			})
 		}
 	}
 }

@@ -94,8 +94,8 @@ let classMixin_LoggingUtility = Base => class extends Base {
 
 let classMixin_EventManager = Base => class extends Base {
 
-	constructor(){
-		super()
+	constructor(loglevel){
+		super(loglevel)
 		this.eventListeners = {}
 	}
 
@@ -143,25 +143,19 @@ let classMixin_EventManager = Base => class extends Base {
 
 
 class C2BaseClass {
-	//nothing
+
 }
 
 class C2LoggingUtility extends classMixin_LoggingUtility(C2BaseClass) {
-	constructor(loglevel){
-		super(loglevel)
-	}
+
 }
 
 class C2EventManager extends classMixin_EventManager(C2BaseClass) {
-	constructor(){
-		super()
-	}
+
 }
 
 class C2EventManagerAndLoggingUtility extends classMixin_LoggingUtility(classMixin_EventManager(C2BaseClass)) {
-	constructor(){
-		super()
-	}
+
 }
 
 

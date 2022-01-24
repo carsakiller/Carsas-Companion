@@ -409,8 +409,14 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.showError('' + msg + '\n\n' + trace)
 	}
 
-	showError(msg){
-		this.setError('An Error has occured (Please contact an admin)', msg)
+	showError(msgOrError){
+		let text
+		if(msgOrError instanceof Error){
+			text = msgOrError.message + '\n\n' + msgOrError.stack
+		} else {
+			text = msgOrError
+		}
+		this.setError('An Error has occured (Please contact an admin)', text)
 	}
 
 	registerStorable(storableName){

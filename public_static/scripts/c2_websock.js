@@ -139,7 +139,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 						} else {
 							pm.reject(parsed.data)
 						}
-						delete this.pendingMessages[i]
+						this.pendingMessages.splice(i, 1)
 						return
 					}
 				}
