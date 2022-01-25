@@ -111,10 +111,14 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				}
 			}
 
-			this.log('<- ', 'content part arrived #' + parsed.packetId + ':' + parsed.packetPart, 'of', maxPartsKnown ? omt.max : 'unknown')
+			if(parsed.type !== 'heartbeat'){
+				this.log('<- ', 'content part arrived #' + parsed.packetId + ':' + parsed.packetPart, 'of', maxPartsKnown ? omt.max : 'unknown')
+			}
 
 			if(maxPartsKnown && allPartsArrived){//the signal, that this is the last part (yes we count upside down mate!)
-				this.log('final message part arrived for #' + parsed.packetId)
+				if(parsed.type !== 'heartbeat'){
+					this.log('final message part arrived for #' + parsed.packetId)
+				}
 
 				if(!allPartsArrived){
 					this.warn('missing content part:', i)
@@ -136,7 +140,9 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 
 				delete this.ongoingMessageTransfers[parsed.packetId]
 			
-				this.log('final message content (', content.length, ' chars)', content)
+				if(parsed.type !== 'heartbeat'){
+					this.log('final message content (', content.length, ' chars)', content)
+				}
 
 				let parsedContent
 
@@ -237,7 +243,9 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	handleMessage(messageType, parsedContent){		
 		return new Promise((fulfill, reject)=>{
 
-			this.info('handleMessage', messageType)
+			if(messageType !== 'heartbeat'){
+				this.info('handleMessage', messageType)
+			}
 
 			if(typeof this.messageCallback === 'function'){
 				let promise = this.messageCallback({
