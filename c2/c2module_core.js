@@ -34,10 +34,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
 			if(messageType.startsWith('sync-')){
-				this.log("\n\nSYNC\n\n")
 				return new Promise((fulfill, reject)=>{
 					let syncname = messageType.substring('sync-'.length)
-					this.log('(%)', 'syncing', syncname, data)
+					this.info('(%)', 'syncing', syncname)
+					this.log(data)
 					this.c2.sendMessageToWebClient('all', messageType, data).then((res)=>{
 						this.log('sync', syncname, 'success:', res)
 						fulfill()

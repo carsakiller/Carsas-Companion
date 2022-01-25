@@ -30,7 +30,7 @@ module.exports = class C2GameInterface extends C2Interface {
 			}
 		}, 100)
 
-		this.c2GameHttpHandler = new C2GameHttpHandler(loglevel)
+		this.c2GameHttpHandler = new C2GameHttpHandler(loglevel-1)
 
 		app.use('/game-api', (req, res)=>{
 			if(!this.isGameAvailable){

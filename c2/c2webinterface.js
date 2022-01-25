@@ -54,7 +54,6 @@ module.exports = class C2WebInterface extends C2Interface {
 
 		if(clientOrClients === 'all'){
 			this.info(' ->', 'sending data to all', messageType)
-			this.log(data)
 
 			return this.c2WebSocketHandler.sendToAllClients(dataToSend)
 		} else if(clientOrClients instanceof Array){
