@@ -315,7 +315,7 @@ class C2Module_Core extends C2LoggingUtility {
 				</div>`,
 				methods: {
 					despawn (){
-						alert('not implemented')
+						this.callGameCommandAndWaitForSync('clearVehicle', [this.vehicleId])
 					}
 				},
 				mixins: [componentMixin_gameCommand]
@@ -442,7 +442,7 @@ class C2Module_Core extends C2LoggingUtility {
 							<tab :title="'Permissions'">
 								<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
 								<spacer-horizontal/>
-								<requirements :role="role"/>
+								<permissions :role="role"/>
 							</tab>
 						</tabs>
 					</extendable-body>
@@ -453,12 +453,14 @@ class C2Module_Core extends C2LoggingUtility {
 					},
 					addMember (){
 						alert('not implemented')
+						//TODO: add selection for players
+						//this.callGameCommandAndWaitForSync('giveRole', [this.roleName, ])
 					}
 				},
 				mixins: [componentMixin_gameCommand]
 			})
 
-			this.c2.registerComponent('requirements', {
+			this.c2.registerComponent('permissions', {
 				props: {
 					role: {
 						type: Object,
@@ -466,17 +468,17 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				inject: ['roleName'],
-				template: `<div class="requirements">
+				template: `<div class="permissions">
 
 					<lockable/>
 
-					<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onRequirementChange">isAdmin</toggleable-element>
+					<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onPermissionChange">isAdmin</toggleable-element>
 					<spacer-horizontal/>
-					<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onRequirementChange">isAuth</toggleable-element>
+					<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onPermissionChange">isAuth</toggleable-element>
 				</div>`,
 				methods: {
-					onRequirementChange (name, value){
-						this.debug('onRequirementChange', name, value)
+					onPermissionChange (name, value){
+						this.debug('onPermissionChange', name, value)
 						let updatedRole = {
 							admin: this.role.admin,
 							auth: this.role.auth
@@ -579,7 +581,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				computed: {
 					rules (){
-						return this.$store.state.rules
+						return this.$store.state.rules instanceof Array ? this.$store.state.rules : undefined
 					}
 				},
 				template: `<div class="rules_management">
@@ -677,7 +679,8 @@ class C2Module_Core extends C2LoggingUtility {
 						switch(this.preference.type){
 							case 'bool': return 'preference-bool';
 							case 'number': return 'preference-number';
-							case 'string': return 'preference-string';
+							case 'string':
+							case 'text': return 'preference-string';
 							case 'table': return 'preference-table';
 							default: {
 								this.error('invalid preference type', this.preference.type)

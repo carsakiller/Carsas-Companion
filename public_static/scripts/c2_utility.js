@@ -343,7 +343,6 @@ let componentMixin_gameCommand = {
 	methods: {
 		callGameCommand (command, args){
 			return new Promise((fulfill, reject)=>{
-				this.lockComponentUntilSync()
 
 				c2.webclient.sendMessage('command-' + command, args).then((res)=>{
 					this.log('executing command', command,'was successful')
@@ -785,7 +784,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					this.oldVal = this.val
 					this.oldInitialValue = this.initialValue
 				},
-				watch: {
+				watch: {//TODO: skipNextWatch is not 100% accurate, sometimes skips even though it was user input
 					val: function (){
 						if(this.skipNextWatch){
 							this.skipNextWatch = false
