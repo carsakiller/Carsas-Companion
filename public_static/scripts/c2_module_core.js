@@ -102,7 +102,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="players_management">
 					<player-list v-if="players" v-bind:players="players"/>
-					<span v-else>No players</span>
+					<span v-else>Not synced</span>
 				</div>`
 			})
 
@@ -270,7 +270,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="vehicles_management">
 					<vehicle-list v-if="vehicles" :vehicles="vehicles"/>
-					<span v-else>No vehicles</span>
+					<span v-else>Not synced</span>
 				</div>`
 			})
 
@@ -344,7 +344,7 @@ class C2Module_Core extends C2LoggingUtility {
 						<lockable-button @click="addNewRole">Add new Role</lockable-button>
 					</division>
 					<role-list v-if="roles" :roles="roles"/>
-					<span v-else>No roles</span>
+					<span v-else>Not synced</span>
 				</div>`,
 				methods: {
 					addNewRole (){
@@ -585,17 +585,19 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="rules_management">
-					<division class="new_rule_container" :startExtended="true">
-						<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5" :disabled="isComponentLocked"/>
-						<lockable-button @click="addNewRule">Add new Rule</lockable-button>
-					</division>
-					<rule-list v-if="rules" :rules="rules"/>
-					<span v-else>No rules</span>
+					<lockable-by-childs>
+						<division class="new_rule_container" :startExtended="true">
+							<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5" :disabled="isComponentLocked"/>
+							<lockable-button @click="addNewRule" :set-disabled="newRuleText.length === 0">Add new Rule (at the end)</lockable-button>
+						</division>
+						<rule-list v-if="rules" :rules="rules" @addNewRuleBefore="addNewRule"/>
+						<span v-else>Not synced</span>
+					</lockable-by-childs>
 				</div>`,
 				methods: {
-					addNewRule (){
+					addNewRule (/* optional */ beforeIndex){
 						if(this.newRuleText && this.newRuleText.length > 0){
-							this.callGameCommandAndWaitForSync('addRule', this.newRuleText).then(()=>{
+							this.callGameCommandAndWaitForSync('addRule', typeof beforeIndex === 'number' ? [this.newRuleText, beforeIndex] : [this.newRuleText]).then(()=>{
 								this.newRuleText = ''
 							})
 						}
@@ -611,9 +613,15 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
+				emits: ['addNewRuleBefore'],
 				template: `<div class="list rule_list">
-					<rule v-for="(rule, index) of rules" :rule="rule" :index="index"/>
-				</div>`
+					<rule v-for="(rule, index) of rules" :rule="rule" :index="index" @addNewRuleBeforeMe="addNewRuleBeforeMe"/>
+				</div>`,
+				methods: {
+					addNewRuleBeforeMe (beforeIndex) {
+						this.$emit('addNewRuleBefore', beforeIndex)
+					}
+				}
 			})
 
 			this.c2.registerComponent('rule', {
@@ -627,16 +635,20 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
+				emits: ['addNewRuleBeforeMe'],
 				template: `<div class="rule">
-					<lockable/>
 					<p class="text">{{rule}}</p>
 					<confirm-button class="small_button" :mini="true" @click="remove">
 						<span class="im im-minus"/>
 					</confirm-button>
+					<button class="small_button" :mini="true" @click="addBeforeMe">Insert Before</button>
 				</div>`,
 				methods: {
 					remove (){
 						this.callGameCommandAndWaitForSync('removeRule', this.index + 1)
+					},
+					addBeforeMe (){
+						this.$emit('addNewRuleBeforeMe', this.index + 1)
 					}
 				},
 				mixins: [componentMixin_gameCommand]
@@ -656,7 +668,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="preferences_management">
 					<preference-list v-if="preferences" :preferences="preferences"/>
-					<span v-else>No preferences</span>
+					<span v-else>Not synced</span>
 				</div>`
 			})
 
@@ -806,7 +818,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="gamesettings_management">
 					<gamesetting-list v-if="gamesettings" :gamesettings="gamesettings"/>
-					<span v-else>No gamesettings</span>
+					<span v-else>Not synced</span>
 				</div>`
 			})
 
@@ -906,7 +918,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="logs_management">
 					<log-list v-if="logs" :logs="logs"></log-list>
-					<span v-else>No logs</span>
+					<span v-else>Not synced</span>
 				</div>`
 			})
 

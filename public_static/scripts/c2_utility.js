@@ -347,10 +347,12 @@ let componentMixin_gameCommand = {
 				c2.webclient.sendMessage('command-' + command, args).then((res)=>{
 					this.log('executing command', command,'was successful')
 					this.debug('args', args, 'result', res)
+					fulfill(res)
 				}).catch((err)=>{
 					this.log('executing command', command,'failed')
 					this.debug('args', args, 'error', err)
 					this.unlockComponent()
+					reject(err)
 				})
 			})
 		},
@@ -561,7 +563,13 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			})
 
 			this.c2.registerComponent('lockable-button', {
-				template: `<button :disabled="isDisabled">
+				props: {
+					setDisabled: {
+						type: Boolean,
+						default: false
+					}
+				},
+				template: `<button :disabled="isDisabled || setDisabled">
 					<slot/>
 				</button>`,
 				mixins: [componentMixin_disabledWhenAnyParentLocked]
@@ -762,7 +770,8 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						required: true
 					},
 					'is-disabled': {
-						type: Boolean
+						type: Boolean,
+						default: false
 					}
 				},
 				template: `<div class="toggleable_element">
