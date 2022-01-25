@@ -2649,23 +2649,28 @@ table th:last-child, table td:last-child {
   word-wrap: break-word;
 }
 
-/* line 298, ../../compass/sass/_c2_module_core.scss */
+/* line 300, ../../compass/sass/_c2_module_core.scss */
+.gamesettings_management .gamesetting .gamesetting_bool .only_ingame_hint {
+  color: #7a7a7a;
+}
+
+/* line 308, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 303, ../../compass/sass/_c2_module_core.scss */
+/* line 313, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 308, ../../compass/sass/_c2_module_core.scss */
+/* line 318, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 312, ../../compass/sass/_c2_module_core.scss */
+/* line 322, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
 }

@@ -860,7 +860,7 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerComponent('gamesetting-bool', {
 				inject: ['gamesetting', 'gamesettingName'],
-				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged"/>`,
+				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged" :is-disabled="true"><span class="only_ingame_hint">can only be changed ingame</span></toggleable-element>`,
 				methods: {
 					gamesettingChanged (name, value){
 						this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, value])

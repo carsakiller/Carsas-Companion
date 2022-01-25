@@ -293,6 +293,16 @@
 	}
 }
 
+.gamesettings_management {
+
+	.gamesetting {
+
+		.gamesetting_bool .only_ingame_hint {
+			color: shade($text-color, 50%);
+		}
+	}
+}
+
 .logs_management {
 
 	.log_list {

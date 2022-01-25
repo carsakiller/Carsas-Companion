@@ -757,19 +757,19 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						type: Boolean,
 						required: true
 					},
-					'value-name': {
-						type: String,
-					},
 					'on-value-change': {
 						type: Function,
 						required: true
+					},
+					'is-disabled': {
+						type: Boolean
 					}
 				},
 				template: `<div class="toggleable_element">
 					<div class="front">
 						<label :for="uiid">
 							<disabled-when-any-parent-locked v-slot="disabledProps">
-								<input type="checkbox" :id="uiid" v-model="val" :disabled="disabledProps.isDisabled">
+								<input type="checkbox" :id="uiid" v-model="val" :disabled="disabledProps.isDisabled || isDisabled">
 							</disabled-when-any-parent-locked>
 							<span class="checkbox_slider"/>
 						</label>
