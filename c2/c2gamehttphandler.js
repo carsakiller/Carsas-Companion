@@ -170,7 +170,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 							answer(true, res)
 						}).catch((err)=>{
 							this.error('error in callback promise', err)
-							answer(false, 'Error: check server logs')
+							answer(false, err)
 						})
 					} else {
 						answer(true, 'ok')

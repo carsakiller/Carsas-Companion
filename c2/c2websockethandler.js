@@ -107,7 +107,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		})
 	}
 
-	//will not fail if fails for a single client, skips disconnected clients
+	//fails if fails for a single client, skips disconnected clients
 	sendToAllClients(data){
 		let promises = []
 		for(let c of this.clients){
@@ -117,9 +117,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 
 			promises.push(this.sendToClient(c, data))
 		}
-		return new Promise((resolve, reject)=>{
-			Promise.all(promises).finally(resolve)
-		})
+		return Promise.all(promises)
 	}
 
 	handleMessage(client, msg){
@@ -141,9 +139,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 						if(parsed.success === true){
 							pm.fulfill(parsed.data)
 						} else {
-							this.log("$$1")
 							pm.reject(parsed.data)
-							this.log("$$2")
 						}
 
 						this.pendingMessageResponses.splice(i, 1)
