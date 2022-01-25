@@ -17,9 +17,32 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 			return this.runWebClientTest(client, 'test-performance-backend-frontend')
 		})
 
-		// GAME -> BACKEND TEST (triggered by game)
+
+		this.currentGameBackendTest = undefined
+
+		// GAME -> BACKEND TEST (triggered see below)
 		this.c2.registerGameMessageHandler('test-performance-game-backend', (data)=>{
-			return JSON.parse(data)
+			if(typeof this.currentGameBackendTest === 'function'){
+				this.currentGameBackendTest(JSON.parse(data))
+			}
+		})
+		// GAME -> BACKEND TEST (proxy triggered by webclient)
+		this.c2.registerWebClientMessageHandler('test-performance-game-backend-proxy', ()=>{
+			return new Promise((resolve, reject)=>{
+				let start = Math.floor(performance.now())
+
+				this.currentGameBackendTest = (data)=>{
+					resolve({
+						testSuccess: data === start,
+						testMessage: 'executed via proxy (companion server)'
+					})
+				}
+
+				this.c2.sendMessageToGame(undefined, 'test-performance-game-backend-proxy', start).catch(err => {
+					this.currentGameBackendTest = undefined
+					reject(err)
+				})
+			})
 		})
 
 		// GAME <- BACKEND TEST (triggered by webclient)
@@ -29,7 +52,14 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 
 		// FRONTEND -> GAME TEST (triggered by webclient), just proxying)
 		this.c2.registerWebClientMessageHandler('test-performance-frontend-game', (client, data)=>{
-			return this.c2.sendMessageToGame(undefined, 'test-performance-frontend-game', data)
+			return new Promise((resolve, reject)=>{
+				let dat = JSON.parse(JSON.stringify(data)) //simulate the conversion that would normally happen
+				this.c2.sendMessageToGame(undefined, 'test-performance-frontend-game', dat).then(res => {
+					resolve(JSON.parse(res))
+				}).catch(err => {
+					reject(err)
+				})
+			})
 		})
 
 

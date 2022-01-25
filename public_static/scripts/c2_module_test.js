@@ -267,8 +267,9 @@ class C2Module_Test extends C2LoggingUtility {
 								<division :name="'Performance'" :start-extended="true">
 									<test-run :name="'test-performance-frontend-backend'" :type="'local'"/>
 									<test-run :name="'test-performance-backend-frontend'" :type="'remote'"/>
+									<test-run :name="'test-performance-game-backend-proxy'" :type="'remote'"/>
 									<test-run :name="'test-performance-backend-game'" :type="'remote'"/>
-									<test-run :name="'test-performance-frontend-game'" :type="'remote'"/>
+									<test-run :name="'test-performance-frontend-game'" :type="'local'"/>
 								</division>
 							</tab>
 
