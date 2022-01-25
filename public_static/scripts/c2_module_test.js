@@ -586,13 +586,13 @@ class C2Module_Test extends C2LoggingUtility {
 						this.lockComponent()
 
 						that.c2.webclient.sendMessage('command-run-custom-command', this.rawCommand + ';DELIM;' + this.rawArgs)
-						.then(res => this.setResult(true, res))
+						.then(res => this.setResult(true, JSON.parse(res)))
 						.catch(err => this.setResult(false, err))
 						.finally(_ => this.unlockComponent())
 					},
 					setResult (success, message){
 						this.resultSuccess = success
-						this.resultMessage = message
+						this.resultMessage = ('' + message).replaceAll('\\n', '\n')
 					}
 				},
 				mixins: [componentMixin_lockable]
