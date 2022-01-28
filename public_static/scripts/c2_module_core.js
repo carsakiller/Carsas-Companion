@@ -188,14 +188,14 @@ class C2Module_Core extends C2LoggingUtility {
 
 						<tabs>
 							<tab :title="'Roles'">
-								<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :key="roleName"/>
+								<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :key="roleName" :steamid="steamid"/>
 							</tab>
 						</tabs>
 					</extendable-body>
 				</extendable>`,
 				methods: {
 					kick (){
-						alert('not implemented')//TODO: requires new command
+						this.callGameCommandAndWaitForSync('kickPlayer', this.steamid)
 					},
 					ban (){
 						this.callGameCommandAndWaitForSync('banPlayer', this.steamid)
@@ -215,7 +215,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="player_state">
-					<span class="id" v-if="player.peerID">{{player.peerID}}</span>
+					<span class="id" v-if="typeof player.peerID === 'number'">{{player.peerID}}</span>
 					<span class="offline im im-power" v-else></span>
 				</div>`
 			})
@@ -235,9 +235,13 @@ class C2Module_Core extends C2LoggingUtility {
 					roleName: {
 						type: String,
 						required: true
+					},
+					steamid: {
+						type: String,
+						required: true
 					}
 				},
-				inject: ['player', 'steamid'],
+				inject: ['player'],
 				template: `<div class="player_role" :class="hasRole ? enabledClass : disabledClass">
 					<lockable/>
 					<span class="name">{{roleName}}</span>
@@ -424,7 +428,7 @@ class C2Module_Core extends C2LoggingUtility {
 						</extendable-trigger>
 
 						<div class="buttons">
-							<confirm-button @click="remove">Remove</confirm-button>
+							<confirm-button v-if="role.no_delete !== true" @click="remove">Remove</confirm-button>
 						</div>
 					</div>
 
@@ -519,7 +523,7 @@ class C2Module_Core extends C2LoggingUtility {
 				inject: ['roleName'],
 				template: `<div class="command">
 					<lockable/>
-					<toggleable-element :initial-value="isCommand" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+					<toggleable-element :initial-value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
 					onCommandChange (name, value){
@@ -561,7 +565,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.players[this.steamid]
 					},
 					removeMember (){
-						this.callGameCommandAndWaitForSync('revokeRole ', [this.steamid, this.roleName])
+						this.callGameCommandAndWaitForSync('revokeRole', [this.roleName, this.steamid])
 					}
 				},
 				mixins: [componentMixin_gameCommand]
@@ -726,7 +730,7 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerComponent('preference-bool', {
 				inject: ['preference', 'preferenceName'],
-				template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :on-value-change="preferenceChanged"/>`,
+				template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :value-name="preferenceName" :on-value-change="preferenceChanged"/>`,
 				methods: {
 					preferenceChanged (name, value){
 						this.callGameCommandAndWaitForSync('setPref', [this.preferenceName, value])
@@ -859,20 +863,25 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				provide: function (){
 					return {
-						gamesetting: this.gamesetting,
-						gamesettingName: this.gamesettingName
+						gamesetting: this.gamesetting
 					}
 				},
 				template: `<division class="gamesetting" :name="gamesettingName" :alwaysExtended="true">
 					<lockable-by-childs>
-						<component :is="gamesettingComponent"/>
+						<component :is="gamesettingComponent" :gamesetting-name="gamesettingName"/>
 					</lockable-by-childs>
 				</division>`
 			})
 
 			this.c2.registerComponent('gamesetting-bool', {
-				inject: ['gamesetting', 'gamesettingName'],
-				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :on-value-change="gamesettingChanged" :is-disabled="true"><span class="only_ingame_hint">can only be changed ingame</span></toggleable-element>`,
+				props: {
+					gamesettingName: {
+						type: String,
+						required: true
+					}
+				},
+				inject: ['gamesetting'],
+				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :value-name="gamesettingName" :on-value-change="gamesettingChanged"></toggleable-element>`,
 				methods: {
 					gamesettingChanged (name, value){
 						this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, value])
@@ -887,11 +896,18 @@ class C2Module_Core extends C2LoggingUtility {
 						val: 0
 					}
 				},
-				inject: ['gamesetting', 'gamesettingName'],
+				props: {
+					gamesettingName: {
+						type: String,
+						required: true
+					}
+				},
+				inject: ['gamesetting'],
 				template: `<div class="gamesetting_number">
-					<input type="number" v-model="val" :disabled="isComponentLocked"/>
+					<span class="only_ingame_hint">can only be changed ingame in custom menu.</span>
+					<!--<input type="number" v-model="val" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
-					<lockable-button @click="update">Update</lockable-button>
+					<lockable-button @click="update">Update</lockable-button>-->
 				</div>`,
 				created: function (){
 					this.val = this.gamesetting

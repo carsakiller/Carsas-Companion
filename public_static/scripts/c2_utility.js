@@ -765,6 +765,10 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						type: Boolean,
 						required: true
 					},
+					'value-name': {
+						type: String,
+						required: true
+					},
 					'on-value-change': {
 						type: Function,
 						required: true

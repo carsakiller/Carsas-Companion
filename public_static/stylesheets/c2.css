@@ -2650,7 +2650,7 @@ table th:last-child, table td:last-child {
 }
 
 /* line 300, ../../compass/sass/_c2_module_core.scss */
-.gamesettings_management .gamesetting .gamesetting_bool .only_ingame_hint {
+.gamesettings_management .gamesetting .gamesetting_number .only_ingame_hint {
   color: #7a7a7a;
 }
 
