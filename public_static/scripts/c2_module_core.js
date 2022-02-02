@@ -119,6 +119,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('player', {
+				data: function(){
+					return {
+						syncables: ['players']
+					}
+				},
 				computed: {
 					isBanned (){
 						return !!this.player.banned
@@ -188,7 +193,9 @@ class C2Module_Core extends C2LoggingUtility {
 
 						<tabs>
 							<tab :title="'Roles'">
-								<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :key="roleName" :steamid="steamid"/>
+								<lockable-by-childs>
+									<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :key="roleName" :steamid="steamid"/>
+								</lockable-by-childs>
 							</tab>
 						</tabs>
 					</extendable-body>
@@ -224,7 +231,8 @@ class C2Module_Core extends C2LoggingUtility {
 				data: function (){
 					return {
 						enabledClass: 'enabled',
-						disabledClass: 'disabled'
+						disabledClass: 'disabled',
+						syncables: ['roles']
 					}
 				},
 				props: {
@@ -286,11 +294,18 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list vehicle_list">
-					<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)" :key="vehicleId"/>
+					<lockable-by-childs>
+						<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)" :key="vehicleId"/>
+					</lockable-by-childs>
 				</div>`
 			})
 
 			this.c2.registerComponent('vehicle', {
+				data: function(){
+					return {
+						syncables: ['vehicles']
+					}
+				},
 				computed: {
 					ownerName (){
 						return this.$store.state.players && this.$store.state.players[this.vehicle.owner] && this.$store.state.players[this.vehicle.owner].name || '?'
@@ -334,7 +349,8 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('roles-management', {
 				data: function (){
 					return {
-						newRoleText: ''
+						newRoleText: '',
+						syncables: ['roles']
 					}
 				},
 				computed: {
@@ -343,12 +359,15 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="roles_management">
-					<division class="new_role_container" :startExtended="true">
-						<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
-						<lockable-button @click="addNewRole">Add new Role</lockable-button>
-					</division>
-					<role-list v-if="roles" :roles="roles"/>
-					<span v-else>Not synced</span>
+					<lockable/>
+					<lockable-by-childs>
+						<division class="new_role_container" :startExtended="true">
+							<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
+							<lockable-button @click="addNewRole">Add new Role</lockable-button>
+						</division>
+						<role-list v-if="roles" :roles="roles"/>
+						<span v-else>Not synced</span>
+					</lockable-by-childs>
 				</div>`,
 				methods: {
 					addNewRole (){
@@ -375,6 +394,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('role', {
+				data: function(){
+					return {
+						syncables: ['roles']
+					}
+				},
 				props: {
 					role: {
 						type: Object,
@@ -465,6 +489,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('permissions', {
+				data: function(){
+					return {
+						syncables: ['roles']
+					}
+				},
 				props: {
 					role: {
 						type: Object,
@@ -510,6 +539,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('command', {
+				data: function(){
+					return {
+						syncables: ['roles']
+					}
+				},
 				props: {
 					isCommand: {
 						type: Boolean,
@@ -546,6 +580,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('member', {
+				data: function(){
+					return {
+						syncables: ['roles']
+					}
+				},
 				props: {
 					steamid: {
 						type: String,
@@ -580,7 +619,8 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('rules-management', {
 				data: function (){
 					return {
-						newRuleText: ''
+						newRuleText: '',
+						syncables: ['rules']
 					}
 				},
 				computed: {
@@ -589,6 +629,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="rules_management">
+					<lockable/>
 					<lockable-by-childs>
 						<division class="new_rule_container" :startExtended="true">
 							<textarea v-model="newRuleText" placeholder="New rule text" cols="30" rows="5" :disabled="isComponentLocked"/>
@@ -629,6 +670,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('rule', {
+				data: function(){
+					return {
+						syncables: ['rules']
+					}
+				},
 				props: {
 					rule: {
 						type: String,
@@ -684,8 +730,11 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list preference_list">
-					<preference v-if="preferences" v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
-					<spacer-horizontal/>
+					<lockable/>
+					<lockable-by-childs>
+						<preference v-if="preferences" v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
+						<spacer-horizontal/>
+					</lockable-by-childs>
 				</div>`
 			})
 
@@ -729,6 +778,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('preference-bool', {
+				data: function(){
+					return {
+						syncables: ['preferences']
+					}
+				},
 				inject: ['preference', 'preferenceName'],
 				template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :value-name="preferenceName" :on-value-change="preferenceChanged"/>`,
 				methods: {
@@ -742,7 +796,8 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('preference-string', {
 				data: function (){
 					return {
-						val: ''
+						val: '',
+						syncables: ['preferences']
 					}
 				},
 				inject: ['preference', 'preferenceName'],
@@ -765,7 +820,8 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('preference-number', {
 				data: function (){
 					return {
-						val: 0
+						val: 0,
+						syncables: ['preferences']
 					}
 				},
 				inject: ['preference', 'preferenceName'],
@@ -788,7 +844,8 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('preference-table', {
 				data: function (){
 					return {
-						val: ''
+						val: '',
+						syncables: 'preferences'
 					}
 				},
 				inject: ['preference', 'preferenceName'],
@@ -834,9 +891,13 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list gamesetting_list">
-					<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
-					<spacer-horizontal/>
-				</div>`
+					<lockable/>
+					<lockable-by-childs>
+						<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
+						<spacer-horizontal/>
+					</lockable-by-childs>
+				</div>`,
+				mixins: [componentMixin_lockable]
 			})
 
 			this.c2.registerComponent('gamesetting', {
@@ -874,6 +935,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('gamesetting-bool', {
+				data: function(){
+					return {
+						syncables: ['gamesettings']
+					}
+				},
 				props: {
 					gamesettingName: {
 						type: String,
@@ -893,7 +959,8 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('gamesetting-number', {
 				data: function (){
 					return {
-						val: 0
+						val: 0,
+						syncables: ['gamesettings']
 					}
 				},
 				props: {

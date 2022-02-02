@@ -7,11 +7,8 @@ let classMixin_LoggingUtility = Base => class extends Base {
 	constructor(loglevel){
 		super()
 
-		this.loglevel = 5 //The browser can filter it by himself
-
-		let loglevelValue = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
-		this.log("loglevel", loglevelValue)
-		this.loglevel =loglevelValue
+		this.loglevel = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
+		this.log("loglevel", this.loglevel)
 	}
 
 	error(...args){
@@ -115,10 +112,20 @@ let classMixin_EventManager = Base => class extends Base {
 		}
 	}
 
-	/* removes all event listeners for that eventname */
-	off(eventname){
+	/* removes all event listeners for that eventname, or only a single one, if original callback is provided */
+	off(eventname, /*optional */ callback){
 		if(this.eventListeners[eventname]){
-			delete this.eventListeners[eventname]
+			if(callback){
+				let index
+				do {
+					index = this.eventListeners[eventname][callback]
+					if(index >= 0){
+						this.eventListeners[eventname].splice(index, 1)
+					}
+				} while (index >= 0)
+			} else {
+				delete this.eventListeners[eventname]
+			}
 		}
 	}
 
@@ -256,12 +263,13 @@ let componentMixin_logging = {
 	}
 }
 
+
 let componentMixin_lockable = {
 	data: function(){
 		return {
 			isComponentLocked: false,
 			isUnlockComponentOnNextSync: false,
-			timeSetOnNextSync: 0,
+			/* syncables: ['players'],  MUST BE SET IN THE COMPONENT! */
 			lockableParents: []
 		}
 	},
@@ -286,31 +294,47 @@ let componentMixin_lockable = {
 			}
 		},
 		unlockComponentOnNextSync (){
-			this.debug('unlockComponentOnNextSync')
-			this.isUnlockComponentOnNextSync = true
-			this.timeSetOnNextSync = Date.now()
+			this.syncablesToWaitFor = this.syncables.slice()
+			this.debug('unlockComponentOnNextSync', this.syncablesToWaitFor)
 		}
 	},
 	created: function (){
+		if(this.syncables === undefined || this.syncables instanceof Array === false){
+			this.error('syncables field must be defined for this component!')
+			return
+		}
+
+		this.onSyncOfCallback = (syncableName)=>{
+			if(this.syncablesToWaitFor){
+				let index = this.syncablesToWaitFor.indexOf(syncableName)
+				if(index >= 0){
+					this.syncablesToWaitFor.splice(index, 1)
+				}
+
+				if(this.syncablesToWaitFor.length === 0){
+					this.syncablesToWaitFor = undefined
+					this.debug('all syncablesToWaitFor have arrived')
+					this.unlockComponent()
+				}
+			}
+		}
+		c2.on('sync-arrived', this.onSyncOfCallback)
+
 		searchForLockableByChildsParentRecursively(this, this.$parent)
 
 		function searchForLockableByChildsParentRecursively(me, node){
 			if(node && ('isLockableByChilds' in node)){
 				me.lockableParents.push(node)
 				me.debug('found a lockable by childs parent', node)
-			} else if (node) {
+			}
+
+			if(node) {
 				searchForLockableByChildsParentRecursively(me, node.$parent)
 			}
 		}
 	},
-	updated (){
-		setTimeout(()=>{
-			if(this.isUnlockComponentOnNextSync && (Date.now() - this.timeSetOnNextSync > 10) ){// a sync from the game will NEVER happen within 10ms (this prevents other update calls to look like a sync) TODO: does it make sense to add a global event ('sync') which is called by "c2webclient" when a sync arrives?
-				this.isUnlockComponentOnNextSync = false
-				this.timeSetOnNextSync = 0
-				this.unlockComponent()
-			}
-		}, 1)
+	unmounted: function(){
+		c2.off('sync-arrived', this.onSyncOfCallback)
 	}
 }
 

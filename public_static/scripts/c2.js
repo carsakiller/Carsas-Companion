@@ -1,9 +1,7 @@
 class C2 extends C2EventManagerAndLoggingUtility {
 
 	constructor(el){
-		super(4)
-
-		this.loglevel = 4
+		super(5)
 
 		this.c2Utility = new C2Utility(this.loglevel, this)
 		this.c2Module_Core = new C2Module_Core(this.loglevel, this)
@@ -239,6 +237,8 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			this.registerMessageHandler('sync-' + syncable, data => {
 				this.log(`got ${syncable} sync`, data)
 				this.store.commit('set_' + syncable, data)
+
+				this.dispatch('sync-arrived', syncable)
 			})
 		}
 
