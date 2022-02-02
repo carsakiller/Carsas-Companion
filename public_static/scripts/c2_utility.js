@@ -118,7 +118,7 @@ let classMixin_EventManager = Base => class extends Base {
 			if(callback){
 				let index
 				do {
-					index = this.eventListeners[eventname][callback]
+					index = this.eventListeners[eventname].indexOf(callback)
 					if(index >= 0){
 						this.eventListeners[eventname].splice(index, 1)
 					}
