@@ -469,7 +469,8 @@ class C2Module_Test extends C2LoggingUtility {
 				data: function (){
 					return {
 						testSuccess: undefined,
-						testMessage: undefined
+						testMessage: undefined,
+						syncables: []
 					}
 				},
 				props: {
@@ -555,7 +556,8 @@ class C2Module_Test extends C2LoggingUtility {
 						rawCommand: '',
 						rawArgs: '',
 						resultSuccess: undefined,
-						resultMessage: undefined
+						resultMessage: undefined,
+						syncables: []
 					}
 				},
 				template: `<div class="run_custom_command">

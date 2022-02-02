@@ -300,25 +300,27 @@ let componentMixin_lockable = {
 	},
 	created: function (){
 		if(this.syncables === undefined || this.syncables instanceof Array === false){
-			this.error('syncables field must be defined for this component!')
+			this.error('syncables field must be defined for this component! Hint: [] is valid!')
 			return
 		}
 
-		this.onSyncOfCallback = (syncableName)=>{
-			if(this.syncablesToWaitFor){
-				let index = this.syncablesToWaitFor.indexOf(syncableName)
-				if(index >= 0){
-					this.syncablesToWaitFor.splice(index, 1)
-				}
+		if(this.syncables.length > 0){
+			this.onSyncOfCallback = (syncableName)=>{
+				if(this.syncablesToWaitFor){
+					let index = this.syncablesToWaitFor.indexOf(syncableName)
+					if(index >= 0){
+						this.syncablesToWaitFor.splice(index, 1)
+					}
 
-				if(this.syncablesToWaitFor.length === 0){
-					this.syncablesToWaitFor = undefined
-					this.debug('all syncablesToWaitFor have arrived')
-					this.unlockComponent()
+					if(this.syncablesToWaitFor.length === 0){
+						this.syncablesToWaitFor = undefined
+						this.debug('all syncablesToWaitFor have arrived')
+						this.unlockComponent()
+					}
 				}
 			}
+			c2.on('sync-arrived', this.onSyncOfCallback)
 		}
-		c2.on('sync-arrived', this.onSyncOfCallback)
 
 		searchForLockableByChildsParentRecursively(this, this.$parent)
 
