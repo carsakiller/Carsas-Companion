@@ -1187,6 +1187,20 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				},
 				template: `<span :class="['im', 'im-' + icon]"><slot/></span>`
 			})
+
+			this.c2.registerComponent('a-link', {
+				props: {
+					url: {
+						type: String,
+						required: true
+					},
+					text: {
+						type: String,
+						required: true
+					}
+				},
+				template: `<a :href="url" target="_blank" rel="noopener noreferrer">{{text}}</a>`
+			})
 		})
 	}
 }

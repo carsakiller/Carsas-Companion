@@ -83,7 +83,7 @@ class C2Module_Core extends C2LoggingUtility {
 						</p>
 					</division>
 					<division :name="'Help'" :startExtended="false">
-						You can find a manual <a href="#">here (TODO)</a>
+						You can find a manual <a-link :url="'#'" :text="'here (TODO)'"/>
 					</division>
 				</div>`
 			})
@@ -296,6 +296,7 @@ class C2Module_Core extends C2LoggingUtility {
 				template: `<div class="list vehicle_list">
 					<lockable-by-childs>
 						<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)" :key="vehicleId"/>
+						<span v-if="Object.keys(vehicles).length === 0">No vehicles</span>
 					</lockable-by-childs>
 				</div>`
 			})
@@ -432,7 +433,7 @@ class C2Module_Core extends C2LoggingUtility {
 
 						return ret
 					},
-					playersThatAreNotAMember (){//TODO: show that in a popup so one can select it
+					playersThatAreNotAMember (){
 						let ret = []
 
 						for(let steamid of Object.keys(this.$store.state.players)){
@@ -829,6 +830,7 @@ class C2Module_Core extends C2LoggingUtility {
 					<input type="number" v-model="val" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
 					<lockable-button @click="update">Update</lockable-button>
+					<a-link v-if="preferenceName.toLowerCase().indexOf('equipment') >= 0" :url="'#'" :text="'Equipment IDs'" class="more_link"/>
 				</div>`,
 				created: function (){
 					this.val = this.preference.value
@@ -1045,7 +1047,7 @@ class C2Module_Core extends C2LoggingUtility {
 		this.c2.on('can-register-messagehandler', ()=>{
 
 			this.c2.registerMessageHandler('heartbeat', (data)=>{
-				//TODO: maybe lock the UI? or at least parts of the UI that interact with the game
+
 			})
 
 			this.c2.registerMessageHandler('game-connection', data => {

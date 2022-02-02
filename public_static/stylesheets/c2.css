@@ -2649,28 +2649,33 @@ table th:last-child, table td:last-child {
   word-wrap: break-word;
 }
 
-/* line 300, ../../compass/sass/_c2_module_core.scss */
+/* line 287, ../../compass/sass/_c2_module_core.scss */
+.preferences_management .preference_list .preference .preference_number .more_link {
+  margin-left: 1em;
+}
+
+/* line 303, ../../compass/sass/_c2_module_core.scss */
 .gamesettings_management .gamesetting .gamesetting_number .only_ingame_hint {
   color: #7a7a7a;
 }
 
-/* line 308, ../../compass/sass/_c2_module_core.scss */
+/* line 311, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 313, ../../compass/sass/_c2_module_core.scss */
+/* line 316, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 318, ../../compass/sass/_c2_module_core.scss */
+/* line 321, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 322, ../../compass/sass/_c2_module_core.scss */
+/* line 325, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
 }
