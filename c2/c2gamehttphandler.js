@@ -195,6 +195,9 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 			    }
 
 			    if(nextCommand){
+			    	if(nextCommand.token){
+			    		resp.token = nextCommand.token
+			    	}
 			    	resp.command = nextCommand.command;
 			    	resp.commandId = nextCommand.id;
 			    	resp.commandContent = nextCommand.content;

@@ -189,6 +189,11 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 	createApp (el){
 		this.app = Vue.createApp({
+			data: function(){
+				return {
+					isLoggedIn: false
+				}
+			},
 			computed: {
 				pages: function (){
 					return this.$store.getters.pages
@@ -200,7 +205,8 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			},
 			template: `<div class="c2">
 				<error-popup/>
-				<pages :initial-index="initialPage" @page-change="onPageChange">
+				<login-form @loginSuccess="isLoggedIn = true"/>
+				<pages v-if="isLoggedIn" :initial-index="initialPage" @page-change="onPageChange">
 					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon">
 						<component :is="page.componentName"/>
 					</page>
@@ -227,7 +233,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.vm = this.app.mount(el)
 
-		this.webclient = new C2WebClient(this)
+		this.webclient = new C2WebClient(this.loglevel, this)
 
 		this.webclient.on('message', (...args)=>{return this.handleMessage.apply(this, args)})
 

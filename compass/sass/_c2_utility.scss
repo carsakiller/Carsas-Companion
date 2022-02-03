@@ -343,69 +343,6 @@
 	}
 }
 
-.status_bar {
-	position: fixed;
-	z-index: 999;
-	bottom: 0;
-	left: 0;
-	width: 100vw;
-	padding: 0.7em 2em;
-	color: $text-color;
-	text-align: center;
-	font-size: 0.7em;
-
-	&.success {
-		background: linear-gradient(45deg, shade($enabled, 15%), tint($enabled, 15%));
-	}
-
-	&.error {
-		background: linear-gradient(45deg, shade($disabled, 15%), tint($disabled, 15%));
-	}
-}
-
-.error_popup {
-	position: fixed;
-	z-index: 999999;
-	top: 0;
-	left: 0;
-	height: 100vh;
-	width: 100vw;
-	background: #000a;
-
-	.inner {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		height: 80vh;
-		width: 80vw;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		transform: translateX(-50%) translateY(-50%);
-		background: $disabled;
-		padding: 2em 3em;
-		color: $text-color;
-		text-align: center;
-
-		.title {
-			font-size: 1.2em;
-		}
-
-		.message {
-			height: 100%;
-			width: 100%;
-			resize: none;
-			background: #c28d8d;
-			color: #222;
-			margin: 2em 0;
-		}
-
-		button {
-			font-size: inherit;
-		}
-	}
-}
-
 .confirm_button {
 	color: $text-color;
 	position: relative;

@@ -70,6 +70,7 @@ module.exports = class C2GameInterface extends C2Interface {
 
 		this.info(' ->', 'sending messageType', messageType)
 		this.log(data)
+		this.debug(token)
 		return new Promise((fulfill, reject)=>{
 			this.c2GameHttpHandler.sendCommandToGame(token, messageType, data).then((res)=>{
 				this.info('received result from messageType ', messageType, res)

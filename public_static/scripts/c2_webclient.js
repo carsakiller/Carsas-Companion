@@ -8,12 +8,12 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 		message
 	*/
 
-	constructor(c2){
-		super(4)
+	constructor(loglevel, c2){
+		super(loglevel)
 
 		this.c2 = c2
 
-		this.ws = new C2WebSock('ws://' + window.location.host + '/ws', 'XYZ')
+		this.ws = new C2WebSock(loglevel, 'ws://' + window.location.host + '/ws')
 
 		this.ws.on('open', ()=>{
 			this.log('is now open')

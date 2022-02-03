@@ -64,15 +64,13 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 		The promise is optional. If you don't return a promise, the server will be sent a sucess response once callback() finished execution
 	*/
 
-	constructor(url, token){
-		super(4)
+	constructor(loglevel, url){
+		super(loglevel)
 
 		this.log('new WebSock', url)
 
 		this.url = url
-		this.token = token
-
-		this.LOGLEVEL = 3
+		this.token = undefined
 
 		this.listeners = {}
 
@@ -97,20 +95,20 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 	createWebSocket(){
 		this.websocket = new WebSocket(this.url)
 
-		this.websocket.onopen = (evt)=>this.handleWesocketOpen(evt)
+		this.websocket.onopen = (evt)=>this.handleWebsocketOpen(evt)
 
-		this.websocket.onmessage = (evt)=>this.handleWesocketMessage(evt)
+		this.websocket.onmessage = (evt)=>this.handleWebsocketMessage(evt)
 
-		this.websocket.onclose = (evt)=>this.handleWesocketClose(evt)
+		this.websocket.onclose = (evt)=>this.handleWebsocketClose(evt)
 
 		this.websocket.onerror = (evt)=>this.handleWebsocketError(evt)
 	}
 
-	handleWesocketOpen(evt){
+	handleWebsocketOpen(evt){
 		this.dispatch('open', evt)
 	}
 
-	handleWesocketMessage(evt){
+	handleWebsocketMessage(evt){
 		if(evt.data === '*RELOAD_PAGE*'){
 			if(window.NO_MAGIC_PAGE_RELOAD){
 				return//ignore
@@ -120,6 +118,15 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 			setTimeout(()=>{// give the server some time to finish building resources (e.g. compass)
 				document.location.reload()
 			}, 1000)
+			return
+		}
+
+		if(evt.data === '*FORCE_RELOAD*'){
+			this.preventReconnect = true
+			this.websocket.close()
+			setTimeout(()=>{
+				document.location.reload()
+			}, 100)
 			return
 		}
 
@@ -190,7 +197,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 		}
 	}
 
-	handleWesocketClose(evt){
+	handleWebsocketClose(evt){
 		this.dispatch('close', evt)
 
 		this.on('open', ()=>{
@@ -225,6 +232,8 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 				fulfill: fulfill,
 				reject: reject
 			})
+
+			this.debug('token', this.token)
 
 			this.websocket.send(JSON.stringify({
 				clientId: myMessageId,

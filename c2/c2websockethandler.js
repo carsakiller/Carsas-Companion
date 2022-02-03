@@ -57,7 +57,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		let client = {
 			id: this.clientIdCounter++,
 			ws: ws,
-			token: undefined,//TODO: set this token once the client logs in
+			token: undefined,
 			req: req
 		}
 
@@ -238,5 +238,11 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 				data: JSON.stringify(data)
 			}))
 		})
+	}
+
+	forceReloadAll(){
+		for(let client of this.clients){
+			client.ws.send('*FORCE_RELOAD*')
+		}
 	}
 }

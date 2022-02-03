@@ -39,9 +39,8 @@ let mixin_LoggingUtility = Base => class extends Base {
 			this.CONSOLE_COLORS[key] = '\x1b' + this.CONSOLE_COLORS[key]
 		}
 
-		let loglevelValue = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
-		this.loglevel = loglevelValue
-		this.log("loglevel", loglevelValue)
+		this.loglevel = Math.max(0, typeof loglevel === 'number' ? loglevel : 4)
+		this.log("loglevel", this.loglevel)
 	}
 
 	colorizeConsole(text, color){
@@ -95,6 +94,8 @@ let mixin_LoggingUtility = Base => class extends Base {
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
+			+ ' '
+			+ this.colorizeConsole('Log', 'FgWhite')
 		].concat(args))
 	}
 
@@ -106,6 +107,8 @@ let mixin_LoggingUtility = Base => class extends Base {
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
+			+ ' '
+			+ this.colorizeConsole('Debug', 'FgWhite')
 		].concat(args))
 	}
 }

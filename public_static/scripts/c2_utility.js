@@ -36,7 +36,7 @@ let classMixin_LoggingUtility = Base => class extends Base {
 				+ '%c}-%c Warning',
 
 				'color: #364CC4', 'color: initial',
-				'color: #364CC4', 'color: orang'
+				'color: #364CC4', 'color: orange'
 			].concat(args)
 		)
 	}
@@ -63,10 +63,10 @@ let classMixin_LoggingUtility = Base => class extends Base {
 		console.log.apply(null, [
 				'%c-{%c'
 				+ this.constructor.name
-				+ '%c}-%c',
+				+ '%c}-%c Log',
 
 				'color: #364CC4', 'color: initial',
-				'color: #364CC4', 'color: initial'
+				'color: #364CC4', 'color: grey'
 			].concat(args)
 		)
 	}
@@ -78,10 +78,10 @@ let classMixin_LoggingUtility = Base => class extends Base {
 		console.debug.apply(null, [
 				'%c-{%c'
 				+ this.constructor.name
-				+ '%c}-%c',
+				+ '%c}-%c Debug',
 
 				'color: #364CC4', 'color: initial',
-				'color: #364CC4', 'color: initial',
+				'color: #364CC4', 'color: black',
 
 				this
 			].concat(args)
@@ -210,7 +210,7 @@ let componentMixin_logging = {
 					+ '%c>%c Warning',
 
 					'color: #364CC4', 'color: initial',
-					'color: #364CC4', 'color: orang',
+					'color: #364CC4', 'color: orange',
 
 					this.$el
 				].concat(args)
@@ -237,10 +237,10 @@ let componentMixin_logging = {
 			console.log.apply(null, [
 					'%c<%c'
 					+ this.getThisComponentName()
-					+ '%c>%c',
+					+ '%c>%c Log',
 
 					'color: #364CC4', 'color: initial',
-					'color: #364CC4', 'color: initial'
+					'color: #364CC4', 'color: grey'
 				].concat(args)
 			)
 		},
@@ -251,10 +251,10 @@ let componentMixin_logging = {
 			console.debug.apply(null, [
 					'%c<%c'
 					+ this.getThisComponentName()
-					+ '%c>%c',
+					+ '%c>%c Debug',
 
 					'color: #364CC4', 'color: initial',
-					'color: #364CC4', 'color: initial',
+					'color: #364CC4', 'color: black',
 
 					this.$el
 				].concat(args)
@@ -350,10 +350,12 @@ let componentMixin_serverMessage = {
 				c2.webclient.sendMessage(messageType, data).then((res)=>{
 					this.log('sending messageType', messageType,'was successful')
 					this.debug('data', data, 'result', res)
+					fulfill(res)
 				}).catch((err)=>{
 					this.log('sending messageType', messageType,'failed')
 					this.debug('data', data, 'error', err)
 					this.unlockComponent()
+					reject(err)
 				})
 			})
 		},

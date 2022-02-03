@@ -2269,71 +2269,6 @@ table th:last-child, table td:last-child {
 }
 
 /* line 346, ../../compass/sass/_c2_utility.scss */
-.status_bar {
-  position: fixed;
-  z-index: 999;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  padding: 0.7em 2em;
-  color: #f3f3f3;
-  text-align: center;
-  font-size: 0.7em;
-}
-/* line 357, ../../compass/sass/_c2_utility.scss */
-.status_bar.success {
-  background: linear-gradient(45deg, #2f7c3e, #55a264);
-}
-/* line 361, ../../compass/sass/_c2_utility.scss */
-.status_bar.error {
-  background: linear-gradient(45deg, #ab2828, #d14e4e);
-}
-
-/* line 366, ../../compass/sass/_c2_utility.scss */
-.error_popup {
-  position: fixed;
-  z-index: 999999;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-  background: #000a;
-}
-/* line 375, ../../compass/sass/_c2_utility.scss */
-.error_popup .inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  height: 80vh;
-  width: 80vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: translateX(-50%) translateY(-50%);
-  background: #c92f2f;
-  padding: 2em 3em;
-  color: #f3f3f3;
-  text-align: center;
-}
-/* line 390, ../../compass/sass/_c2_utility.scss */
-.error_popup .inner .title {
-  font-size: 1.2em;
-}
-/* line 394, ../../compass/sass/_c2_utility.scss */
-.error_popup .inner .message {
-  height: 100%;
-  width: 100%;
-  resize: none;
-  background: #c28d8d;
-  color: #222;
-  margin: 2em 0;
-}
-/* line 403, ../../compass/sass/_c2_utility.scss */
-.error_popup .inner button {
-  font-size: inherit;
-}
-
-/* line 409, ../../compass/sass/_c2_utility.scss */
 .confirm_button {
   color: #f3f3f3;
   position: relative;
@@ -2342,48 +2277,48 @@ table th:last-child, table td:last-child {
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
-/* line 419, ../../compass/sass/_c2_utility.scss */
+/* line 356, ../../compass/sass/_c2_utility.scss */
 .confirm_button.mini_button:before {
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
-/* line 428, ../../compass/sass/_c2_utility.scss */
+/* line 365, ../../compass/sass/_c2_utility.scss */
 .confirm_button.mini_button.hovering.confirmed:before {
   opacity: 0;
 }
-/* line 433, ../../compass/sass/_c2_utility.scss */
+/* line 370, ../../compass/sass/_c2_utility.scss */
 .confirm_button.mini_button.hovering:not(.confirmed) {
   color: transparent;
 }
-/* line 436, ../../compass/sass/_c2_utility.scss */
+/* line 373, ../../compass/sass/_c2_utility.scss */
 .confirm_button.mini_button.hovering:not(.confirmed):before {
   color: #f3f3f3;
 }
-/* line 445, ../../compass/sass/_c2_utility.scss */
+/* line 382, ../../compass/sass/_c2_utility.scss */
 .confirm_button:not(.mini_button).hovering {
   padding-left: 2.2em;
 }
-/* line 452, ../../compass/sass/_c2_utility.scss */
+/* line 389, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering:before, .confirm_button.hovering:after {
   opacity: 1;
 }
-/* line 456, ../../compass/sass/_c2_utility.scss */
+/* line 393, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering.confirmed {
   background: #379249 !important;
 }
-/* line 459, ../../compass/sass/_c2_utility.scss */
+/* line 396, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering.confirmed:before {
   content: '\e062';
 }
-/* line 463, ../../compass/sass/_c2_utility.scss */
+/* line 400, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering.confirmed:after {
   opacity: 0;
 }
-/* line 468, ../../compass/sass/_c2_utility.scss */
+/* line 405, ../../compass/sass/_c2_utility.scss */
 .confirm_button.hovering:not(.confirmed) {
   color: #aaaaaa;
 }
-/* line 473, ../../compass/sass/_c2_utility.scss */
+/* line 410, ../../compass/sass/_c2_utility.scss */
 .confirm_button:before {
   content: '\e061';
   opacity: 0;
@@ -2395,7 +2330,7 @@ table th:last-child, table td:last-child {
   font-family: "iconmonstr-iconic-font";
   z-index: 2;
 }
-/* line 485, ../../compass/sass/_c2_utility.scss */
+/* line 422, ../../compass/sass/_c2_utility.scss */
 .confirm_button:after {
   content: '';
   opacity: 0;
@@ -2409,12 +2344,12 @@ table th:last-child, table td:last-child {
   z-index: 1;
 }
 
-/* line 501, ../../compass/sass/_c2_utility.scss */
+/* line 438, ../../compass/sass/_c2_utility.scss */
 .module_enableable .module_not_enabled {
   padding: 0.5em 1em;
   background: #8d2121;
 }
-/* line 505, ../../compass/sass/_c2_utility.scss */
+/* line 442, ../../compass/sass/_c2_utility.scss */
 .module_enableable .module_not_enabled .name {
   font-size: 1.3em;
   font-weight: 600;
@@ -2678,6 +2613,120 @@ table th:last-child, table td:last-child {
 /* line 325, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
+}
+
+/* line 333, ../../compass/sass/_c2_module_core.scss */
+.login_form {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* line 345, ../../compass/sass/_c2_module_core.scss */
+.login_form .inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2em 3em;
+  color: #f3f3f3;
+  text-align: center;
+}
+/* line 353, ../../compass/sass/_c2_module_core.scss */
+.login_form .inner .title {
+  font-size: 1.7em;
+  margin-bottom: 1em;
+}
+/* line 358, ../../compass/sass/_c2_module_core.scss */
+.login_form .inner .message {
+  color: #f3f3f3;
+  margin: 1em 0;
+  padding: 1em 1.5em;
+  border: 0.1em solid #f3f3f3;
+  border-radius: 0.3em;
+}
+/* line 365, ../../compass/sass/_c2_module_core.scss */
+.login_form .inner .message.type_success {
+  background: #379249;
+}
+/* line 369, ../../compass/sass/_c2_module_core.scss */
+.login_form .inner .message.type_error {
+  background: #c92f2f;
+}
+/* line 374, ../../compass/sass/_c2_module_core.scss */
+.login_form .inner button {
+  font-size: inherit;
+  margin-top: 1em;
+}
+
+/* line 381, ../../compass/sass/_c2_module_core.scss */
+.status_bar {
+  position: fixed;
+  z-index: 2000;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  padding: 0.7em 2em;
+  color: #f3f3f3;
+  text-align: center;
+  font-size: 0.7em;
+}
+/* line 392, ../../compass/sass/_c2_module_core.scss */
+.status_bar.success {
+  background: linear-gradient(45deg, #2f7c3e, #55a264);
+}
+/* line 396, ../../compass/sass/_c2_module_core.scss */
+.status_bar.error {
+  background: linear-gradient(45deg, #ab2828, #d14e4e);
+}
+
+/* line 401, ../../compass/sass/_c2_module_core.scss */
+.error_popup {
+  position: fixed;
+  z-index: 3000;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #000a;
+}
+/* line 410, ../../compass/sass/_c2_module_core.scss */
+.error_popup .inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 80vh;
+  width: 80vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%) translateY(-50%);
+  background: #c92f2f;
+  padding: 2em 3em;
+  color: #f3f3f3;
+  text-align: center;
+}
+/* line 425, ../../compass/sass/_c2_module_core.scss */
+.error_popup .inner .title {
+  font-size: 1.2em;
+}
+/* line 429, ../../compass/sass/_c2_module_core.scss */
+.error_popup .inner .message {
+  height: 100%;
+  width: 100%;
+  resize: none;
+  background: #c28d8d;
+  color: #222;
+  margin: 2em 0;
+}
+/* line 438, ../../compass/sass/_c2_module_core.scss */
+.error_popup .inner button {
+  font-size: inherit;
 }
 
 /* line 1, ../../compass/sass/_c2_module_map.scss */

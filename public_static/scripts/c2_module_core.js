@@ -50,6 +50,74 @@ class C2Module_Core extends C2LoggingUtility {
 				</div>`
 			})
 
+			this.c2.registerComponent('login-form', {
+				data: function(){
+					return {
+						isLoggedIn: false,
+						isCurrentlyLoggingIn: false,
+						token: '',
+						message: undefined,
+						messageType: 'normal',
+						syncables: []
+					}
+				},
+				computed: {
+					theError (){
+						return this.$store.state.error
+					}
+				},
+				emits: ['loginSuccess'],
+				template: `<div class="login_form" v-if="!isLoggedIn">
+					<div class="inner">
+						<span class="title">Login</span>
+						<label>Token: <input type="text" name="token" v-model="token" :disabled="isCurrentlyLoggingIn" @keydown="onKeyDown"/></label>
+						<p v-if="message" :class="['message', 'type_' + messageType]">{{message}}</p>
+						<button @click="login" :disabled="token === '' || isCurrentlyLoggingIn || isLoggedIn">Login</button>
+					</div>
+				</div>`,
+				methods: {
+					login (){
+						if(this.isLoggedIn){
+							return
+						}
+
+						this.setMessage('normal', 'logging in ...')
+
+						this.isCurrentlyLoggingIn = true
+						this.sendServerMessage('companion-login', this.token).then(res => {
+							this.setMessage('success', res)
+							localStorage.companionToken = this.token
+							c2.webclient.ws.token = this.token
+
+							this.$emit('loginSuccess')
+
+							setTimeout(()=>{
+								this.isLoggedIn = true
+							}, 1000)
+						}).catch(err => {
+							this.setMessage('error', err)
+						}).finally(()=>{
+							this.isCurrentlyLoggingIn = false
+						})
+					},
+					setMessage(type, message){
+						this.messageType = type
+						this.message = message
+					},
+					onKeyDown(evt){
+						if(evt.key === 'Enter'){
+							this.login()
+						}
+					}
+				},
+				created: function (){
+					if(typeof localStorage.companionToken === 'string'){
+						this.token = localStorage.companionToken
+					}
+				},
+				mixins: [componentMixin_serverMessage]
+			})
+
 			/*
 
 				PAGE INFO
