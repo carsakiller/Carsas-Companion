@@ -287,6 +287,10 @@ let componentMixin_lockable = {
 			this.unlockComponentOnNextSync()
 		},
 		unlockComponent (){
+			if(!this.isComponentLocked){
+				return
+			}
+
 			this.debug('unlockComponent', this.lockableParents)
 			this.isComponentLocked = false
 			for(let lp of this.lockableParents){
@@ -468,12 +472,12 @@ class C2Utility extends C2LoggingUtility {
 					}
 				},
 				computed: {
-					childComponentIsLocked (){
+					isComponentLocked (){
 						return this.childComponentLocked > 0
 					}
 				},
 				template: `<div class="lockable" @click.stop>
-					<div v-if="childComponentIsLocked" class="lock_overlay"/>
+					<div v-if="isComponentLocked" class="lock_overlay"/>
 					<slot/>
 				</div>`,
 				mounted (){
@@ -549,7 +553,9 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			function searchForLockedParentRecursively(me, node){
 				if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
 					return true
-				} else if (node) {
+				}
+
+				if (node) {
 					return searchForLockedParentRecursively(me, node.$parent)
 				}
 				return false
@@ -781,10 +787,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			this.c2.registerComponent('toggleable-element', {
 				data: function (){
 					return {
-						skipNextWatch: false,
-						oldVal: false,
 						val: false,
-						oldInitialValue: false,
 						uiid: C2.uuid()
 					}
 				},
@@ -795,7 +798,6 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					},
 					'value-name': {
 						type: String,
-						required: true
 					},
 					'on-value-change': {
 						type: Function,
@@ -810,7 +812,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					<div class="front">
 						<label :for="uiid">
 							<disabled-when-any-parent-locked v-slot="disabledProps">
-								<input type="checkbox" :id="uiid" v-model="val" :disabled="disabledProps.isDisabled || isDisabled">
+								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="val" :disabled="disabledProps.isDisabled || isDisabled">
 							</disabled-when-any-parent-locked>
 							<span class="checkbox_slider"/>
 						</label>
@@ -819,32 +821,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						<slot/>
 					</div>
 				</div>`,
-				created: function (){
-					this.skipNextWatch = this.initialValue //vue will only call update() if the initialValue is true
-					this.val = this.initialValue
-					this.oldVal = this.val
-					this.oldInitialValue = this.initialValue
-				},
-				watch: {//TODO: skipNextWatch is not 100% accurate, sometimes skips even though it was user input
-					val: function (){
-						if(this.skipNextWatch){
-							this.skipNextWatch = false
-							this.debug('skipping watch')
-						} else {
-							this.log('watch val changed to', this.val)
-							this.onValueChange(this.valueName, this.val)
-							this.oldVal = this.val
+				methods: {
+					inputChanged (){
+						if(this.isComponentLocked){
+							return
 						}
+
+						this.log('inputChanged')
+						this.onValueChange(this.valueName, this.val)
 					}
 				},
-				updated: function (){
-					if(this.initialValue !== this.oldInitialValue){
-						this.log('updated [cause: props change]', this.valueName, this.initialValue)
-						this.skipNextWatch = true
-						this.oldInitialValue = this.initialValue
-						this.val = this.initialValue
-						this.oldVal = this.initialValue
-					}
+				created: function (){
+					this.val = this.initialValue
 				},
 				mixins: [componentMixin_logging]
 			})
@@ -1057,7 +1045,9 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						if(node && node.isAnExtendableComponent === true){
 							me.extendable = node
 							me.debug('found an extendable', node)
-						} else if (node) {
+						}
+
+						if (node) {
 							searchForExtendableParentRecursively(me, node.$parent)
 						}
 					}
@@ -1094,7 +1084,9 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						if(node && node.isAnExtendableComponent === true){
 							me.extendable = node
 							me.debug('found an extendable', node)
-						} else if (node) {
+						}
+
+						if (node) {
 							searchForExtendableParentRecursively(me, node.$parent)
 						}
 					}

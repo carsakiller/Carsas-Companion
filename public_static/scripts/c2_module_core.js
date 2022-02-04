@@ -564,7 +564,6 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="roles_management">
-					<lockable/>
 					<lockable-by-childs>
 						<division class="new_role_container" :startExtended="true">
 							<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
@@ -738,8 +737,9 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list command_list">
-					<command v-for="(isCommand, commandName) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
-					<spacer-horizontal/>
+					<lockable-by-childs>
+						<command v-for="(isCommand, commandName) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
+					</lockable-by-childs>
 				</div>`
 			})
 
@@ -761,7 +761,6 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['roleName'],
 				template: `<div class="command">
-					<lockable/>
 					<toggleable-element :initial-value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
@@ -935,12 +934,11 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list preference_list">
-					<lockable/>
 					<lockable-by-childs>
 						<preference v-if="preferences" v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
-						<spacer-horizontal/>
 					</lockable-by-childs>
-				</div>`
+				</div>`,
+				mixins: [componentMixin_lockable]
 			})
 
 			this.c2.registerComponent('preference', {
@@ -1097,10 +1095,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list gamesetting_list">
-					<lockable/>
 					<lockable-by-childs>
 						<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
-						<spacer-horizontal/>
 					</lockable-by-childs>
 				</div>`,
 				mixins: [componentMixin_lockable]
