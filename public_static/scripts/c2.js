@@ -56,11 +56,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 	createApp (el){
 		this.app = Vue.createApp({
-			data: function(){
-				return {
-					isLoggedIn: false
-				}
-			},
 			computed: {
 				pages: function (){
 					return this.$store.state.pages
@@ -71,13 +66,14 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				}
 			},
 			template: `<div class="c2">
-				<login-form @loginSuccess="isLoggedIn = true"/>
+				<login-popup ref="loginPopup"/>
 				<pages :initial-index="initialPage" @page-change="onPageChange">
+					<user-login @show-login="$refs.loginPopup.show()"/>
 					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon">
 						<component :is="page.componentName"/>
 					</page>
+					<status-bar/>
 				</pages>
-				<status-bar/>
 			</div>`,
 			methods: {
 				onPageChange (index){
@@ -130,7 +126,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 	handleMessage(message){
 
 		if(message.type === 'heartbeat'){
-			this.log('received message', message)
+			this.debug('received message', message)
 			this.dispatch('heartbeat')
 		} else {
 			this.info('received message', message)

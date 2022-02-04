@@ -1,3 +1,5 @@
+const axios = require('axios')
+
 const C2LoggingUtility = require('./utility.js').C2LoggingUtility
 
 module.exports = class C2Module_Core extends C2LoggingUtility {
@@ -6,6 +8,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		super(loglevel)
 
 		this.c2 = c2
+
+		this.steamProfileCache = {}
 
 		this.c2.registerWebClientMessageHandler('*', (client, data, messageType)=>{
 			if(messageType.startsWith('command-')){
@@ -32,6 +36,49 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			return this.c2.sendMessageToGame(client.token, messageType, data)//TODO: rate limit this
 		})
 
+		this.c2.registerWebClientMessageHandler('steam-profile', (client, messageData)=>{
+			return new Promise((resolve, reject)=>{
+				let steamId = messageData
+
+				if(typeof steamId !== 'string' ||!steamId.match(/^[0-9]{17}$/)){
+					return reject('invalid steamId')
+				}
+
+				if(this.steamProfileCache[steamId]){
+					this.log('serving steam profile from cache')
+					return resolve(this.steamProfileCache[steamId])
+				}
+
+				let profileUrl = 'http://steamcommunity.com/profiles/' + steamId
+
+				this.log('resolving steam profile', profileUrl)
+
+				axios.get(profileUrl,
+					{ headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0'}}
+				).then(res=>{
+					let html = res.data
+
+					let start = html.indexOf('"', html.indexOf('src', html.indexOf('img', html.indexOf('playerAvatarAutoSizeInner'))))
+					let end = html.indexOf('"', start+1)
+					let profileImageUrl = html.substring(start+1, end)
+
+					if(typeof profileImageUrl === 'string' && profileImageUrl.length > 0){
+						let profile = {
+							profileImageUrl: profileImageUrl
+						}
+						this.steamProfileCache[steamId] = profile
+						resolve(profile)
+					} else {
+						this.warn('invalid html format for steam profile', profileUrl, res.data)
+						reject('invalid html format')
+					}
+				}).catch(err=>{
+					this.error(err)
+					reject(err)
+				})
+			})
+		})
+
 		this.c2.registerGameMessageHandler('heartbeat', (data, messageType)=>{
 			if(data === 'first'){
 				//script has just reloaded
@@ -39,7 +86,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				c2.c2WebInterface.c2WebSocketHandler.forceReloadAll()
 			}
 
-			return this.c2.sendMessageToWebClient('all', messageType, data)
+			this.c2.sendMessageToWebClient('all', messageType, data)
 		})
 
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{

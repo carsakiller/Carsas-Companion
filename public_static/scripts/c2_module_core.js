@@ -7,6 +7,8 @@ class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.on('can-register-storable', ()=>{
 			this.c2.registerStorable('status')
+			this.c2.registerStorable('userSteamId')
+			this.c2.registerStorable('profile')
 		})
 
 		this.c2.on('can-register-syncable', ()=>{
@@ -76,11 +78,64 @@ class C2Module_Core extends C2LoggingUtility {
 				}
 			})
 
-			this.c2.registerComponent('login-form', {
-				data: function(){
+			this.c2.registerComponent('user-login', {
+				data (){
 					return {
-						isLoggedIn: false,
+						syncables: []
+					}
+				},
+				computed: {
+					steamId (){
+						return this.$store.state.userSteamId
+					},
+					isLoggedIn (){
+						return this.steamId !== undefined
+					},
+					profile (){
+						return this.$store.state.profile
+					},
+					profileImageStyle (){
+						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholer.png') + '")'
+					}
+				},
+				emits: ['show-login'],
+				template: `<div class="user_login" @click="showLoginPopup">
+					<span v-if="!isLoggedIn">Log In</span>
+					<div v-else class="user_container">
+						<div class="profile_image" :style="profileImageStyle"></div>
+					</div>
+				</div>`,
+				methods: {
+					showLoginPopup (){
+						this.$emit('show-login')
+					},
+					setProfile (profile){
+						this.$store.state.profile = profile
+					}
+				},
+				watch: {
+					steamId (){
+						if(this.steamId){
+							this.sendServerMessage('steam-profile', this.steamId).then(res => {
+								this.setProfile(JSON.parse(res))
+								this.log('profile', this.profile)
+							}).catch(err => {
+								this.setProfile(undefined)
+							})
+						} else {
+							this.setProfile(undefined)
+						}
+					}
+				},
+				mixins: [componentMixin_serverMessage]
+			})
+
+			this.c2.registerComponent('login-popup', {
+				data (){
+					return {
+						isVisible: false,
 						isCurrentlyLoggingIn: false,
+						isCurrentlyLoggingOut: false,
 						token: '',
 						message: undefined,
 						messageType: 'normal',
@@ -88,20 +143,37 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				computed: {
-					theError (){
-						return this.$store.state.error
+					isLoggedIn (){
+						return this.$store.state.userSteamId !== undefined
+					},
+					profile (){
+						return this.$store.state.profile
+					},
+					profileImageStyle (){
+						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholer.png') + '")'
 					}
 				},
-				emits: ['loginSuccess'],
-				template: `<div class="login_form" v-if="!isLoggedIn">
+				template: `<div class="login_popup" v-if="isVisible">
 					<div class="inner">
-						<span class="title">Login</span>
-						<label>Token: <input type="text" name="token" v-model="token" :disabled="isCurrentlyLoggingIn" @keydown="onKeyDown"/></label>
+						<icon :icon="'x-mark'" class="close" @click="hide"/>
+						<span class="title">{{isLoggedIn ? 'You are logged in as' : 'Login'}}</span>
+
+						<div v-if="isLoggedIn" class="profile_image" :style="profileImageStyle"></div>
+						<label v-else>Token: <input type="text" name="token" v-model="token" :disabled="isCurrentlyLoggingIn" @keydown="onKeyDown"/></label>
+
 						<p v-if="message" :class="['message', 'type_' + messageType]">{{message}}</p>
-						<button @click="login" :disabled="token === '' || isCurrentlyLoggingIn || isLoggedIn">Login</button>
+
+						<button v-if="isLoggedIn" @click="logout" :disabled="isCurrentlyLoggingOut || !isLoggedIn">Logout</button>
+						<button v-else="isLoggedIn" @click="login" :disabled="token === '' || isCurrentlyLoggingIn || isLoggedIn">Login</button>
 					</div>
 				</div>`,
 				methods: {
+					show (){
+						this.isVisible = true
+					},
+					hide (){
+						this.isVisible = false
+					},
 					login (){
 						if(this.isLoggedIn){
 							return
@@ -110,21 +182,43 @@ class C2Module_Core extends C2LoggingUtility {
 						this.setMessage('normal', 'logging in ...')
 
 						this.isCurrentlyLoggingIn = true
-						this.sendServerMessage('companion-login', this.token).then(res => {
-							this.setMessage('success', res)
+						this.sendServerMessage('companion-login', this.token).then(json => {
+							let steamId = JSON.parse(json)
+							this.setMessage('success', steamId)
 							localStorage.companionToken = this.token
 							c2.webclient.ws.token = this.token
 
-							this.$emit('loginSuccess')
-
 							setTimeout(()=>{
-								this.isLoggedIn = true
+								this.hide()
+								this.setMessage(undefined, undefined)
+
+								this.$store.state.userSteamId = steamId
 							}, 1000)
+
 						}).catch(err => {
 							this.setMessage('error', err)
 						}).finally(()=>{
 							this.isCurrentlyLoggingIn = false
 						})
+					},
+					logout (){
+						this.setMessage('normal', 'logging out ...')
+						this.isCurrentlyLoggingOut = true
+
+						setTimeout(()=>{
+							this.setMessage('success', 'logged out')
+							c2.webclient.ws.token = undefined
+
+							setTimeout(()=>{
+								this.hide()
+								this.setMessage(undefined, undefined)
+
+								this.$store.state.userSteamId = undefined
+							}, 1000)
+
+							this.isCurrentlyLoggingOut = false
+
+						}, 1000)
 					},
 					setMessage(type, message){
 						this.messageType = type

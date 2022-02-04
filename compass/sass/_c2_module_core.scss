@@ -330,29 +330,50 @@
 }
 
 
-.login_form {
+.login_popup {
 	position: fixed;
 	z-index: 2000;
 	top: 0;
 	left: 0;
 	height: 100vh;
 	width: 100vw;
-	background: $app-background;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background: #000a;
 
 	.inner {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		padding: 2em 3em;
+		border-radius: 0.2em;
+		background: $app-background;
 		color: $text-color;
 		text-align: center;
+
+		.close {
+			position: absolute;
+			top: 1em;
+			right: 1em;
+			cursor: pointer;
+
+			&:hover {
+				color: shade($text-color, 50%);
+			}
+		}
 
 		.title {
 			font-size: 1.7em;
 			margin-bottom: 1em;
+		}
+
+		.profile_image {
+			width: 3em;
+			height: 3em;
+			background-size: contain;
+			background-position: center;
 		}
 
 		.message {

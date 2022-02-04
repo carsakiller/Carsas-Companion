@@ -53,11 +53,19 @@ module.exports = class C2WebInterface extends C2Interface {
 		}
 
 		if(clientOrClients === 'all'){
-			this.info(' ->', 'sending data to all', messageType)
+			if(messageType == 'heartbeat'){
+				this.debug(' ->', 'sending data to all', messageType)
+			} else {
+				this.info(' ->', 'sending data to all', messageType)
+			}
 
 			return this.c2WebSocketHandler.sendToAllClients(dataToSend)
 		} else if(clientOrClients instanceof Array){
-			this.info(' ->', 'sending data to', clientOrClients, messageType)
+			if(messageType == 'heartbeat'){
+				this.debug(' ->', 'sending data to', clientOrClients, messageType)
+			} else {
+				this.info(' ->', 'sending data to', clientOrClients, messageType)
+			}
 			this.log(data)
 
 			let promises = []
@@ -68,12 +76,20 @@ module.exports = class C2WebInterface extends C2Interface {
 				Promise.all(promises).finally(resolve)
 			})
 		} else if(typeof clientOrClients === 'string'){
-			this.info(' ->', 'sending data to', clientOrClients, messageType)
+			if(messageType == 'heartbeat'){
+				this.debug(' ->', 'sending data to', clientOrClients, messageType)
+			} else {
+				this.info(' ->', 'sending data to', clientOrClients, messageType)
+			}
 			this.log(data)
 
 			return this.c2WebSocketHandler.sendToClientToken(clientOrClients, dataToSend)
 		} else if(clientOrClients.ws){
-			this.info(' ->', 'sending data to $' + (clientOrClients.token || 'unknown'),'#' + clientOrClients.id, messageType)
+			if(messageType == 'heartbeat'){
+				this.debug(' ->', 'sending data to $' + (clientOrClients.token || 'unknown'),'#' + clientOrClients.id, messageType)
+			} else {
+				this.info(' ->', 'sending data to $' + (clientOrClients.token || 'unknown'),'#' + clientOrClients.id, messageType)
+			}
 			this.log(data)
 
 			return this.c2WebSocketHandler.sendToClient(clientOrClients, dataToSend)

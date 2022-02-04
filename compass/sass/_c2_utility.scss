@@ -37,6 +37,29 @@
 		}
 	}
 
+	.user_login {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 1;
+		cursor: pointer;
+		color: $text-color;
+
+		&:hover {
+			color: shade($text-color, 50%);
+		}
+
+		.user_container {
+
+			.profile_image {
+				width: 3em;
+				height: 3em;
+				background-size: contain;
+				background-position: center;
+			}
+		}
+	}
+
 	.page {
 		display: flex;
 		flex-direction: column;
@@ -54,6 +77,7 @@
 			font-size: 2em;
 			font-weight: 600;
 			padding: 0.8em 2em;
+			margin-right: 4em;
 			background-image: url('/static/images/headerBanner.jpg');
 			background-position: center;
 			background-size: cover;

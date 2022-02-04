@@ -155,7 +155,6 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 				this.error('did not find message with id', parsed.clientId, 'in pendingMessages!')
 
 			} else if (typeof parsed.serverId === 'number'){
-				this.info('received new message from the server', parsed.serverId)
 
 				let that = this
 
@@ -163,8 +162,15 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 
 				try {
 					let parsedInternalData = JSON.parse(parsed.data)
+
+					if(parsedInternalData.type === 'heartbeat'){
+						this.debug('received new message from the server', parsed.serverId)
+					} else {
+						this.info('received new message from the server', parsed.serverId)
+					}
 					promise = this.dispatch('message', parsedInternalData)
 				} catch (ex){
+					this.info('received new message from the server', parsed.serverId)
 					answer(false, ex.toString())
 					return
 				}
