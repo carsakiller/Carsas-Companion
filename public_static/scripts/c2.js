@@ -19,10 +19,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.storeConfig = {
 			state: {
-				localStorage: {},
-
-				pages: [],
-
 				status: {
 					message: undefined,
 					clazz:undefined
@@ -31,134 +27,40 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				error: {
 					title: undefined,
 					message: undefined
-				},
-
-				logs: [
-					{
-						time: new Date().getTime(),
-						message: 'server started'
-					},{
-						time: new Date().getTime(),
-						message: 'fondling ponies'
-					},{
-						time: new Date().getTime(),
-						message: 'loading lasers'
-					}
-				],
-
-				liveVehicles: {
-					1 /* vehicle_id */: {
-						owner: 'x32',//steam_id
-						name: 'Bus',
-						ui_id: 'ui_id',
-						x: 300,
-						y: 30,
-						z: 100
-					}
-				},
-
-				livePlayers: {
-					'x32' /* steam_id */ : {
-						name: 'Pony',
-						roles: {
-							Admin: true
-						},
-						peer_id: 1,
-						x: 400,
-						y: 100,
-						z: 100
-					},
-					'x99': {
-						name: 'aBannedUser',
-						roles: {
-							Owner: true
-						}
-					}
-				},
+				}
 			},
 			mutations: {
-				setPlayers (state, players){
-					state.players = players
-				},
-				test (state){
-					state.roles.Owner.auth = false
-				},
 				setStatus(state, status){
 					state.status = status
 				},
 				setError(state, error){
 					state.error = error
 				},
-				setC2Version(state, version){
-					state.C2_VERSION = version
-				},
-				setC2Commit(state, _commit){
-					state.C2_COMMIT = _commit
-				},
 				addPage (state, page){
+					if(!state.pages){
+						state.pages = []
+					}
 					state.pages.push(page)
-				},
-				setLocalStorage (state, _localStorage){
-					state.localStorage = _localStorage
-				},
-				setToken (state, token){
-					state.localStorage = token
 				}
 			},
 			actions: {
-				setPlayers ({commit}, players){
-					commit('setPlayers', players)
-				},
-				test ({commit}){
-					commit('test')
-				},
 				setStatus({commit}, status){
 					commit('setStatus', status)
 				},
 				setError({commit}, error){
 					commit('setError', error)
 				},
-				setC2Version({commit}, version){
-					commit('setC2Version', version)
-				},
-				setC2Commit({commit}, _commit){
-					commit('setC2Commit', _commit)
-				},
 				addPage ({commit}, page){
 					commit('addPage', page)
-				},
-				setLocalStorage ({commit}, _localStorage){
-					commit('setLocalStorage', _localStorage)
-				},
-				setToken ({commit}, token){
-					commit('setToken', token)
-				}
-			},
-
-			getters: {//TODO do this for EVERY state.xyz and make replace every components use of `this.$store.state.xyz` with `this.$store.getters.xyz`
-				C2_VERSION: state =>{
-					return state.C2_VERSION
-				},
-				C2_COMMIT: state =>{
-					return state.C2_COMMIT
-				},
-				pages: state => {
-					return state.pages
-				},
-				players: state => {
-					return state.players
-				},
-
-				livePlayers: state => {
-					return state.livePlayers
-				},
-				liveVehicles: state => {
-					return state.liveVehicles
 				}
 			}
 		}
 
 		this.dispatch('can-register-storable')
+		this.registerStorable('pages')
+		this.registerStorable('C2_VERSION')
+		this.registerStorable('C2_COMMIT')
+		this.registerStorable('localStorage')
 
 		this.syncables = []
 		this.dispatch('can-register-syncable')
@@ -170,7 +72,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			accepts: 'text/plain',
 			async: true,
 			success: (data)=>{
-				this.store.dispatch('setC2Version', data)
+				this.store.dispatch('set_C2_VERSION', data)
 
 				this.loadLocalStorage()
 				$(window).on('beforeunload', ()=>{
@@ -206,7 +108,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			template: `<div class="c2">
 				<error-popup/>
 				<login-form @loginSuccess="isLoggedIn = true"/>
-				<pages v-if="isLoggedIn" :initial-index="initialPage" @page-change="onPageChange">
+				<pages :initial-index="initialPage" @page-change="onPageChange">
 					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon">
 						<component :is="page.componentName"/>
 					</page>
@@ -252,7 +154,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		setTimeout(()=>{
 			$.get('/static/commit.txt', (data)=>{
-				this.store.dispatch('setC2Commit', data)
+				this.store.dispatch('set_C2_COMMIT', data)
 			})
 		}, 1000)
 
@@ -456,7 +358,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			}
 		}
 
-		this.store.dispatch('setLocalStorage', value)
+		this.store.dispatch('set_localStorage', value)
 	}
 
 	saveLocalStorage(){

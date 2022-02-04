@@ -6,7 +6,8 @@ class C2Module_Map extends C2LoggingUtility {
 		this.c2 = c2
 
 		this.c2.on('can-register-storable', ()=>{
-
+			this.c2.registerStorable('livePlayers')
+			this.c2.registerStorable('liveVehicles')
 		})
 
 		this.c2.on('can-register-component', ()=>{
@@ -53,6 +54,10 @@ class C2Module_Map extends C2LoggingUtility {
 							map.removeMarker(marker)
 						}
 
+						if(!this.livePlayers){
+							return
+						}
+
 						for(let p of Object.keys(this.livePlayers)){
 							let player = this.livePlayers[p]
 							if(player.x && player.y){
@@ -72,6 +77,10 @@ class C2Module_Map extends C2LoggingUtility {
 
 						for(let marker of this.vehicleMarkers){
 							this.map.removeMarker(marker)
+						}
+
+						if(!this.liveVehicles){
+							return
 						}
 
 						for(let v of Object.keys(this.liveVehicles)){
@@ -215,7 +224,7 @@ class C2Module_Map extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{
-
+			//TODO register handlers for liveplayers and livevehicles
 		})
 
 		this.c2.on('setup-done', ()=>{

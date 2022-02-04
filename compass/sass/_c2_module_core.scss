@@ -332,7 +332,7 @@
 
 .login_form {
 	position: fixed;
-	z-index: 1000;
+	z-index: 2000;
 	top: 0;
 	left: 0;
 	height: 100vh;
@@ -380,7 +380,7 @@
 
 .status_bar {
 	position: fixed;
-	z-index: 2000;
+	z-index: 3000;
 	bottom: 0;
 	left: 0;
 	width: 100vw;
@@ -400,7 +400,7 @@
 
 .error_popup {
 	position: fixed;
-	z-index: 3000;
+	z-index: 4000;
 	top: 0;
 	left: 0;
 	height: 100vh;
