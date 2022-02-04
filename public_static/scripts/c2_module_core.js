@@ -1235,7 +1235,7 @@ class C2Module_Core extends C2LoggingUtility {
 		this.c2.on('can-register-messagehandler', ()=>{
 
 			this.c2.registerMessageHandler('heartbeat', (data)=>{
-
+				this.setStatus('game', true)
 			})
 
 			this.c2.registerMessageHandler('game-connection', data => {
@@ -1258,6 +1258,7 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.webclient.on('disconnected', ()=>{
 				this.setStatus('server', false)
+				this.setStatus('game', false)
 			})
 		})
 	}
