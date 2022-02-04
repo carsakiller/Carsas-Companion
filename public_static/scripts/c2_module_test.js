@@ -611,44 +611,10 @@ class C2Module_Test extends C2LoggingUtility {
 			this.c2.registerMessageHandler('test-performance-backend-frontend', (data)=>{
 				return data
 			})
-
-			/* TODO: this is outdated!
-			this.c2.registerMessageHandler('test-timeout', (data)=>{
-				return new Promise(()=>{
-					//ignore so it runs into a timeout
-				})
-			})
-			*/
 		})
 
 		this.c2.on('setup-done', ()=>{
 
-			/* TODO: OLD outdated tests
-
-			if(false){
-				setTimeout(()=>{
-					ws.send({
-						type: 'rtt',
-						data: new Date().getTime()
-					}).then((res)=>{
-						this.log('rtt response success', res)
-					}).catch((err)=>{
-						this.log('rtt response unsuccessful', err)
-					})
-				}, 1000)
-
-				setTimeout(()=>{
-					ws.send({
-						type: 'test',
-						data: 'hello?'
-					}).then((res)=>{
-						this.log('test response success', res)
-					}).catch((err)=>{
-						this.log('test response unsuccessful', err)
-					})
-				}, 10000)
-			}
-			*/
 		})
 	}
 

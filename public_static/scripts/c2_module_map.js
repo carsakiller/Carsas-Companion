@@ -170,8 +170,6 @@ class C2Module_Map extends C2LoggingUtility {
 				</map-view-info>`,
 				methods: {
 					kick (){
-						//TODO implement (requires new command)
-						//this.callGameCommand('kickPlayer', this.dataId)
 						alert('not implemented')
 						this.$emit('close')
 					},
@@ -209,8 +207,6 @@ class C2Module_Map extends C2LoggingUtility {
 				</map-view-info>`,
 				methods: {
 					despawn (){
-						//TODO implement
-						//this.callGameCommand()
 						alert('not implemented')
 						this.$emit('close')
 					}
