@@ -163,7 +163,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		}, 1)
 	}
 
-	//TODO: rework this to work without vue, because if vue fucks up, we still want to have an error message!
 	setError(title, message){
 		this.store.dispatch('setError', {
 			title: title,
