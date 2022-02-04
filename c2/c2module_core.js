@@ -105,6 +105,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			this.c2.sendMessageToWebClient('all', messageType, data)
 		})
 
+		this.c2.registerGameMessageHandler('stream-log', (data, messageType)=>{
+			this.c2.sendMessageToWebClient('all', messageType, data)
+		})
+
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
 			if(messageType.startsWith('sync-')){
 				return new Promise((fulfill, reject)=>{

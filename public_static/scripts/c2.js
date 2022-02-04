@@ -25,7 +25,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.registerStorable('pages')
 		this.registerStorable('C2_VERSION')
 		this.registerStorable('C2_COMMIT')
-		this.registerStorable('localStorage')
 
 		this.syncables = []
 		this.dispatch('can-register-syncable')
@@ -38,11 +37,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			async: true,
 			success: (data)=>{
 				this.store.state.C2_VERSION = data
-
-				this.loadLocalStorage()
-				$(window).on('beforeunload', ()=>{
-					this.saveLocalStorage()
-				})
 			},
 			error: (err)=>{
 				this.error('Error checking version', err)
@@ -179,7 +173,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		popup.show()
 	}
 
-	registerStorable(storableName){
+	registerStorable(storableName, /* optional */ initialValue){
 		if(typeof storableName !== 'string'){
 			this.error('storableName must be a string', storableName)
 			return
@@ -195,7 +189,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			this.warn('storable is overwriting existing store state', storableName)
 		}
 
-		this.storeConfig.state[storableName] = undefined
+		this.storeConfig.state[storableName] = initialValue
 	}
 
 	// creates a storable and a message handler with "sync-[syncableName]"
@@ -272,32 +266,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		}
 
 		this.messageHandlers[messageType] = callback
-	}
-
-	loadLocalStorage(){
-		let value = {
-			version: this.store.C2_VERSION
-		}
-
-		let saved = localStorage.getItem('c2')
-		if(saved){
-			try {
-				let parsed = JSON.parse(saved)
-				if(parsed.version === this.store.C2_VERSION){
-					value = parsed
-				} else {
-					this.info('ignoring outdated localStorage.c2')
-				}
-			} catch (ex){
-				this.warn('failed to parse saved localStorage.c2', ex)
-			}
-		}
-
-		this.store.state.localStorage = value
-	}
-
-	saveLocalStorage(){
-		localStorage.setItem('c2', JSON.stringify(this.store.state.localStorage))
 	}
 }
 

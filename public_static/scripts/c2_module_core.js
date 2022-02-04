@@ -9,6 +9,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerStorable('status')
 			this.c2.registerStorable('userSteamId')
 			this.c2.registerStorable('profile')
+			this.c2.registerStorable('logs', [])
 		})
 
 		this.c2.on('can-register-syncable', ()=>{
@@ -21,6 +22,21 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerSyncable('commands')
 		})
 
+
+		this.c2.on('can-register-messagehandler', ()=>{
+			this.c2.registerMessageHandler('stream-log', (newLogs)=>{
+				if(!newLogs){
+					return
+				}
+
+				for(let log of newLogs){
+					this.c2.store.state.logs.push({
+						message: log,
+						time: Date.now()
+					})
+				}
+			})
+		})
 
 		this.c2.on('can-register-component', ()=>{
 
@@ -1190,8 +1206,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="logs_management">
-					<log-list v-if="logs" :logs="logs"></log-list>
-					<span v-else>Not synced</span>
+					<log-list :logs="logs"></log-list>
 				</div>`
 			})
 
