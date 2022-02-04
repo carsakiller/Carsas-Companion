@@ -173,7 +173,10 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		} else {
 			text = msgOrError
 		}
-		alert('An Error has occured (Please contact an admin): \n' + text)
+		let popup = $('#error-popup')
+		popup.find('.title').text('An Error has occured (Please contact an admin):')
+		popup.find('.message').val(text)
+		popup.show()
 	}
 
 	registerStorable(storableName){

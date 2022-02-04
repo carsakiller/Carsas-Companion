@@ -1933,6 +1933,49 @@ table th:last-child, table td:last-child {
   height: 100%;
 }
 
+/* line 181, ../../compass/sass/c2.scss */
+#error-popup {
+  position: fixed;
+  z-index: 4000;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #000a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* line 193, ../../compass/sass/c2.scss */
+#error-popup .inner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2em 3em;
+  border-radius: 0.2em;
+  background: #c92f2f;
+  color: #f3f3f3;
+  text-align: center;
+}
+/* line 204, ../../compass/sass/c2.scss */
+#error-popup .inner .title {
+  font-size: 1.2em;
+}
+/* line 208, ../../compass/sass/c2.scss */
+#error-popup .inner .message {
+  height: 100%;
+  width: 100%;
+  resize: none;
+  background: #c28d8d;
+  color: #222;
+  margin: 2em 0;
+}
+/* line 217, ../../compass/sass/c2.scss */
+#error-popup .inner button {
+  font-size: inherit;
+}
+
 /* line 1, ../../compass/sass/_c2_utility.scss */
 .pages {
   position: relative;
@@ -2761,50 +2804,6 @@ table th:last-child, table td:last-child {
     filter: brightness(1);
   }
 }
-/* line 459, ../../compass/sass/_c2_module_core.scss */
-.error_popup {
-  position: fixed;
-  z-index: 4000;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-  background: #000a;
-}
-/* line 468, ../../compass/sass/_c2_module_core.scss */
-.error_popup .inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  height: 80vh;
-  width: 80vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: translateX(-50%) translateY(-50%);
-  background: #c92f2f;
-  padding: 2em 3em;
-  color: #f3f3f3;
-  text-align: center;
-}
-/* line 483, ../../compass/sass/_c2_module_core.scss */
-.error_popup .inner .title {
-  font-size: 1.2em;
-}
-/* line 487, ../../compass/sass/_c2_module_core.scss */
-.error_popup .inner .message {
-  height: 100%;
-  width: 100%;
-  resize: none;
-  background: #c28d8d;
-  color: #222;
-  margin: 2em 0;
-}
-/* line 496, ../../compass/sass/_c2_module_core.scss */
-.error_popup .inner button {
-  font-size: inherit;
-}
-
 /* line 1, ../../compass/sass/_c2_module_map.scss */
 .map_view {
   width: 100%;
@@ -3069,49 +3068,49 @@ table th:last-child, table td:last-child {
   margin-right: 1em;
 }
 
-/* line 187, ../../compass/sass/c2.scss */
+/* line 229, ../../compass/sass/c2.scss */
 body {
   font-size: 29px;
 }
 
 @media (min-width: 576px) {
-  /* line 192, ../../compass/sass/c2.scss */
+  /* line 234, ../../compass/sass/c2.scss */
   body {
     font-size: 24px;
   }
 }
 @media (min-width: 768px) {
-  /* line 198, ../../compass/sass/c2.scss */
+  /* line 240, ../../compass/sass/c2.scss */
   body {
     font-size: 22px;
   }
 }
 @media (min-width: 992px) {
-  /* line 204, ../../compass/sass/c2.scss */
+  /* line 246, ../../compass/sass/c2.scss */
   body {
     font-size: 20px;
   }
 }
 @media (min-width: 1200px) {
-  /* line 210, ../../compass/sass/c2.scss */
+  /* line 252, ../../compass/sass/c2.scss */
   body {
     font-size: 22px;
   }
 }
 @media (min-width: 1400px) {
-  /* line 216, ../../compass/sass/c2.scss */
+  /* line 258, ../../compass/sass/c2.scss */
   body {
     font-size: 24px;
   }
 }
 @media (min-width: 1800px) {
-  /* line 222, ../../compass/sass/c2.scss */
+  /* line 264, ../../compass/sass/c2.scss */
   body {
     font-size: 27px;
   }
 }
 @media (min-width: 2200px) {
-  /* line 228, ../../compass/sass/c2.scss */
+  /* line 270, ../../compass/sass/c2.scss */
   body {
     font-size: 32px;
   }
