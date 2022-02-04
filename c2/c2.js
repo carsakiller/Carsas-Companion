@@ -101,7 +101,7 @@ module.exports = class C2 extends C2LoggingUtility {
 
 	handleGameMessage(message){
 		if(message.type === 'heartbeat'){
-			this.warn('♥')
+			this.log('♥')
 		} else {
 			this.log('handleGameMessage', message.type)
 		}
