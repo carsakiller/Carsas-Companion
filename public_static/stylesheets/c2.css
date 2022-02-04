@@ -2673,20 +2673,53 @@ table th:last-child, table td:last-child {
   left: 0;
   width: 100vw;
   padding: 0.7em 2em;
-  color: #f3f3f3;
-  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
   font-size: 0.7em;
 }
-/* line 392, ../../compass/sass/_c2_module_core.scss */
-.status_bar.success {
-  background: linear-gradient(45deg, #2f7c3e, #55a264);
+/* line 395, ../../compass/sass/_c2_module_core.scss */
+.status_bar .status_bar_entry .name {
+  margin-right: 0.5em;
 }
-/* line 396, ../../compass/sass/_c2_module_core.scss */
-.status_bar.error {
-  background: linear-gradient(45deg, #ab2828, #d14e4e);
+/* line 399, ../../compass/sass/_c2_module_core.scss */
+.status_bar .status_bar_entry .circle {
+  display: inline-block;
+  border-radius: 100%;
+  width: 0.7em;
+  height: 0.7em;
+}
+/* line 406, ../../compass/sass/_c2_module_core.scss */
+.status_bar .status_bar_entry.state_on .circle {
+  background: #379249;
+}
+/* line 410, ../../compass/sass/_c2_module_core.scss */
+.status_bar .status_bar_entry.state_off .circle {
+  background: #c92f2f;
+}
+/* line 414, ../../compass/sass/_c2_module_core.scss */
+.status_bar .status_bar_entry.state_update .circle {
+  animation-name: status-update-flash;
+  animation-duration: 0.3s;
+  animation-iteration-count: 1;
+}
+/* line 420, ../../compass/sass/_c2_module_core.scss */
+.status_bar .status_bar_entry + .status_bar_entry {
+  margin-left: 1.5em;
 }
 
-/* line 401, ../../compass/sass/_c2_module_core.scss */
+@keyframes status-update-flash {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(10);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+/* line 438, ../../compass/sass/_c2_module_core.scss */
 .error_popup {
   position: fixed;
   z-index: 4000;
@@ -2696,7 +2729,7 @@ table th:last-child, table td:last-child {
   width: 100vw;
   background: #000a;
 }
-/* line 410, ../../compass/sass/_c2_module_core.scss */
+/* line 447, ../../compass/sass/_c2_module_core.scss */
 .error_popup .inner {
   position: absolute;
   top: 50%;
@@ -2712,11 +2745,11 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   text-align: center;
 }
-/* line 425, ../../compass/sass/_c2_module_core.scss */
+/* line 462, ../../compass/sass/_c2_module_core.scss */
 .error_popup .inner .title {
   font-size: 1.2em;
 }
-/* line 429, ../../compass/sass/_c2_module_core.scss */
+/* line 466, ../../compass/sass/_c2_module_core.scss */
 .error_popup .inner .message {
   height: 100%;
   width: 100%;
@@ -2725,7 +2758,7 @@ table th:last-child, table td:last-child {
   color: #222;
   margin: 2em 0;
 }
-/* line 438, ../../compass/sass/_c2_module_core.scss */
+/* line 475, ../../compass/sass/_c2_module_core.scss */
 .error_popup .inner button {
   font-size: inherit;
 }

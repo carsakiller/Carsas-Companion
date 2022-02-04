@@ -37,10 +37,10 @@ class C2Module_Map extends C2LoggingUtility {
 				},
 				computed: {
 					livePlayers (){
-						return this.$store.getters.livePlayers
+						return this.$store.state.livePlayers
 					},
 					liveVehicles (){
-						return this.$store.getters.liveVehicles
+						return this.$store.state.liveVehicles
 					}
 				},
 				template: `<div class="map_2d">

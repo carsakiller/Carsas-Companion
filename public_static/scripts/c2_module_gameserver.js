@@ -28,7 +28,7 @@ class C2Module_Gameserver extends C2LoggingUtility {
 			this.c2.registerComponent('gameserver-control', {
 				computed: {
 					isGameServerRunning (){
-						return this.$store.getters.gameserverState
+						return this.$store.state.gameserverState
 					}
 				},
 				template: `<div class="gameserver_control">
@@ -53,7 +53,7 @@ class C2Module_Gameserver extends C2LoggingUtility {
 			this.c2.registerComponent('gameserver-status', {
 				computed: {
 					gameserverStdout (){
-						return this.$store.getters.gameserverStdout
+						return this.$store.state.gameserverStdout
 					}
 				},
 				template: `<div class="gameserver_status">
@@ -68,11 +68,11 @@ class C2Module_Gameserver extends C2LoggingUtility {
 
 		this.c2.on('can-register-messagehandler', ()=>{
 			this.c2.registerMessageHandler('gameserver-stdout', (data)=>{
-				this.c2.store.dispatch('set_gameserverStdout', data)
+				this.c2.store.state.gameserverStdout = data
 			})
 
 			this.c2.registerMessageHandler('gameserver-state', (data)=>{
-				c2.store.dispatch('set_gameserverState', data)
+				this.c2.store.state.gameserverState = data
 			})
 		})
 

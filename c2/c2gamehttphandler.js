@@ -76,7 +76,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 			try {
 				parsed = JSON.parse(data);
 			} catch (ex){
-				this.log('user json has bad format', data, ex)
+				this.warn('game json has bad format', data, ex)
 				return res.json({
 					success: false,
 					result: 'json syntax error'

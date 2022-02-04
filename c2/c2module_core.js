@@ -32,12 +32,14 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			return this.c2.sendMessageToGame(client.token, messageType, data)//TODO: rate limit this
 		})
 
-		this.c2.registerGameMessageHandler('heartbeat', (data)=>{
+		this.c2.registerGameMessageHandler('heartbeat', (data, messageType)=>{
 			if(data === 'first'){
 				//script has just reloaded
 				this.info('Game script has restarted, force reloading all webclients ...')
 				c2.c2WebInterface.c2WebSocketHandler.forceReloadAll()
 			}
+
+			return this.c2.sendMessageToWebClient('all', messageType, data)
 		})
 
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{

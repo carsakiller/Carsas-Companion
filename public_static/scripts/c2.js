@@ -18,42 +18,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.log('[C2] setup', el)
 
 		this.storeConfig = {
-			state: {
-				status: {
-					message: undefined,
-					clazz:undefined
-				},
-
-				error: {
-					title: undefined,
-					message: undefined
-				}
-			},
-			mutations: {
-				setStatus(state, status){
-					state.status = status
-				},
-				setError(state, error){
-					state.error = error
-				},
-				addPage (state, page){
-					if(!state.pages){
-						state.pages = []
-					}
-					state.pages.push(page)
-				}
-			},
-			actions: {
-				setStatus({commit}, status){
-					commit('setStatus', status)
-				},
-				setError({commit}, error){
-					commit('setError', error)
-				},
-				addPage ({commit}, page){
-					commit('addPage', page)
-				}
-			}
+			state: {}
 		}
 
 		this.dispatch('can-register-storable')
@@ -72,7 +37,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			accepts: 'text/plain',
 			async: true,
 			success: (data)=>{
-				this.store.dispatch('set_C2_VERSION', data)
+				this.store.state.C2_VERSION = data
 
 				this.loadLocalStorage()
 				$(window).on('beforeunload', ()=>{
@@ -98,7 +63,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			},
 			computed: {
 				pages: function (){
-					return this.$store.getters.pages
+					return this.$store.state.pages
 				},
 				initialPage: function (){
 					let saved = parseInt(localStorage.getItem('lastPageIndex'))
@@ -106,14 +71,13 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				}
 			},
 			template: `<div class="c2">
-				<error-popup/>
 				<login-form @loginSuccess="isLoggedIn = true"/>
 				<pages :initial-index="initialPage" @page-change="onPageChange">
 					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon">
 						<component :is="page.componentName"/>
 					</page>
-					<status-bar/>
 				</pages>
+				<status-bar/>
 			</div>`,
 			methods: {
 				onPageChange (index){
@@ -144,7 +108,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		for(let syncable of this.syncables){
 			this.registerMessageHandler('sync-' + syncable, data => {
 				this.log(`got ${syncable} sync`, data)
-				this.store.commit('set_' + syncable, data)
+				this.store.state[syncable] = data
 
 				this.dispatch('sync-arrived', syncable)
 			})
@@ -154,7 +118,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		setTimeout(()=>{
 			$.get('/static/commit.txt', (data)=>{
-				this.store.dispatch('set_C2_COMMIT', data)
+				this.store.state.C2_COMMIT = data
 			})
 		}, 1000)
 
@@ -163,17 +127,11 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		}, 1)
 	}
 
-	setError(title, message){
-		this.store.dispatch('setError', {
-			title: title,
-			message: message
-		})
-	}
-
 	handleMessage(message){
 
 		if(message.type === 'heartbeat'){
 			this.log('received message', message)
+			this.dispatch('heartbeat')
 		} else {
 			this.info('received message', message)
 		}
@@ -219,7 +177,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		} else {
 			text = msgOrError
 		}
-		this.setError('An Error has occured (Please contact an admin)', text)
+		alert('An Error has occured (Please contact an admin): \n' + text)
 	}
 
 	registerStorable(storableName){
@@ -239,30 +197,6 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		}
 
 		this.storeConfig.state[storableName] = undefined
-
-		if(!this.storeConfig.mutations){
-			this.storeConfig.mutations = {}
-		}
-
-		this.storeConfig.mutations['set_' + storableName] = function (state, data){
-			state[storableName] = data
-		}
-
-		if(!this.storeConfig.actions){
-			this.storeConfig.actions = {}
-		}
-
-		this.storeConfig.actions['set_' + storableName] = function ({ commit }, data){
-			commit('set_' + storableName, data)
-		}
-
-		if(!this.storeConfig.getters){
-			this.storeConfig.getters = {}
-		}
-
-		this.storeConfig.getters[storableName] = function (state){
-			return state[storableName]
-		}
 	}
 
 	// creates a storable and a message handler with "sync-[syncableName]"
@@ -312,7 +246,10 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			return
 		}
 
-		this.store.dispatch('addPage', {
+		if(!this.store.state.pages){
+			this.store.state.pages = []
+		}
+		this.store.state.pages.push({
 			name: name,
 			icon: icon,
 			componentName: componentName
@@ -357,7 +294,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			}
 		}
 
-		this.store.dispatch('set_localStorage', value)
+		this.store.state.localStorage = value
 	}
 
 	saveLocalStorage(){

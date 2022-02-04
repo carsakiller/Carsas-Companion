@@ -385,16 +385,53 @@
 	left: 0;
 	width: 100vw;
 	padding: 0.7em 2em;
-	color: $text-color;
-	text-align: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
 	font-size: 0.7em;
 
-	&.success {
-		background: linear-gradient(45deg, shade($enabled, 15%), tint($enabled, 15%));
-	}
+	.status_bar_entry {
 
-	&.error {
-		background: linear-gradient(45deg, shade($disabled, 15%), tint($disabled, 15%));
+		.name {
+			margin-right: 0.5em;
+		}
+
+		.circle {
+			display: inline-block;
+			border-radius: 100%;
+			width: 0.7em;
+			height: 0.7em;
+		}
+
+		&.state_on .circle {
+			background: $enabled;
+		}
+
+		&.state_off .circle {
+			background: $disabled;
+		}
+
+		&.state_update .circle {
+			animation-name: status-update-flash;
+			animation-duration: 0.3s;
+			animation-iteration-count: 1;
+		}
+
+		& + .status_bar_entry {
+			margin-left: 1.5em;
+		}
+	}
+}
+
+@keyframes status-update-flash {
+	0% {
+		filter: brightness(1);
+	}
+	50% {
+		filter: brightness(10);
+	}
+	100% {
+		filter: brightness(1);
 	}
 }
 

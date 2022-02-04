@@ -5,6 +5,10 @@ class C2Module_Core extends C2LoggingUtility {
 
 		this.c2 = c2
 
+		this.c2.on('can-register-storable', ()=>{
+			this.c2.registerStorable('status')
+		})
+
 		this.c2.on('can-register-syncable', ()=>{
 			this.c2.registerSyncable('players')
 			this.c2.registerSyncable('vehicles')
@@ -25,29 +29,51 @@ class C2Module_Core extends C2LoggingUtility {
 			*/
 
 			this.c2.registerComponent('status-bar', {
-				computed: {
-					status (){
-						return this.$store.state.status
-					}
-				},
-				template: `<div class="status_bar" v-if="status.message" :class="status.clazz">
-					{{status.message}}
+				template: `<div class="status_bar">
+					<status-bar-entry :name="'server'" :label="'Webserver'"/>
+					<status-bar-entry :name="'game'" :label="'Game'" :flash-on-heartbeat="true"/>
 				</div>`
 			})
 
-			this.c2.registerComponent('error-popup', {
-				computed: {
-					theError (){
-						return this.$store.state.error
+			this.c2.registerComponent('status-bar-entry', {
+				data: function (){
+					return {
+						updating: false
 					}
 				},
-				template: `<div class="error_popup" v-if="theError.message">
-					<div class="inner">
-						<p class="title">{{theError.title}}</p>
-						<textarea class="message" cols="30" rows="5" readonly="true" wrap="hard">{{theError.message}}</textarea>
-						<button onclick="document.location.reload()">Reload Page</button>
-					</div>
-				</div>`
+				props: {
+					name: {
+						type: String,
+						required: true
+					},
+					label: {
+						type: String,
+						required: true
+					},
+					'flash-on-heartbeat': {
+						type: Boolean
+					}
+				},
+				computed: {
+					state (){
+						return this.$store.state.status && this.$store.state.status[this.name] === true
+					}
+				},
+				template: `<div class="status_bar_entry" :class="[state ? 'state_on' : 'state_off', updating ? 'state_update' : '']">
+					<span class="name">{{label}}</span><span class="circle"/>
+				</div>`,
+				created (){
+					c2.on('heartbeat', ()=>{
+						if(!this.flashOnHeartbeat){
+							return
+						}
+
+						this.updating = true
+						setTimeout(()=>{
+							this.updating = false
+						}, 500)
+					})
+				}
 			})
 
 			this.c2.registerComponent('login-form', {
@@ -127,10 +153,10 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('info', {
 				computed: {
 					version (){
-						return this.$store.getters.C2_VERSION
+						return this.$store.state.C2_VERSION
 					},
 					commit (){
-						return this.$store.getters.C2_COMMIT
+						return this.$store.state.C2_COMMIT
 					},
 					commitShort (){
 						return this.commit ? this.commit.substring(0,8) : undefined
@@ -1120,11 +1146,11 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerMessageHandler('game-connection', data => {
 				if(data === true){
-					this.setStatusSuccess('Game connected', 3000)
+					this.setStatus('game', true)
 
 					this.syncAllData()
 				} else {
-					this.setStatusError('Game disconnected')
+					this.setStatus('game', false)
 				}
 			})
 
@@ -1133,11 +1159,11 @@ class C2Module_Core extends C2LoggingUtility {
 		this.c2.on('setup-done', ()=>{
 
 			this.c2.webclient.on('connected', ()=>{
-				this.setStatusSuccess('Server Connected')
+				this.setStatus('server', true)
 			})
 
 			this.c2.webclient.on('disconnected', ()=>{
-				this.setStatusError('Server Connection Lost')
+				this.setStatus('server', false)
 			})
 		})
 	}
@@ -1148,35 +1174,11 @@ class C2Module_Core extends C2LoggingUtility {
 		.catch(err => this.error('error while syncing all', err))
 	}
 
-	// TODO: rework this to use registerStorable()
-
-	setStatus(message, clazz, /* optional */hideAfterTime){
-		this.log('setStatus', message)
-		this.c2.store.dispatch('setStatus', {
-			message: message,
-			clazz: clazz
-		})
-
-		if(hideAfterTime){
-			setTimeout(()=>{
-				this.setStatus(undefined, undefined)
-			}, hideAfterTime)
+	setStatus(type, state){
+		this.log('setStatus', type, state)
+		if(!this.c2.store.state.status){
+			this.c2.store.state.status = {}
 		}
-	}
-
-	setStatusSuccess(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'success', hideAfterTime)
-	}
-
-	setStatusWarn(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'warn', hideAfterTime)
-	}
-
-	setStatusError(message, /* optional */hideAfterTime){
-		this.setStatus(message, 'error', hideAfterTime)
-	}
-
-	clearStatus(){
-		this.setStatus(undefined, undefined)
+		this.c2.store.state.status[type] = state
 	}
 }
