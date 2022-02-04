@@ -11,6 +11,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.steamProfileCache = {}
 
+		this.companionLoginAttemptsFromIP = {}
+
 		this.c2.registerWebClientMessageHandler('*', (client, data, messageType)=>{
 			if(messageType.startsWith('command-')){
 				return new Promise((fulfill, reject)=>{
@@ -33,7 +35,21 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('companion-login', (client, data, messageType)=>{
-			return this.c2.sendMessageToGame(client.token, messageType, data)//TODO: rate limit this
+			if(this.companionLoginAttemptsFromIP[client.ip] === undefined){
+				this.companionLoginAttemptsFromIP[client.ip] = 0
+			}
+
+			this.companionLoginAttemptsFromIP[client.ip]++
+
+			if(this.companionLoginAttemptsFromIP[client.ip] >= 50){
+				//rate limit, but pretend token not exists
+				if(this.companionLoginAttemptsFromIP[client.ip] == 50){
+					this.warn('someone hit the companion-login rate limit:', client.ip)
+				}
+				return new Promise((resolve, reject)=>{ reject('token not found') })
+			} else {
+				return this.c2.sendMessageToGame(client.token, messageType, data)
+			}
 		})
 
 		this.c2.registerWebClientMessageHandler('steam-profile', (client, messageData)=>{

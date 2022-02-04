@@ -56,6 +56,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	addClient(ws, req){
 		let client = {
 			id: this.clientIdCounter++,
+			ip: req.ip,
 			ws: ws,
 			token: undefined,
 			req: req

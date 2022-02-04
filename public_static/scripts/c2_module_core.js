@@ -95,7 +95,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.profile
 					},
 					profileImageStyle (){
-						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholer.png') + '")'
+						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholder.png') + '")'
 					}
 				},
 				emits: ['show-login'],
@@ -150,7 +150,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.profile
 					},
 					profileImageStyle (){
-						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholer.png') + '")'
+						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholder.png') + '")'
 					}
 				},
 				template: `<div class="login_popup" v-if="isVisible">
