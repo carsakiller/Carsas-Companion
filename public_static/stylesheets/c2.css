@@ -3080,42 +3080,42 @@ body {
 @media (min-width: 576px) {
   /* line 234, ../../compass/sass/c2.scss */
   body {
-    font-size: 24px;
+    font-size: 21px;
   }
 }
 @media (min-width: 768px) {
   /* line 240, ../../compass/sass/c2.scss */
   body {
-    font-size: 22px;
+    font-size: 19px;
   }
 }
 @media (min-width: 992px) {
   /* line 246, ../../compass/sass/c2.scss */
   body {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 @media (min-width: 1200px) {
   /* line 252, ../../compass/sass/c2.scss */
   body {
-    font-size: 22px;
+    font-size: 19px;
   }
 }
 @media (min-width: 1400px) {
   /* line 258, ../../compass/sass/c2.scss */
   body {
-    font-size: 24px;
+    font-size: 20px;
   }
 }
 @media (min-width: 1800px) {
   /* line 264, ../../compass/sass/c2.scss */
   body {
-    font-size: 27px;
+    font-size: 23px;
   }
 }
 @media (min-width: 2200px) {
   /* line 270, ../../compass/sass/c2.scss */
   body {
-    font-size: 32px;
+    font-size: 27px;
   }
 }
