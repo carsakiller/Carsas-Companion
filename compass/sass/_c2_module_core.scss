@@ -205,13 +205,18 @@
 			.role_body {
 				padding: 1em;
 
-				.add_member {
-					width: 100%;
+
+				.add_member, .member_selection {
+					border-radius: 0.2em;
 					border: 0.2em solid;
 					border-top-color: #315fb0;
 					border-left-color: #315fb0;
 					border-bottom-color: #00346c;
 					border-right-color: #00346c;
+				}
+
+				.add_member {
+					width: 100%;
 					transition: border 0.2s linear, background 0.2s linear;
 
 					.im {
@@ -225,6 +230,26 @@
 
 						.im {
 							transform: rotate(90deg);
+						}
+					}
+				}
+
+				.member_selection {
+					padding: 0.2em;
+
+					.member_entry {
+						padding: 0.3em 0.6em;
+						border-radius: 0.2em;
+						cursor: pointer;
+						background: transparent;
+						transition: all 0.2s ease 0s;
+
+						&:not(:last-child) {
+							margin-bottom: 0.2em;
+						}
+
+						&:hover {
+							background: #fffa;
 						}
 					}
 				}

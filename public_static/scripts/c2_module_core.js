@@ -612,6 +612,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('role', {
 				data: function(){
 					return {
+						showAddMemberSelection: false,
 						syncables: ['roles']
 					}
 				},
@@ -647,17 +648,6 @@ class C2Module_Core extends C2LoggingUtility {
 						}
 
 						return ret
-					},
-					playersThatAreNotAMember (){
-						let ret = []
-
-						for(let steamid of Object.keys(this.$store.state.players)){
-							if(! this.role.members[steamid]){
-								ret.push(steamid)
-							}
-						}
-
-						return ret
 					}
 				},
 				template: `<extendable class="role">
@@ -675,9 +665,10 @@ class C2Module_Core extends C2LoggingUtility {
 					<extendable-body class="role_body" :showShadow="true">
 						<tabs>
 							<tab :title="'Members'">
-								<lockable-button class="add_member" @click="addMember">
+								<lockable-button v-if="!showAddMemberSelection" class="add_member" @click="showAddMemberSelection = true">
 									<span class="im im-plus"/>
 								</lockable-button>
+								<member-selection v-if="showAddMemberSelection" @member-selected="addMember" :role="role"/>
 								<member-list :members="role.members"/>
 							</tab>
 							<tab :title="'Commands'">
@@ -695,13 +686,46 @@ class C2Module_Core extends C2LoggingUtility {
 					remove (){
 						this.callGameCommandAndWaitForSync('removeRole', this.roleName)
 					},
-					addMember (){
-						alert('not implemented')
-						//TODO: add selection for players
-						//this.callGameCommandAndWaitForSync('giveRole', [this.roleName, ])
+					addMember (steamId){
+						this.showAddMemberSelection = false
+						this.callGameCommandAndWaitForSync('giveRole', [this.roleName, steamId])
 					}
 				},
 				mixins: [componentMixin_gameCommand]
+			})
+
+
+			this.c2.registerComponent('member-selection', {
+				props: {
+					role: {
+						type: Object,
+						required: true
+					}
+				},
+				computed: {
+					playersThatAreNotAMember (){
+						let ret = {}
+
+						for(let steamId of Object.keys(this.$store.state.players)){
+							if(! this.role.members[steamId]){
+								ret[steamId] = this.$store.state.players[steamId]
+							}
+						}
+
+						return ret
+					}
+				},
+				emits: ['member-selected'],
+				template: `<div class="member_selection">
+					<div v-for="(player, steamid) in playersThatAreNotAMember" class="member_entry" @click="selectMember(steamid)">
+						<span>{{player.name}}</span>
+					</div>
+				</div>`,
+				methods: {
+					selectMember (steamId){
+						this.$emit('member-selected', steamId)
+					}
+				}
 			})
 
 			this.c2.registerComponent('permissions', {
