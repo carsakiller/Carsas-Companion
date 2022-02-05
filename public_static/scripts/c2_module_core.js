@@ -225,6 +225,7 @@ class C2Module_Core extends C2LoggingUtility {
 							this.setMessage('success', 'logged out')
 							c2.webclient.ws.token = undefined
 
+
 							setTimeout(()=>{
 								this.hide()
 								this.setMessage(undefined, undefined)
@@ -1279,14 +1280,14 @@ class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-page', ()=>{
-			this.c2.registerPage('Home', 'home', 'info')
-			this.c2.registerPage('Players', 'users', 'players-management')
-			this.c2.registerPage('Vehicles', 'car', 'vehicles-management')
-			this.c2.registerPage('Roles', 'crown', 'roles-management')
-			this.c2.registerPage('Rules', 'task-o', 'rules-management')
-			this.c2.registerPage('Preferences', 'control-panel', 'preferences-management')
-			this.c2.registerPage('Game Settings', 'wrench', 'gamesettings-management')
-			this.c2.registerPage('Logs', 'note-o', 'logs-management')
+			this.c2.registerPage('home', 'Home', 'home', 'info')
+			this.c2.registerPage('players', 'Players', 'users', 'players-management')
+			this.c2.registerPage('vehicles', 'Vehicles', 'car', 'vehicles-management')
+			this.c2.registerPage('roles', 'Roles', 'crown', 'roles-management')
+			this.c2.registerPage('rules', 'Rules', 'task-o', 'rules-management')
+			this.c2.registerPage('preferences', 'Preferences', 'control-panel', 'preferences-management')
+			this.c2.registerPage('gamesettings', 'Game Settings', 'wrench', 'gamesettings-management')
+			this.c2.registerPage('logs', 'Logs', 'note-o', 'logs-management')
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{

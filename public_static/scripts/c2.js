@@ -14,6 +14,18 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		})
 	}
 
+	updateUserPermissions(){
+		this.log('userSteamId has changed. Updating permissions ...')
+
+		this.webclient.sendMessage('user-permissions').then((permissions)=>{
+			this.store.state.permissions = JSON.parse(permissions)
+			this.info('updating user permissions to', this.store.state.permissions)
+		}).catch(err=>{
+			this.error(err)
+			this.store.state.permissions = undefined
+		})
+	}
+
 	setup(el){
 		this.log('[C2] setup', el)
 
@@ -25,11 +37,15 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.registerStorable('pages')
 		this.registerStorable('C2_VERSION')
 		this.registerStorable('C2_COMMIT')
+		this.registerStorable('permissions')
 
 		this.syncables = []
 		this.dispatch('can-register-syncable')
 
 		this.store = Vuex.createStore(this.storeConfig)
+		this.store.watch(()=>{return this.store.state.userSteamId}, ()=>{
+			this.updateUserPermissions()
+		})
 
 		$.get({
 			url: '/static/version.txt',
@@ -63,7 +79,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				<login-popup ref="loginPopup"/>
 				<pages :initial-index="initialPage" @page-change="onPageChange">
 					<user-login @show-login="$refs.loginPopup.show()"/>
-					<page v-for="(page, index) of pages" :title="page.name" :icon="page.icon">
+					<page v-for="(page, index) of pages" :name="page.name" :title="page.title" :icon="page.icon">
 						<component :is="page.componentName"/>
 					</page>
 					<status-bar/>
@@ -115,6 +131,10 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		setTimeout(()=>{
 			this.dispatch('setup-done')
 		}, 1)
+
+		this.webclient.ws.on('open', ()=>{
+			this.updateUserPermissions()
+		})
 	}
 
 	handleMessage(message){
@@ -223,8 +243,13 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.app.component(name, options)
 	}
 
-	registerPage(name, icon, componentName){
+	registerPage(name, title, icon, componentName){
 		if(typeof name !== 'string'){
+			this.error('name must be a string')
+			return
+		}
+
+		if(typeof title !== 'string'){
 			this.error('name must be a string')
 			return
 		}
@@ -244,6 +269,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		}
 		this.store.state.pages.push({
 			name: name,
+			title: title,
 			icon: icon,
 			componentName: componentName
 		})

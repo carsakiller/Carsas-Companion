@@ -63,7 +63,7 @@ class C2Module_Gameserver extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-page', ()=>{
-			this.c2.registerPage('GameServer Management', 'server', 'gameserver-management')
+			this.c2.registerPage('gameserver-management', 'GameServer Management', 'server', 'gameserver-management')
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{

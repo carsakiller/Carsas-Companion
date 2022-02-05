@@ -603,7 +603,7 @@ class C2Module_Test extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-page', ()=>{
-			this.c2.registerPage('Tests', 'flask', 'tests-management')
+			this.c2.registerPage('tests', 'Tests', 'flask', 'tests-management')
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{

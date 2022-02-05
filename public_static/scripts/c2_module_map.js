@@ -216,7 +216,7 @@ class C2Module_Map extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-page', ()=>{
-			this.c2.registerPage('Map', 'map-o', 'map-view')
+			this.c2.registerPage('live-map', 'Map', 'map-o', 'map-view')
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{

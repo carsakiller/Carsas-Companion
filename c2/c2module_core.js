@@ -9,6 +9,36 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2 = c2
 
+		this.companionTokens = {}
+		this.roles = {}
+
+		this.PERMISSIONS = {
+			Default:  {
+				'page-home': true,
+				'page-players': true,
+				'page-vehicles': true,
+				'page-roles': true,
+				'page-rules': true,
+				'page-preferences': true,
+				'page-gamesettings': true,
+				'page-live-map': true
+			},
+			Owner: {
+				'page-home': true,
+				'page-players': true,
+				'page-vehicles': true,
+				'page-roles': true,
+				'page-rules': true,
+				'page-preferences': true,
+				'page-gamesettings': true,
+				'page-live-map': true,
+
+				'page-logs': true,
+				'page-gameserver-management': true,
+				'page-tests': true
+			}
+		}
+
 		this.steamProfileCache = {}
 
 		this.companionLoginAttemptsFromIP = {}
@@ -95,6 +125,28 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			})
 		})
 
+		this.c2.registerWebClientMessageHandler('user-permissions', (client)=>{
+			return new Promise((resolve, reject)=>{
+				for(let steamId of Object.keys(this.companionTokens)){
+					if(this.companionTokens[steamId] === client.token){
+						if(this.roles['Owner'] && this.roles['Owner'].members[steamId] === true){
+							return resolve(this.PERMISSIONS.Owner)
+						}
+
+						//not an owner
+						return resolve(this.PERMISSIONS.Default)
+					}
+				}
+
+				resolve(this.PERMISSIONS.Default)
+			})
+		})
+
+		this.c2.registerGameMessageHandler('token-sync', (data)=>{
+			this.log('tokensync', data)
+			this.companionTokens = data
+		})
+
 		this.c2.registerGameMessageHandler('heartbeat', (data, messageType)=>{
 			if(data === 'first'){
 				//script has just reloaded
@@ -122,6 +174,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 						this.log('sync', syncname, 'unsuccessful:', err)
 						reject(err)
 					})
+
+					if(messageType === 'sync-roles'){
+						this.roles = data
+					}
 				})
 			} else {
 				this.error('unsupported type by game', messageType)

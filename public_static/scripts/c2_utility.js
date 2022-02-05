@@ -884,7 +884,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				template: `<div class="pages">
 					<div class="sidebar">
 						<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :title="page.title">
-							<icon :icon="page.icon"/>
+							<icon v-if="isPageVisible(page.name)" :icon="page.icon"/>
 						</div>
 					</div>
 
@@ -900,6 +900,9 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					    })
 
 					    this.$emit('page-change', this.selectedIndex)
+					},
+					isPageVisible (name){
+						return this.$store.state.permissions && this.$store.state.permissions['page-' + name] === true
 					}
 				},
 				created: function (){
@@ -917,6 +920,10 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					}
 				},
 				props: {
+					name: {
+						type: String,
+						required: true
+					},
 					title: {
 						type: String,
 						required: true
@@ -926,7 +933,12 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						required: true
 					}
 				},
-				template: `<div class="page" v-if="isSelected">
+				computed: {
+					isVisible (){
+						return this.$store.state.permissions && this.$store.state.permissions['page-' + this.name] === true
+					}
+				},
+				template: `<div class="page" v-if="isSelected && isVisible">
 					<div class="page_head">
 						<h2>{{title}}</h2>
 					</div>
