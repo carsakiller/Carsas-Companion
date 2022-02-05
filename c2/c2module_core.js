@@ -127,18 +127,11 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('user-permissions', (client)=>{
 			return new Promise((resolve, reject)=>{
-				for(let steamId of Object.keys(this.companionTokens)){
-					if(this.companionTokens[steamId] === client.token){
-						if(this.roles['Owner'] && this.roles['Owner'].members[steamId] === true){
-							return resolve(this.PERMISSIONS.Owner)
-						}
-
-						//not an owner
-						return resolve(this.PERMISSIONS.Default)
-					}
+				if(this.tokenIsOwner(client.token)){
+					return resolve(this.PERMISSIONS.Owner)
+				} else {
+					return resolve(this.PERMISSIONS.Default)
 				}
-
-				resolve(this.PERMISSIONS.Default)
 			})
 		})
 
@@ -158,7 +151,11 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.registerGameMessageHandler('stream-log', (data, messageType)=>{
-			this.c2.sendMessageToWebClient('all', messageType, data)
+			for(let client of this.c2.c2WebInterface.c2WebSocketHandler.clients){
+				if(this.tokenIsOwner(client.token)){
+					this.c2.sendMessageToWebClient(client, messageType, data)
+				}
+			}
 		})
 
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
@@ -186,5 +183,21 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				})
 			}
 		})
+	}
+
+	tokenIsOwner(token){
+		if(!token){
+			return false
+		}
+
+		for(let steamId of Object.keys(this.companionTokens)){
+			if(this.companionTokens[steamId] === token){
+				if(this.roles['Owner'] && this.roles['Owner'].members[steamId] === true){
+					return true
+				}
+			}
+		}
+
+		return false
 	}
 }
