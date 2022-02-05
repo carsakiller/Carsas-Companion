@@ -39,23 +39,37 @@
 
 	.user_login {
 		position: absolute;
-		top: 0;
-		right: 0;
-		z-index: 1;
+		top: 1em;
+		right: 1em;
+		height: 3em;
+		z-index: 3000;
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		align-items: center;
 		cursor: pointer;
 		color: $text-color;
+		transition: all 0.2s ease 0s;
 
 		&:hover {
-			color: shade($text-color, 50%);
+			filter: brightness(50%);
 		}
 
 		.user_container {
+			height: 3em;
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-end;
+			align-items: center;
 
 			.profile_image {
-				width: 3em;
 				height: 3em;
+				width: 3em;
 				background-size: contain;
 				background-position: center;
+				border-radius: 1000000px;
+				overflow: hidden;
+				border: 0.2em solid $highlight;
 			}
 		}
 	}
@@ -77,23 +91,11 @@
 			font-size: 2em;
 			font-weight: 600;
 			padding: 0.8em 2em;
-			margin-right: 4em;
-			background-image: url('/static/images/headerBanner.jpg');
-			background-position: center;
-			background-size: cover;
+			background-color: #111;
+			background-image: url('/static/images/headerBanner.svg');
+			background-position: left center;
+			background-size: 19%;
 			background-repeat: no-repeat;
-
-			&:after {
-			    content: '';
-			    position: absolute;
-			    top: 0;
-			    left: 50%;
-			    height: 100%;
-			    width: 100%;
-			    background: radial-gradient(ellipse at center, $primary 0%, $primary 15%, rgba(0,0,0,0) 90%);
-			    z-index: 1;
-			    transform: translateX(-50%);
-			}
 
 			h2 {
 				z-index: 2;
