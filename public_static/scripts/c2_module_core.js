@@ -117,7 +117,7 @@ class C2Module_Core extends C2LoggingUtility {
 				emits: ['show-login'],
 				template: `<div class="user_login" @click="showLoginPopup">
 					<span v-if="!isLoggedIn">Log In</span>
-					<div v-else class="user_container">
+					<div v-else class="user_container" title="Logout">
 						<div class="profile_image" :style="profileImageStyle"></div>
 					</div>
 				</div>`,
@@ -224,7 +224,7 @@ class C2Module_Core extends C2LoggingUtility {
 						setTimeout(()=>{
 							this.setMessage('success', 'logged out')
 							c2.webclient.ws.token = undefined
-
+							localStorage.removeItem('companionToken')
 
 							setTimeout(()=>{
 								this.hide()
@@ -250,6 +250,12 @@ class C2Module_Core extends C2LoggingUtility {
 				created: function (){
 					if(typeof localStorage.companionToken === 'string'){
 						this.token = localStorage.companionToken
+						this.isCurrentlyLoggingIn = true
+						c2.on('setup-done', ()=>{
+							c2.webclient.ws.on('open', ()=>{
+								this.login()
+							})
+						})
 					}
 				},
 				mixins: [componentMixin_serverMessage]

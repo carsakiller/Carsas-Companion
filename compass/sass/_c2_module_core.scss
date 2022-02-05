@@ -377,6 +377,9 @@
 			height: 3em;
 			background-size: contain;
 			background-position: center;
+			border-radius: 1000000px;
+			overflow: hidden;
+			border: 0.2em solid $highlight;
 		}
 
 		.message {

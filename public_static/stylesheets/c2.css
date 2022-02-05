@@ -2736,8 +2736,11 @@ table th:last-child, table td:last-child {
   height: 3em;
   background-size: contain;
   background-position: center;
+  border-radius: 1000000px;
+  overflow: hidden;
+  border: 0.2em solid #07C5CB;
 }
-/* line 382, ../../compass/sass/_c2_module_core.scss */
+/* line 385, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message {
   color: #f3f3f3;
   margin: 1em 0;
@@ -2745,21 +2748,21 @@ table th:last-child, table td:last-child {
   border: 0.1em solid #f3f3f3;
   border-radius: 0.3em;
 }
-/* line 389, ../../compass/sass/_c2_module_core.scss */
+/* line 392, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message.type_success {
   background: #379249;
 }
-/* line 393, ../../compass/sass/_c2_module_core.scss */
+/* line 396, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message.type_error {
   background: #c92f2f;
 }
-/* line 398, ../../compass/sass/_c2_module_core.scss */
+/* line 401, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner button {
   font-size: inherit;
   margin-top: 1em;
 }
 
-/* line 405, ../../compass/sass/_c2_module_core.scss */
+/* line 408, ../../compass/sass/_c2_module_core.scss */
 .status_bar {
   position: fixed;
   z-index: 3000;
@@ -2772,32 +2775,32 @@ table th:last-child, table td:last-child {
   justify-content: flex-end;
   font-size: 0.7em;
 }
-/* line 419, ../../compass/sass/_c2_module_core.scss */
+/* line 422, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry .name {
   margin-right: 0.5em;
 }
-/* line 423, ../../compass/sass/_c2_module_core.scss */
+/* line 426, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry .circle {
   display: inline-block;
   border-radius: 100%;
   width: 0.7em;
   height: 0.7em;
 }
-/* line 430, ../../compass/sass/_c2_module_core.scss */
+/* line 433, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_on .circle {
   background: #379249;
 }
-/* line 434, ../../compass/sass/_c2_module_core.scss */
+/* line 437, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_off .circle {
   background: #c92f2f;
 }
-/* line 438, ../../compass/sass/_c2_module_core.scss */
+/* line 441, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_update .circle {
   animation-name: status-update-flash;
   animation-duration: 0.3s;
   animation-iteration-count: 1;
 }
-/* line 444, ../../compass/sass/_c2_module_core.scss */
+/* line 447, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry + .status_bar_entry {
   margin-left: 1.5em;
 }
