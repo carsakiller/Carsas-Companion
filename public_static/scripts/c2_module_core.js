@@ -967,6 +967,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('preference-list', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				props: {
 					preferences: {
 						type: Object,
@@ -1159,6 +1164,11 @@ class C2Module_Core extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('gamesetting-list', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				props: {
 					gamesettings: {
 						type: Object,
@@ -1363,7 +1373,7 @@ class C2Module_Core extends C2LoggingUtility {
 	}
 
 	setStatus(type, state){
-		this.log('setStatus', type, state)
+		this.debug('setStatus', type, state)
 		if(!this.c2.store.state.status){
 			this.c2.store.state.status = {}
 		}
