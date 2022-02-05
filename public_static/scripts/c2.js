@@ -66,11 +66,16 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 	createApp (el){
 		this.app = Vue.createApp({
+			computed: {
+				pages: function (){
+					return this.$store.state.pages
+				}
+			},
 			template: `<div class="c2">
 				<login-popup ref="loginPopup"/>
 				<user-login @show-login="$refs.loginPopup.show()"/>
 				<status-bar/>
-				<pages/>
+				<pages :pages="pages"/>
 			</div>`
 		})
 

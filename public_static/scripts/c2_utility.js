@@ -873,14 +873,15 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						selectedIndex: -1
 					}
 				},
-				computed: {
-					pages: function (){
-						return this.$store.state.pages
+				props: {
+					pages: {
+						type: Object,
+						required: true
 					}
 				},
 				template: `<div class="pages">
 					<div class="sidebar">
-						<pages-sidebar-entry v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :page="page" @visibility-change="checkSelectedPageVisible"/>
+						<pages-sidebar-entry v-for="(page, index) in pages" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :page="page" @visibility-change="checkSelectedPageVisible"/>
 					</div>
 
 					<page v-for="(page, index) in pages" :name="page.name" :title="page.title" :icon="page.icon" :is-selected="index === selectedIndex">
@@ -900,10 +901,6 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						if(newSelected !== this.selectedIndex){
 
 							this.selectedIndex = newSelected
-
-							this.pages.forEach((page, index) => {
-						    	page.isSelected = (index === i)
-						    })
 
 						    this.debug('page change', this.selectedIndex)
 							localStorage.setItem('lastPageIndex', this.selectedIndex)
