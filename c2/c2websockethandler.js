@@ -125,9 +125,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		try {
 			let parsed = JSON.parse(msg)
 
-			if(typeof parsed.token === 'string'){
-				client.token = parsed.token
-			}
+			client.token = parsed.token
 
 			if(typeof parsed.serverId === 'number'){
 				this.log('received response to server message', parsed.serverId)
