@@ -2131,7 +2131,7 @@ table th:last-child, table td:last-child {
 /* line 159, ../../compass/sass/_c2_utility.scss */
 .tabs .tabs_selector .entry {
   position: relative;
-  padding: 1em 0.5em 0.5em;
+  padding: 0.5em;
   margin: 0 0.5em;
   font-family: sans-serif, "VarelaRound";
   color: #929292;

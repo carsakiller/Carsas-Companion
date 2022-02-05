@@ -787,12 +787,12 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			this.c2.registerComponent('toggleable-element', {
 				data: function (){
 					return {
-						val: false,
+						inputVal: false,
 						uiid: C2.uuid()
 					}
 				},
 				props: {
-					'initial-value': {
+					'value': {
 						type: Boolean,
 						required: true
 					},
@@ -812,7 +812,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					<div class="front">
 						<label :for="uiid">
 							<disabled-when-any-parent-locked v-slot="disabledProps">
-								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="val" :disabled="disabledProps.isDisabled || isDisabled">
+								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="inputVal" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
 							</disabled-when-any-parent-locked>
 							<span class="checkbox_slider"/>
 						</label>
@@ -827,12 +827,16 @@ let componentMixin_disabledWhenAnyParentLocked = {
 							return
 						}
 
+						this.inputVal = !this.inputVal
+
 						this.log('inputChanged')
-						this.onValueChange(this.valueName, this.val)
+						this.onValueChange(this.valueName, this.inputVal)
 					}
 				},
-				created: function (){
-					this.val = this.initialValue
+				created (){
+					setInterval(()=>{
+						this.inputVal = this.value
+					}, 100)
 				},
 				mixins: [componentMixin_logging]
 			})

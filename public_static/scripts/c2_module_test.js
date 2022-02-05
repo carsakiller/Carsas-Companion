@@ -173,7 +173,7 @@ class C2Module_Test extends C2LoggingUtility {
 							<tab :title="'Functional Components'">
 								<test-component-group :title="'toggleable-element'" :description="'Nice looking version of a checkbox.'">
 									<test-component>
-										<toggleable-element :initial-value="false" :on-value-change="toggleStateChange">{{toggleState}}</toggleable-element>
+										<toggleable-element :value="false" :on-value-change="toggleStateChange">{{toggleState}}</toggleable-element>
 									</test-component>
 								</test-component-group>
 

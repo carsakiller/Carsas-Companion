@@ -111,7 +111,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.profile
 					},
 					profileImageStyle (){
-						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholder.png') + '")'
+						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'static/images/profile_image_placeholder.png') + '")'
 					}
 				},
 				emits: ['show-login'],
@@ -166,7 +166,7 @@ class C2Module_Core extends C2LoggingUtility {
 						return this.$store.state.profile
 					},
 					profileImageStyle (){
-						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'images/profile_image_placeholder.png') + '")'
+						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'static/images/profile_image_placeholder.png') + '")'
 					}
 				},
 				template: `<div class="login_popup" v-if="isVisible">
@@ -393,7 +393,7 @@ class C2Module_Core extends C2LoggingUtility {
 					<extendable-body class="body" :showShadow="true">
 						<p v-if="isBanned">Player was banned by <steamid :steamid="bannedBy"/>.</p>
 
-						<spacer-horizontal/>
+						<spacer-horizontal v-if="isBanned"/>
 
 						<tabs>
 							<tab :title="'Roles'">
@@ -709,9 +709,9 @@ class C2Module_Core extends C2LoggingUtility {
 
 					<lockable/>
 
-					<toggleable-element :initial-value="role.admin" :value-name="'admin'" :on-value-change="onPermissionChange">isAdmin</toggleable-element>
+					<toggleable-element :value="role.admin" :value-name="'admin'" :on-value-change="onPermissionChange">isAdmin</toggleable-element>
 					<spacer-horizontal/>
-					<toggleable-element :initial-value="role.auth" :value-name="'auth'" :on-value-change="onPermissionChange">isAuth</toggleable-element>
+					<toggleable-element :value="role.auth" :value-name="'auth'" :on-value-change="onPermissionChange">isAuth</toggleable-element>
 				</div>`,
 				methods: {
 					onPermissionChange (name, value){
@@ -761,7 +761,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['roleName'],
 				template: `<div class="command">
-					<toggleable-element :initial-value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+					<toggleable-element :value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
 					onCommandChange (name, value){
@@ -840,7 +840,7 @@ class C2Module_Core extends C2LoggingUtility {
 							<lockable-button @click="addNewRule" :set-disabled="newRuleText.length === 0">Add new Rule (at the end)</lockable-button>
 						</division>
 						<rule-list v-if="rules" :rules="rules" @addNewRuleBefore="addNewRule"/>
-						<span v-else>Not synced</span>
+						<span v-else>No rules</span>
 					</lockable-by-childs>
 				</div>`,
 				methods: {
@@ -967,12 +967,6 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
-				provide: function (){
-					return {
-						preference: this.preference,
-						preferenceName: this.preferenceName
-					}
-				},
 				template: `<division class="preference" :name="preferenceName" :alwaysExtended="true">
 					<lockable-by-childs>
 						<component :is="preferenceComponent" :preference="preference" :preferenceName="preferenceName"/>
@@ -986,8 +980,17 @@ class C2Module_Core extends C2LoggingUtility {
 						syncables: ['preferences']
 					}
 				},
-				inject: ['preference', 'preferenceName'],
-				template: `<toggleable-element class="preference_bool" :initial-value="preference.value" :value-name="preferenceName" :on-value-change="preferenceChanged"/>`,
+				props: {
+					preference: {
+						type: Object,
+						required: true
+					},
+					preferenceName: {
+						type: String,
+						required: true
+					}
+				},
+				template: `<toggleable-element class="preference_bool" :value="preference.value" :value-name="preferenceName" :on-value-change="preferenceChanged"/>`,
 				methods: {
 					preferenceChanged (name, value){
 						this.callGameCommandAndWaitForSync('setPref', [this.preferenceName, value])
@@ -1003,7 +1006,16 @@ class C2Module_Core extends C2LoggingUtility {
 						syncables: ['preferences']
 					}
 				},
-				inject: ['preference', 'preferenceName'],
+				props: {
+					preference: {
+						type: Object,
+						required: true
+					},
+					preferenceName: {
+						type: String,
+						required: true
+					}
+				},
 				template: `<div class="preference_string">
 					<textarea v-model="val" cols="30" rows="5" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
@@ -1027,7 +1039,16 @@ class C2Module_Core extends C2LoggingUtility {
 						syncables: ['preferences']
 					}
 				},
-				inject: ['preference', 'preferenceName'],
+				props: {
+					preference: {
+						type: Object,
+						required: true
+					},
+					preferenceName: {
+						type: String,
+						required: true
+					}
+				},
 				template: `<div class="preference_number">
 					<input type="number" v-model="val" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
@@ -1052,7 +1073,16 @@ class C2Module_Core extends C2LoggingUtility {
 						syncables: 'preferences'
 					}
 				},
-				inject: ['preference', 'preferenceName'],
+				props: {
+					preference: {
+						type: Object,
+						required: true
+					},
+					preferenceName: {
+						type: String,
+						required: true
+					}
+				},
 				template: `<div class="preference_table">
 					<textarea type="number" v-model="val" cols="30" rows="5" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
@@ -1149,7 +1179,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				inject: ['gamesetting'],
-				template: `<toggleable-element class="gamesetting_bool" :initial-value="gamesetting" :value-name="gamesettingName" :on-value-change="gamesettingChanged"></toggleable-element>`,
+				template: `<toggleable-element class="gamesetting_bool" :value="gamesetting" :value-name="gamesettingName" :on-value-change="gamesettingChanged"></toggleable-element>`,
 				methods: {
 					gamesettingChanged (name, value){
 						this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, value])
