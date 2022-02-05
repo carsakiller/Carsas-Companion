@@ -20,7 +20,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		setInterval(()=>{
 			if(Date.now() - this.lastGameMessage > this.SERVER_HEARTBEAT_MAX_TIME_UNTIL_TIMEOUT && this.lastGameMessage > 0){
 				if(this.isGameAvailable){
-					this.warn('Game is not available anymore')
+					this.info('Game is not available anymore')
 					this.isGameAvailable = false
 
 					this.c2GameHttpHandler.failAllPendingCommandResponses()
@@ -35,9 +35,11 @@ module.exports = class C2GameInterface extends C2Interface {
 		app.use('/game-api', (req, res)=>{
 			if(!this.isGameAvailable){
 				this.info('Game is available again')
+
+				this.isGameAvailable = true
 				this.dispatch('game-connected')
 			}
-			this.isGameAvailable = true
+
 			this.lastGameMessage = Date.now()
 
 			this.c2GameHttpHandler.onGameHTTP(req,res)

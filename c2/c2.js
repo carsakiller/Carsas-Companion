@@ -42,11 +42,10 @@ module.exports = class C2 extends C2LoggingUtility {
 		})
 
 		this.c2GameInterface.on('game-connected', ()=>{
-			this.c2WebInterface.sendMessageTo('all', 'game-connection', true).then(()=>{
+			this.c2WebInterface.sendMessageTo('all', 'game-connection', true)
 
-			}).catch((err)=>{
-
-			})
+			//request initial sync
+			this.sendMessageToGame(undefined, 'command-sync-all')
 		})
 
 		this.c2GameInterface.on('game-disconnected', ()=>{
