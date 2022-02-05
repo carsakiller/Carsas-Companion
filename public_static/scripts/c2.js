@@ -66,32 +66,12 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 	createApp (el){
 		this.app = Vue.createApp({
-			computed: {
-				pages: function (){
-					return this.$store.state.pages
-				},
-				initialPage: function (){
-					let saved = parseInt(localStorage.getItem('lastPageIndex'))
-					return isNaN(saved) ? 0 : saved
-				}
-			},
 			template: `<div class="c2">
 				<login-popup ref="loginPopup"/>
-				<pages :initial-index="initialPage" @page-change="onPageChange">
-					<user-login @show-login="$refs.loginPopup.show()"/>
-					<page v-for="(page, index) of pages" :name="page.name" :title="page.title" :icon="page.icon">
-						<component :is="page.componentName"/>
-					</page>
-					<status-bar/>
-				</pages>
-			</div>`,
-			methods: {
-				onPageChange (index){
-					this.debug('onPageChange', index)
-					localStorage.setItem('lastPageIndex', index)
-				}
-			},
-			mixins: [componentMixin_logging]
+				<user-login @show-login="$refs.loginPopup.show()"/>
+				<status-bar/>
+				<pages/>
+			</div>`
 		})
 
 		this.app.use(this.store)
@@ -267,6 +247,9 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		if(!this.store.state.pages){
 			this.store.state.pages = []
 		}
+
+		this.log('registerPage', name)
+
 		this.store.state.pages.push({
 			name: name,
 			title: title,

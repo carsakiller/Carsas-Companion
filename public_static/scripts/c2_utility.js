@@ -870,56 +870,89 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			this.c2.registerComponent('pages', {
 				data: function (){
 					return {
-						selectedIndex: 0,
-						pages: []
+						selectedIndex: -1
 					}
 				},
-				props: {
-					'initial-index': {
-						type: Number,
-						default: 0,
-						required: false
+				computed: {
+					pages: function (){
+						return this.$store.state.pages
 					}
 				},
 				template: `<div class="pages">
 					<div class="sidebar">
-						<div v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :title="page.title">
-							<icon v-if="isPageVisible(page.name)" :icon="page.icon"/>
-						</div>
+						<pages-sidebar-entry v-for="(page, index) in pages" :key="index" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :page="page" @visibility-change="checkSelectedPageVisible"/>
 					</div>
 
-					<slot/>
+					<page v-for="(page, index) in pages" :name="page.name" :title="page.title" :icon="page.icon" :is-selected="index === selectedIndex">
+						<component :is="page.componentName"/>
+					</page>
 				</div>`,
 				emits: ['page-change'],
 				methods: {
 					selectPage (i){
-						this.selectedIndex = (i > this.pages.length - 1) ? 0 : i
+						let newSelected = Math.max(0, Math.min(this.pages.length - 1, i))
 
-						this.pages.forEach((page, index) => {
-					    	page.isSelected = (index === i)
-					    })
+						if(!this.isPageVisible(this.pages[newSelected].name) && newSelected !== 0){
+							this.selectPage(0)
+							return
+						}
 
-					    this.$emit('page-change', this.selectedIndex)
+						if(newSelected !== this.selectedIndex){
+
+							this.selectedIndex = newSelected
+
+							this.pages.forEach((page, index) => {
+						    	page.isSelected = (index === i)
+						    })
+
+						    this.debug('page change', this.selectedIndex)
+							localStorage.setItem('lastPageIndex', this.selectedIndex)
+						}
 					},
 					isPageVisible (name){
 						return this.$store.state.permissions && this.$store.state.permissions['page-' + name] === true
+					},
+					checkSelectedPageVisible (){
+						this.selectPage(this.selectedIndex)
 					}
 				},
 				created: function (){
-					this.selectedIndex = this.initialIndex
+					let saved = parseInt(localStorage.getItem('lastPageIndex'))
+					this.selectPage(isNaN(saved) ? 0 : saved)
 				},
-				mounted: function (){
-					this.selectPage(this.selectedIndex)
+				mixins: [componentMixin_logging]
+			})
+
+
+			this.c2.registerComponent('pages-sidebar-entry', {
+				props: {
+					page: {
+						type: Object,
+						required: true
+					}
+				},
+				computed: {
+					isVisible (){
+						return this.$store.state.permissions && this.$store.state.permissions['page-' + this.page.name] === true
+					}
+				},
+				emits: ['visibility-change'],
+				template: `<div v-if="isVisible" :title="page.title">
+					<icon :icon="page.icon"/>
+				</div>`,
+				watch: {
+					isVisible (){
+						this.$emit('visibility-change')
+					}
 				}
 			})
 
 			this.c2.registerComponent('page', {
-				data: function (){
-					return {
-						isSelected: false,
-					}
-				},
 				props: {
+					'is-selected': {
+						type: Boolean,
+						required: true
+					},
 					name: {
 						type: String,
 						required: true
@@ -947,9 +980,6 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						<slot/>
 					</div>
 				</div>`,
-				created: function(){
-					this.$parent.pages.push(this)
-				},
 				mounted: function(){
 					setTimeout(()=>{
 						$(this.$el).find('.page_body').scrollTop(0)
