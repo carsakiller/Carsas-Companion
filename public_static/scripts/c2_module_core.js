@@ -709,13 +709,16 @@ class C2Module_Core extends C2LoggingUtility {
 
 					<lockable/>
 
-					<toggleable-element :value="role.admin" :value-name="'admin'" :on-value-change="onPermissionChange">isAdmin</toggleable-element>
+					<toggleable-element :value-object="role" :value-object-key="'admin'" :on-value-change="onPermissionChange">isAdmin</toggleable-element>
 					<spacer-horizontal/>
-					<toggleable-element :value="role.auth" :value-name="'auth'" :on-value-change="onPermissionChange">isAuth</toggleable-element>
+					<toggleable-element :value-object="role" :value-object-key="'auth'" :on-value-change="onPermissionChange">isAuth</toggleable-element>
 				</div>`,
 				methods: {
 					onPermissionChange (name, value){
 						this.debug('onPermissionChange', name, value)
+
+						this.role[name] = value
+
 						let updatedRole = {
 							admin: this.role.admin,
 							auth: this.role.auth
@@ -738,7 +741,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="list command_list">
 					<lockable-by-childs>
-						<command v-for="(isCommand, commandName) of commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
+						<command v-for="(isCommand, commandName) of commands" :commands="commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
 					</lockable-by-childs>
 				</div>`
 			})
@@ -750,8 +753,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				props: {
-					isCommand: {
-						type: Boolean,
+					commands: {
+						type: Object,
 						required: true
 					},
 					commandName: {
@@ -761,10 +764,11 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['roleName'],
 				template: `<div class="command">
-					<toggleable-element :value="isCommand" :value-name="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+					<toggleable-element :value-object="commands" :value-object-key="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
-					onCommandChange (name, value){
+					onCommandChange (_, value){
+						this.commands[this.commandName] = value
 						this.callGameCommandAndWaitForSync('roleAccess', [this.roleName, this.commandName, value])
 					}
 				},
@@ -990,9 +994,10 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
-				template: `<toggleable-element class="preference_bool" :value="preference.value" :value-name="preferenceName" :on-value-change="preferenceChanged"/>`,
+				template: `<toggleable-element class="preference_bool" :value-object="preference" :value-object-key="'value'" :on-value-change="preferenceChanged"/>`,
 				methods: {
-					preferenceChanged (name, value){
+					preferenceChanged (_, value){
+						this.preference.value = value
 						this.callGameCommandAndWaitForSync('setPref', [this.preferenceName, value])
 					}
 				},
@@ -1126,7 +1131,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="list gamesetting_list">
 					<lockable-by-childs>
-						<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesetting="gamesetting" :gamesettingName="gamesettingName"/>
+						<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesettings="gamesettings" :gamesettingName="gamesettingName"/>
 					</lockable-by-childs>
 				</div>`,
 				mixins: [componentMixin_lockable]
@@ -1134,6 +1139,9 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerComponent('gamesetting', {
 				computed: {
+					gamesetting (){
+						return this.gamesettings[this.gamesettingName]
+					},
 					gamesettingComponent (){
 						switch(typeof this.gamesetting){
 							case 'boolean': return 'gamesetting-bool';
@@ -1146,7 +1154,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				props: {
-					gamesetting: {
+					gamesettings: {
+						type: Object,
 						required: true
 					},
 					gamesettingName: {
@@ -1154,14 +1163,9 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
-				provide: function (){
-					return {
-						gamesetting: this.gamesetting
-					}
-				},
 				template: `<division class="gamesetting" :name="gamesettingName" :alwaysExtended="true">
 					<lockable-by-childs>
-						<component :is="gamesettingComponent" :gamesetting-name="gamesettingName"/>
+						<component :is="gamesettingComponent" :gamesettings="gamesettings" :gamesetting-name="gamesettingName"/>
 					</lockable-by-childs>
 				</division>`
 			})
@@ -1173,15 +1177,19 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				props: {
+					gamesettings: {
+						type: Object,
+						required: true
+					},
 					gamesettingName: {
 						type: String,
 						required: true
 					}
 				},
-				inject: ['gamesetting'],
-				template: `<toggleable-element class="gamesetting_bool" :value="gamesetting" :value-name="gamesettingName" :on-value-change="gamesettingChanged"></toggleable-element>`,
+				template: `<toggleable-element class="gamesetting_bool" :value-object="gamesettings" :value-object-key="gamesettingName" :on-value-change="gamesettingChanged"></toggleable-element>`,
 				methods: {
-					gamesettingChanged (name, value){
+					gamesettingChanged (_, value){
+						this.gamesettings[this.gamesettingName] = value
 						this.callGameCommandAndWaitForSync('setGameSetting', [this.gamesettingName, value])
 					}
 				},
@@ -1195,13 +1203,21 @@ class C2Module_Core extends C2LoggingUtility {
 						syncables: ['gamesettings']
 					}
 				},
+				computed: {
+					gamesetting (){
+						return this.gamesettings[this.gamesettingName]
+					}
+				},
 				props: {
+					gamesettings: {
+						type: Object,
+						required: true
+					},
 					gamesettingName: {
 						type: String,
 						required: true
 					}
 				},
-				inject: ['gamesetting'],
 				template: `<div class="gamesetting_number">
 					<span class="only_ingame_hint">can only be changed ingame in custom menu.</span>
 					<!--<input type="number" v-model="val" :disabled="isComponentLocked"/>

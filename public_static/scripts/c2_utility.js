@@ -784,20 +784,21 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					<span v-else class="steamid">"Invalid SteamId"</span>`
 			})
 
+			/* you must change the prop 'value' when onValueChange() is called */
 			this.c2.registerComponent('toggleable-element', {
 				data: function (){
 					return {
-						inputVal: false,
 						uiid: C2.uuid()
 					}
 				},
 				props: {
-					'value': {
-						type: Boolean,
+					'valueObject': {
+						type: Object,
 						required: true
 					},
-					'value-name': {
+					'valueObjectKey': {
 						type: String,
+						required: true
 					},
 					'on-value-change': {
 						type: Function,
@@ -808,11 +809,16 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						default: false
 					}
 				},
+				computed: {
+					value (){
+						return this.valueObject[this.valueObjectKey]
+					}
+				},
 				template: `<div class="toggleable_element">
 					<div class="front">
 						<label :for="uiid">
 							<disabled-when-any-parent-locked v-slot="disabledProps">
-								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="inputVal" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
+								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="value" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
 							</disabled-when-any-parent-locked>
 							<span class="checkbox_slider"/>
 						</label>
@@ -827,16 +833,10 @@ let componentMixin_disabledWhenAnyParentLocked = {
 							return
 						}
 
-						this.inputVal = !this.inputVal
+						this.log('checkbox changing to', !this.value)
 
-						this.log('inputChanged')
-						this.onValueChange(this.valueName, this.inputVal)
+						this.onValueChange(this.valueObjectKey, !this.value)
 					}
-				},
-				created (){
-					setInterval(()=>{
-						this.inputVal = this.value
-					}, 100)
 				},
 				mixins: [componentMixin_logging]
 			})

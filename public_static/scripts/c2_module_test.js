@@ -13,7 +13,7 @@ class C2Module_Test extends C2LoggingUtility {
 			this.c2.registerComponent('tests-management', {
 				data: function (){
 					return {
-						toggleState: false,
+						toggleStateObject: { value: false},
 						isConfirmed: false
 					}
 				},
@@ -173,7 +173,7 @@ class C2Module_Test extends C2LoggingUtility {
 							<tab :title="'Functional Components'">
 								<test-component-group :title="'toggleable-element'" :description="'Nice looking version of a checkbox.'">
 									<test-component>
-										<toggleable-element :value="false" :on-value-change="toggleStateChange">{{toggleState}}</toggleable-element>
+										<toggleable-element :value-object="toggleStateObject" :value-object-key="'value'" :on-value-change="toggleStateChange">{{toggleStateObject.value}}</toggleable-element>
 									</test-component>
 								</test-component-group>
 
@@ -285,8 +285,8 @@ class C2Module_Test extends C2LoggingUtility {
 					</module-enableable>
 				</div>`,
 				methods: {
-					toggleStateChange (name, val){
-						this.toggleState = val
+					toggleStateChange (key, val){
+						this.toggleStateObject[key] = val
 					}
 				}
 			})
