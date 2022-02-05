@@ -20,6 +20,28 @@ class C2Module_Test extends C2LoggingUtility {
 				template: `<div class="tests_management">
 					<module-enableable :name="'tests'">
 						<tabs>
+							<tab :title="'Test runs'">
+								<division :name="'Performance'" :start-extended="true">
+									<test-run :name="'test-performance-frontend-backend'" :type="'local'"/>
+									<test-run :name="'test-performance-backend-frontend'" :type="'remote'"/>
+									<test-run :name="'test-performance-game-backend-proxy'" :type="'remote'"/>
+									<test-run :name="'test-performance-backend-game'" :type="'remote'"/>
+									<test-run :name="'test-performance-frontend-game'" :type="'local'"/>
+								</division>
+							</tab>
+
+
+
+
+							<tab :title="'Test Custom commands'">
+								<division :name="'Run custom command'" :always-extended="true">
+									<run-custom-command/>
+								</division>
+							</tab>
+
+
+
+
 							<tab :title="'Structural Components'">
 								<test-component-group :title="'tabs'">
 									<test-component>
@@ -241,28 +263,6 @@ class C2Module_Test extends C2LoggingUtility {
 									</test-component>
 								</test-component-group>
 							</tab>
-
-
-
-
-							<tab :title="'Test runs'">
-								<division :name="'Performance'" :start-extended="true">
-									<test-run :name="'test-performance-frontend-backend'" :type="'local'"/>
-									<test-run :name="'test-performance-backend-frontend'" :type="'remote'"/>
-									<test-run :name="'test-performance-game-backend-proxy'" :type="'remote'"/>
-									<test-run :name="'test-performance-backend-game'" :type="'remote'"/>
-									<test-run :name="'test-performance-frontend-game'" :type="'local'"/>
-								</division>
-							</tab>
-
-
-
-
-							<tab :title="'Test Custom commands'">
-								<division :name="'Run custom command'" :always-extended="true">
-									<run-custom-command/>
-								</division>
-							</tab>
 						</tabs>
 					</module-enableable>
 				</div>`,
@@ -349,6 +349,11 @@ class C2Module_Test extends C2LoggingUtility {
 
 			// lockable
 			this.c2.registerComponent('test-example-lockable', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				template: `<div style="background: #65075D; padding: 1em;">
 					<lockable></lockable>
 					<p>This pink area will be locked when you click the button</p>
@@ -362,7 +367,8 @@ class C2Module_Test extends C2LoggingUtility {
 			this.c2.registerComponent('test-example-lockable-by-childs', {
 				data: function (){
 					return {
-						childs: [1,2,3,4]
+						childs: [1,2,3,4],
+						syncables: []
 					}
 				},
 				template: `<lockable-by-childs>
@@ -376,6 +382,11 @@ class C2Module_Test extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('test-example-lockable-by-childs-child', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				props: {
 					i: {
 						type: Number,
@@ -388,6 +399,11 @@ class C2Module_Test extends C2LoggingUtility {
 
 			// lockable-by-parent
 			this.c2.registerComponent('test-example-lockable-by-parent', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				template: `<div>
 					<button v-on:click="lockComponent">lock</button>
 					<button v-on:click="unlockComponent">unlock</button>
@@ -401,6 +417,11 @@ class C2Module_Test extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('test-example-lockable-by-parent-child', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				template: `<div style="background: #65075D; padding: 1em;">
 					<lockable-by-parent/>
 					This child can be locked.
@@ -410,6 +431,11 @@ class C2Module_Test extends C2LoggingUtility {
 
 			// disabled-when-any-parent-locked
 			this.c2.registerComponent('test-example-disabled-when-any-parent-locked', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				template: `<div>
 					<button v-on:click="lockComponent">lock</button>
 					<button v-on:click="unlockComponent">unlock</button>

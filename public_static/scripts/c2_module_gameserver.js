@@ -26,6 +26,11 @@ class C2Module_Gameserver extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('gameserver-control', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
 				computed: {
 					isGameServerRunning (){
 						return this.$store.state.gameserverState
