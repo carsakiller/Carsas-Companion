@@ -24,17 +24,17 @@ class C2Module_Test extends C2LoggingUtility {
 								<test-component-group :title="'pages'">
 									<test-component>
 										<pages>
-											<page :title="'Page A'" :icon="'users'">Content of A</page>
-											<page :title="'Page B'" :icon="'car'">Content of B</page>
-											<page :title="'Page C'" :icon="'plus'">Content of C</page>
+											<page :name="'page-a'" :title="'Page A'" :icon="'users'">Content of A</page>
+											<page :name="'page-b'" :title="'Page B'" :icon="'car'">Content of B</page>
+											<page :name="'page-c'" :title="'Page C'" :icon="'plus'">Content of C</page>
 										</pages>
 									</test-component>
 
 									<test-component :options="{initialIndex: 1}">
 										<pages :initial-index="1">
-											<page :title="'Page A'" :icon="'users'">Content of A</page>
-											<page :title="'Page B'" :icon="'car'">Content of B</page>
-											<page :title="'Page C'" :icon="'plus'">Content of C</page>
+											<page :name="'page-a'" :title="'Page A'" :icon="'users'">Content of A</page>
+											<page :name="'page-b'" :title="'Page B'" :icon="'car'">Content of B</page>
+											<page :name="'page-c'" :title="'Page C'" :icon="'plus'">Content of C</page>
 										</pages>
 									</test-component>
 								</test-component-group>
