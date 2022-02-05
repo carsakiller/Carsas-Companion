@@ -1765,7 +1765,7 @@ POPPINS
 /* line 5, ../../compass/sass/c2.scss */
 body {
   color: #f3f3f3;
-  font-family: sans-serif, "SourceCodePro";
+  font-family: "SourceCodePro", sans-serif;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -1786,7 +1786,7 @@ button {
   background: transparent;
   color: #f3f3f3;
   font-size: 1em;
-  font-family: sans-serif, "SourceCodePro";
+  font-family: "SourceCodePro", sans-serif;
   font-weight: 600;
   border: 0.1em solid #f3f3f3;
   border-radius: 0.15em;
@@ -1840,7 +1840,7 @@ textarea, input {
   background-color: #333;
   border: 0.1em solid #1f1f1f;
   outline: none;
-  font-family: sans-serif, "SourceCodePro";
+  font-family: "SourceCodePro", sans-serif;
   font-style: inherit;
   font-size: inherit;
 }
@@ -2019,9 +2019,9 @@ table th:last-child, table td:last-child {
 /* line 40, ../../compass/sass/_c2_utility.scss */
 .pages .user_login {
   position: absolute;
-  top: 1em;
-  right: 1em;
-  height: 3em;
+  top: 0.3em;
+  right: 0.3em;
+  height: 2em;
   z-index: 3000;
   display: flex;
   flex-direction: row;
@@ -2037,7 +2037,7 @@ table th:last-child, table td:last-child {
 }
 /* line 58, ../../compass/sass/_c2_utility.scss */
 .pages .user_login .user_container {
-  height: 3em;
+  height: 2em;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -2045,8 +2045,8 @@ table th:last-child, table td:last-child {
 }
 /* line 65, ../../compass/sass/_c2_utility.scss */
 .pages .user_login .user_container .profile_image {
-  height: 3em;
-  width: 3em;
+  height: 2em;
+  width: 2em;
   background-size: contain;
   background-position: center;
   border-radius: 1000000px;
@@ -2069,19 +2069,19 @@ table th:last-child, table td:last-child {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 2em;
+  font-size: 1.7em;
   font-weight: 600;
-  padding: 0.8em 2em;
+  padding: 0.3em 2em;
   background-color: #111;
-  background-image: url("/static/images/headerBanner.svg");
-  background-position: left center;
-  background-size: 19%;
+  background-image: url("/static/images/logo.svg");
+  background-position: 0.5em center;
+  background-size: 1em;
   background-repeat: no-repeat;
 }
 /* line 100, ../../compass/sass/_c2_utility.scss */
 .pages .page .page_head h2 {
   z-index: 2;
-  font-family: sans-serif, "Poppins";
+  font-family: "Poppins", sans-serif;
 }
 /* line 106, ../../compass/sass/_c2_utility.scss */
 .pages .page .page_body {
@@ -2138,7 +2138,7 @@ table th:last-child, table td:last-child {
   position: relative;
   padding: 0.5em;
   margin: 0 0.5em;
-  font-family: sans-serif, "VarelaRound";
+  font-family: "VarelaRound", sans-serif;
   color: #929292;
   cursor: pointer;
   transition: all 0.2s ease 0s;
@@ -2206,7 +2206,7 @@ table th:last-child, table td:last-child {
   align-items: center;
   padding: 1em;
   background: #00446c;
-  font-family: sans-serif, "VarelaRound";
+  font-family: "VarelaRound", sans-serif;
 }
 /* line 242, ../../compass/sass/_c2_utility.scss */
 .division .division_body {
@@ -2328,7 +2328,7 @@ table th:last-child, table td:last-child {
 }
 /* line 360, ../../compass/sass/_c2_utility.scss */
 .player_state .id {
-  font-family: sans-serif, "Poppins";
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   color: #379249;
 }
@@ -2343,7 +2343,7 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   position: relative;
   transition: all 0.2s ease 0s;
-  font-family: sans-serif, "Poppins";
+  font-family: "Poppins", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
@@ -2426,30 +2426,56 @@ table th:last-child, table td:last-child {
   font-style: italic;
 }
 
-/* line 5, ../../compass/sass/_c2_module_core.scss */
+/* line 3, ../../compass/sass/_c2_module_core.scss */
+.info .intro {
+  margin: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+/* line 10, ../../compass/sass/_c2_module_core.scss */
+.info .intro .logo {
+  position: relative;
+  overflow: hidden;
+  width: 10em;
+  height: 10em;
+  background-image: url("/static/images/logo.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* line 21, ../../compass/sass/_c2_module_core.scss */
+.info .intro .headline {
+  margin: 1em 0;
+  font-family: "SourceCodePro", sans-serif;
+  font-size: 2em;
+}
+
+/* line 33, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player {
   background: #07192B;
 }
-/* line 8, ../../compass/sass/_c2_module_core.scss */
+/* line 36, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player.is_banned .name {
   color: #c92f2f;
 }
-/* line 12, ../../compass/sass/_c2_module_core.scss */
+/* line 40, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0.5em 1em;
 }
-/* line 22, ../../compass/sass/_c2_module_core.scss */
+/* line 50, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .name_container {
   display: flex;
   flex-direction: column;
   margin-left: 1em;
 }
-/* line 27, ../../compass/sass/_c2_module_core.scss */
+/* line 55, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .name_container .name {
-  font-family: sans-serif, "Poppins";
+  font-family: "Poppins", sans-serif;
   font-size: 1.3em;
   font-weight: 500;
   display: flex;
@@ -2457,77 +2483,77 @@ table th:last-child, table td:last-child {
   cursor: pointer;
   margin-bottom: 0.2em;
 }
-/* line 36, ../../compass/sass/_c2_module_core.scss */
+/* line 64, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .name_container .name .extend_arrow {
   font-size: 0.8em;
   margin-left: 0.5em;
   line-height: 1.2em;
 }
-/* line 43, ../../compass/sass/_c2_module_core.scss */
+/* line 71, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .name_container .steamid {
   font-size: 0.9em;
   font-style: italic;
   color: #aaa;
   transition: all 0.2s ease 0s;
 }
-/* line 49, ../../compass/sass/_c2_module_core.scss */
+/* line 77, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .name_container .steamid:hover {
   color: #ddd;
 }
-/* line 53, ../../compass/sass/_c2_module_core.scss */
+/* line 81, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .name_container .steamid .icon {
   font-size: 0.8em;
   position: relative;
   top: 0.1em;
   margin-right: 0.5em;
 }
-/* line 62, ../../compass/sass/_c2_module_core.scss */
+/* line 90, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .gap {
   width: 100%;
 }
-/* line 66, ../../compass/sass/_c2_module_core.scss */
+/* line 94, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .buttons {
   display: flex;
   flex-direction: row;
   margin-left: 1em;
 }
-/* line 71, ../../compass/sass/_c2_module_core.scss */
+/* line 99, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .head .buttons button:not(:last-child) {
   margin-right: 1em;
 }
-/* line 77, ../../compass/sass/_c2_module_core.scss */
+/* line 105, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .body {
   display: flex;
   flex-direction: column;
   padding: 1em;
   background: #061422;
 }
-/* line 83, ../../compass/sass/_c2_module_core.scss */
+/* line 111, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .body .player_role {
   padding: 0.3em 0.6em;
   font-size: 1.2em;
 }
-/* line 87, ../../compass/sass/_c2_module_core.scss */
+/* line 115, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .body .player_role .name {
   color: #f3f3f3;
   margin-right: 0.5em;
 }
-/* line 92, ../../compass/sass/_c2_module_core.scss */
+/* line 120, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .body .player_role.enabled {
   background: #379249;
 }
-/* line 96, ../../compass/sass/_c2_module_core.scss */
+/* line 124, ../../compass/sass/_c2_module_core.scss */
 .players_management .player_list .player .body .player_role.disabled {
   background: #c92f2f;
 }
 
-/* line 107, ../../compass/sass/_c2_module_core.scss */
+/* line 135, ../../compass/sass/_c2_module_core.scss */
 .vehicles_management .vehicle_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 112, ../../compass/sass/_c2_module_core.scss */
+/* line 140, ../../compass/sass/_c2_module_core.scss */
 .vehicles_management .vehicle_list .vehicle {
   display: flex;
   flex-direction: row;
@@ -2535,7 +2561,7 @@ table th:last-child, table td:last-child {
   padding: 0.5em 1em;
   background: #07192B;
 }
-/* line 119, ../../compass/sass/_c2_module_core.scss */
+/* line 147, ../../compass/sass/_c2_module_core.scss */
 .vehicles_management .vehicle_list .vehicle .id {
   font-size: 1.5em;
   min-width: 2.5em;
@@ -2543,49 +2569,49 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   font-weight: 500;
 }
-/* line 127, ../../compass/sass/_c2_module_core.scss */
+/* line 155, ../../compass/sass/_c2_module_core.scss */
 .vehicles_management .vehicle_list .vehicle .name {
   font-size: 1.3em;
   font-weight: 500;
   margin-right: 1em;
 }
-/* line 133, ../../compass/sass/_c2_module_core.scss */
+/* line 161, ../../compass/sass/_c2_module_core.scss */
 .vehicles_management .vehicle_list .vehicle .gap {
   width: 100%;
 }
 
-/* line 148, ../../compass/sass/_c2_module_core.scss */
+/* line 176, ../../compass/sass/_c2_module_core.scss */
 .roles_management .new_role_container input {
   width: 10em;
   margin-right: 1em;
 }
-/* line 156, ../../compass/sass/_c2_module_core.scss */
+/* line 184, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role {
   background: #07192B;
   color: #f3f3f3;
 }
-/* line 160, ../../compass/sass/_c2_module_core.scss */
+/* line 188, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_head {
   display: flex;
   flex-direction: row;
   padding: 1em;
 }
-/* line 165, ../../compass/sass/_c2_module_core.scss */
+/* line 193, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_head .name {
-  font-family: sans-serif, "VarelaRound";
+  font-family: "VarelaRound", sans-serif;
   font-size: 1.5em;
   font-weight: 500;
 }
-/* line 171, ../../compass/sass/_c2_module_core.scss */
+/* line 199, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_head .buttons {
   margin-left: 2em;
   font-size: 0.7em;
 }
-/* line 177, ../../compass/sass/_c2_module_core.scss */
+/* line 205, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body {
   padding: 1em;
 }
-/* line 180, ../../compass/sass/_c2_module_core.scss */
+/* line 208, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .add_member {
   width: 100%;
   border: 0.2em solid;
@@ -2595,25 +2621,25 @@ table th:last-child, table td:last-child {
   border-right-color: #00346c;
   transition: border 0.2s linear, background 0.2s linear;
 }
-/* line 189, ../../compass/sass/_c2_module_core.scss */
+/* line 217, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .add_member .im {
   transition: transform 0.4s cubic-bezier(0.39, 0.56, 0.24, 2);
   transform: rotate(0deg);
 }
-/* line 194, ../../compass/sass/_c2_module_core.scss */
+/* line 222, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .add_member:hover {
   background: #21427c;
   border: 0.2em solid #21427c;
 }
-/* line 198, ../../compass/sass/_c2_module_core.scss */
+/* line 226, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .add_member:hover .im {
   transform: rotate(90deg);
 }
-/* line 204, ../../compass/sass/_c2_module_core.scss */
+/* line 232, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .member_list {
   margin: 1em 0;
 }
-/* line 207, ../../compass/sass/_c2_module_core.scss */
+/* line 235, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .member_list .member {
   display: flex;
   flex-direction: row;
@@ -2621,17 +2647,17 @@ table th:last-child, table td:last-child {
   padding: 0.5em 1em;
   background: #000c12;
 }
-/* line 214, ../../compass/sass/_c2_module_core.scss */
+/* line 242, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .member_list .member .name {
-  font-family: sans-serif, "Poppins";
+  font-family: "Poppins", sans-serif;
   font-size: 1.2em;
 }
-/* line 225, ../../compass/sass/_c2_module_core.scss */
+/* line 253, ../../compass/sass/_c2_module_core.scss */
 .roles_management .role_list .role .role_body .command_list .command:not(:last-child) {
   margin-bottom: 0.5em;
 }
 
-/* line 243, ../../compass/sass/_c2_module_core.scss */
+/* line 271, ../../compass/sass/_c2_module_core.scss */
 .rules_management .new_rule_container textarea {
   width: 100%;
   min-height: 2em;
@@ -2639,7 +2665,7 @@ table th:last-child, table td:last-child {
   max-width: 100%;
   margin-bottom: 1em;
 }
-/* line 254, ../../compass/sass/_c2_module_core.scss */
+/* line 282, ../../compass/sass/_c2_module_core.scss */
 .rules_management .rule_list .rule {
   display: flex;
   flex-direction: row;
@@ -2647,49 +2673,49 @@ table th:last-child, table td:last-child {
   background: #07192B;
   padding: 0.5em 1em;
 }
-/* line 261, ../../compass/sass/_c2_module_core.scss */
+/* line 289, ../../compass/sass/_c2_module_core.scss */
 .rules_management .rule_list .rule:not(:last-child) {
   margin-bottom: 1em;
 }
-/* line 265, ../../compass/sass/_c2_module_core.scss */
+/* line 293, ../../compass/sass/_c2_module_core.scss */
 .rules_management .rule_list .rule .text {
   margin-right: 1em;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-/* line 290, ../../compass/sass/_c2_module_core.scss */
+/* line 318, ../../compass/sass/_c2_module_core.scss */
 .preferences_management .preference_list .preference .preference_number .more_link {
   margin-left: 1em;
 }
 
-/* line 306, ../../compass/sass/_c2_module_core.scss */
+/* line 334, ../../compass/sass/_c2_module_core.scss */
 .gamesettings_management .gamesetting .gamesetting_number .only_ingame_hint {
   color: #7a7a7a;
 }
 
-/* line 314, ../../compass/sass/_c2_module_core.scss */
+/* line 342, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list {
   display: flex;
   flex-direction: column;
   padding: 1em;
 }
-/* line 319, ../../compass/sass/_c2_module_core.scss */
+/* line 347, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry {
   display: flex;
   flex-direction: row;
   padding: 0.2em 0.4em;
 }
-/* line 324, ../../compass/sass/_c2_module_core.scss */
+/* line 352, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry:not(:last-child) {
   margin-bottom: 0.1em;
 }
-/* line 328, ../../compass/sass/_c2_module_core.scss */
+/* line 356, ../../compass/sass/_c2_module_core.scss */
 .logs_management .log_list .log_entry .time {
   margin-right: 1em;
 }
 
-/* line 336, ../../compass/sass/_c2_module_core.scss */
+/* line 364, ../../compass/sass/_c2_module_core.scss */
 .login_popup {
   position: fixed;
   z-index: 2000;
@@ -2702,7 +2728,7 @@ table th:last-child, table td:last-child {
   align-items: center;
   background: #000a;
 }
-/* line 348, ../../compass/sass/_c2_module_core.scss */
+/* line 376, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner {
   position: relative;
   display: flex;
@@ -2714,23 +2740,23 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   text-align: center;
 }
-/* line 359, ../../compass/sass/_c2_module_core.scss */
+/* line 387, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .close {
   position: absolute;
   top: 1em;
   right: 1em;
   cursor: pointer;
 }
-/* line 365, ../../compass/sass/_c2_module_core.scss */
+/* line 393, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .close:hover {
   color: #7a7a7a;
 }
-/* line 370, ../../compass/sass/_c2_module_core.scss */
+/* line 398, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .title {
   font-size: 1.7em;
   margin-bottom: 1em;
 }
-/* line 375, ../../compass/sass/_c2_module_core.scss */
+/* line 403, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .profile_image {
   width: 3em;
   height: 3em;
@@ -2740,7 +2766,7 @@ table th:last-child, table td:last-child {
   overflow: hidden;
   border: 0.2em solid #07C5CB;
 }
-/* line 385, ../../compass/sass/_c2_module_core.scss */
+/* line 413, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message {
   color: #f3f3f3;
   margin: 1em 0;
@@ -2748,21 +2774,21 @@ table th:last-child, table td:last-child {
   border: 0.1em solid #f3f3f3;
   border-radius: 0.3em;
 }
-/* line 392, ../../compass/sass/_c2_module_core.scss */
+/* line 420, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message.type_success {
   background: #379249;
 }
-/* line 396, ../../compass/sass/_c2_module_core.scss */
+/* line 424, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message.type_error {
   background: #c92f2f;
 }
-/* line 401, ../../compass/sass/_c2_module_core.scss */
+/* line 429, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner button {
   font-size: inherit;
   margin-top: 1em;
 }
 
-/* line 408, ../../compass/sass/_c2_module_core.scss */
+/* line 436, ../../compass/sass/_c2_module_core.scss */
 .status_bar {
   position: fixed;
   z-index: 3000;
@@ -2775,32 +2801,32 @@ table th:last-child, table td:last-child {
   justify-content: flex-end;
   font-size: 0.7em;
 }
-/* line 422, ../../compass/sass/_c2_module_core.scss */
+/* line 450, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry .name {
   margin-right: 0.5em;
 }
-/* line 426, ../../compass/sass/_c2_module_core.scss */
+/* line 454, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry .circle {
   display: inline-block;
   border-radius: 100%;
   width: 0.7em;
   height: 0.7em;
 }
-/* line 433, ../../compass/sass/_c2_module_core.scss */
+/* line 461, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_on .circle {
   background: #379249;
 }
-/* line 437, ../../compass/sass/_c2_module_core.scss */
+/* line 465, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_off .circle {
   background: #c92f2f;
 }
-/* line 441, ../../compass/sass/_c2_module_core.scss */
+/* line 469, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_update .circle {
   animation-name: status-update-flash;
   animation-duration: 0.3s;
   animation-iteration-count: 1;
 }
-/* line 447, ../../compass/sass/_c2_module_core.scss */
+/* line 475, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry + .status_bar_entry {
   margin-left: 1.5em;
 }

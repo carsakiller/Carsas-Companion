@@ -280,6 +280,11 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="info">
+					<div class="intro">
+						<div class="logo">
+						</div>
+						<h1 class="headline">Carsa's Commands - Companion</h1>
+					</div>
 					<division :name="'General'" :startExtended="true">
 						<p>Version:
 							<loading-spinner-or :is-loading-code="'return !this.version'" :parents-depth="3">

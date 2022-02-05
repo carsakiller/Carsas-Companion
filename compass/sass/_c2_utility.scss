@@ -39,9 +39,9 @@
 
 	.user_login {
 		position: absolute;
-		top: 1em;
-		right: 1em;
-		height: 3em;
+		top: 0.3em;
+		right: 0.3em;
+		height: 2em;
 		z-index: 3000;
 		display: flex;
 		flex-direction: row;
@@ -56,15 +56,15 @@
 		}
 
 		.user_container {
-			height: 3em;
+			height: 2em;
 			display: flex;
 			flex-direction: row;
 			justify-content: flex-end;
 			align-items: center;
 
 			.profile_image {
-				height: 3em;
-				width: 3em;
+				height: 2em;
+				width: 2em;
 				background-size: contain;
 				background-position: center;
 				border-radius: 1000000px;
@@ -88,13 +88,13 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			font-size: 2em;
+			font-size: 1.7em;
 			font-weight: 600;
-			padding: 0.8em 2em;
+			padding: 0.3em 2em;
 			background-color: #111;
-			background-image: url('/static/images/headerBanner.svg');
-			background-position: left center;
-			background-size: 19%;
+			background-image: url('/static/images/logo.svg');
+			background-position: 0.5em center;
+			background-size: 1em;
 			background-repeat: no-repeat;
 
 			h2 {
