@@ -117,7 +117,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 	}
 
 	runGameTest(testName){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			let start = Date.now()
 
 			this.c2.sendMessageToGame(undefined, testName, start).then((data)=>{
@@ -130,13 +130,13 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 				let message = 'Game Test "'+ testName + '" finished successful after ' + (Date.now() - start) + 'ms'
 
 				this.info(message)
-				fulfill({
+				resolve({
 					testSuccess: true,
 					testMessage: message
 				})
 			}).catch((err)=>{
 				this.error('Game Test "', testName, '" failed:', err)
-				fulfill({
+				resolve({
 					testSuccess: false,
 					testMessage: 'Game Test "' + testName + '" failed: ' + err.toString()
 				})
@@ -145,7 +145,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 	}
 
 	runWebClientTest(client, testName){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			let start = Date.now()
 
 			this.c2.sendMessageToWebClient(client, testName, start).then((data)=>{
@@ -158,13 +158,13 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 				let message = 'WebClient Test "' + testName + '" finished successful after ' + (Date.now() - start) + 'ms'
 
 				this.info(message)
-				fulfill({
+				resolve({
 					testSuccess: true,
 					testMessage: message
 				})
 			}).catch((err)=>{
 				this.error('WebClient Test "', testName, '" failed:', err)
-				fulfill({
+				resolve({
 					testSuccess: false,
 					testMessage: 'WebClient Test "' + testName + '" failed: ' + err.toString()
 				})

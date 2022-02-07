@@ -151,18 +151,18 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				if(promiseOrResult instanceof Promise){
 					return promiseOrResult
 				} else {
-					return new Promise((fulfill, reject)=>{
-						fulfill(promiseOrResult)
+					return new Promise((resolve, reject)=>{
+						resolve(promiseOrResult)
 					})
 				}
 			} catch (ex){
 				this.error(ex)
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					reject('Error check client logs')
 				})
 			}
 		} else {
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				reject('unsupported request type: ' + message.type)
 			})
 		}
@@ -300,7 +300,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 	/*
 		@callback callback(messageData)
 		can return a promise
-		if it does not, we assume it has executed successful and we will fulfill() with whatever callback() returned
+		if it does not, we assume it has executed successful and we will resolve() with whatever callback() returned
 	*/
 	registerMessageHandler(messageType, callback){
 		if(this.messageHandlers[messageType]){

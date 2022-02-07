@@ -221,7 +221,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	}
 
 	sendCommandToGame(token, command, content){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 
 			const myCommandId = this.commandIdCounter++;
 
@@ -235,7 +235,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 			this.pendingCommandResponses.push({
 				id: myCommandId,
 				commandname: command,
-				fulfill: fulfill,
+				resolve: resolve,
 				reject: reject,
 				timeScheduled: new Date().getTime(),
 				parts: []
@@ -244,7 +244,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	}
 
 	handleMessage(messageType, parsedContent){		
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 
 			if(messageType !== 'heartbeat'){
 				this.info('handleMessage', messageType)
@@ -261,7 +261,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 					return reject('Error: check server logs')
 				} else {
 					promise.then((result)=>{
-						fulfill(result)
+						resolve(result)
 					}).catch((err)=>{
 						reject(err)
 					})
@@ -286,7 +286,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				this.pendingCommandResponses.splice(i,1);
 
 				if(content === 'ok'){
-					p.fulfill(statusMessage)
+					p.resolve(statusMessage)
 				} else {
 					p.reject(content)
 				}
@@ -321,9 +321,9 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		Responding to a game message:
 
 		c2gamehttphandler.setMessageCallback((data)=>{
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				//do Something
-				fulfill('result')
+				resolve('result')
 			})
 		})
 

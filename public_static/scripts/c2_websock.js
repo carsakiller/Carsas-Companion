@@ -55,9 +55,9 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 		Responding to a server message:
 
 		webSock.on('message', (data)=>{
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				//do Something
-				fulfill('result')
+				resolve('result')
 			})
 		})
 
@@ -142,7 +142,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 
 					if(pm && pm.id === parsed.clientId){
 						if(parsed.success === true){
-							pm.fulfill(parsed.data)
+							pm.resolve(parsed.data)
 						} else {
 							pm.reject(parsed.data)
 						}
@@ -220,9 +220,9 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 		this.dispatch('error', evt)
 	}
 
-	/* promise will be fulfilled when the server returns success=true, and rejected if server returns success=false or the pending message runs into connection close */
+	/* promise will be resolveed when the server returns success=true, and rejected if server returns success=false or the pending message runs into connection close */
 	send(data){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			if(this.isOpen() === false){
 				return reject('WebSocket not open')
 			}
@@ -235,7 +235,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 			this.pendingMessages.push({
 				id: myMessageId,
 				timeSent: new Date().getTime,
-				fulfill: fulfill,
+				resolve: resolve,
 				reject: reject
 			})
 

@@ -51,12 +51,12 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('*', (client, data, messageType)=>{
 			if(messageType.startsWith('command-')){
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					let commandname = messageType.substring('command-'.length)
 					this.log('(?)', 'executing command:', commandname, data)
 					this.c2.sendMessageToGame(client.token, messageType, data).then((res)=>{
 						this.log('command', commandname, 'success:', res)
-						fulfill(res)
+						resolve(res)
 					}).catch((err)=>{
 						this.log('command', commandname, 'unsuccessful:', err)
 						reject(err)
@@ -64,7 +64,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				})
 			} else {
 				this.error('unsupported type by client', messageType)
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					reject('unsupported type: ' + messageType)
 				})
 			}
@@ -181,13 +181,13 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
 			if(messageType.startsWith('sync-')){
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					let syncname = messageType.substring('sync-'.length)
 					this.info('(%)', 'syncing', syncname)
 					this.log(data)
 					this.c2.sendMessageToWebClient('all', messageType, data).then((res)=>{
 						this.log('sync', syncname, 'success:', res)
-						fulfill()
+						resolve()
 					}).catch((err)=>{
 						this.log('sync', syncname, 'unsuccessful:', err)
 						reject(err)
@@ -201,7 +201,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				})
 			} else {
 				this.error('unsupported type by game', messageType)
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					reject('unsupported type: ' + messageType)
 				})
 			}

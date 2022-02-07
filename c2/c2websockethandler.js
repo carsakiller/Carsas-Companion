@@ -6,9 +6,9 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		Responding to a client message:
 
 		webSocks.setMessageCallback((clientToken, data)=>{
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				//do Something
-				fulfill('result')
+				resolve('result')
 			})
 		})
 
@@ -103,7 +103,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			}
 		}
 
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			reject('client with token ' + clientToken + ' not found')
 		})
 	}
@@ -136,7 +136,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 
 					if(pm.id === parsed.serverId){
 						if(parsed.success === true){
-							pm.fulfill(parsed.data)
+							pm.resolve(parsed.data)
 						} else {
 							pm.reject(parsed.data)
 						}
@@ -207,7 +207,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	}
 
 	send(client, data){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			let validClient = false
 			for(let c of this.clients){
 				if(c === client){
@@ -224,7 +224,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 			this.pendingMessageResponses.push({
 				clientId: client.id,
 				id: myMessageId,
-				fulfill: fulfill,
+				resolve: resolve,
 				reject: reject,
 				timeSent: new Date().getTime()
 			})

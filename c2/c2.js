@@ -80,19 +80,19 @@ module.exports = class C2 extends C2LoggingUtility {
 				if(promiseOrResult instanceof Promise){
 					return promiseOrResult
 				} else {
-					return new Promise((fulfill, reject)=>{
-						fulfill(promiseOrResult)
+					return new Promise((resolve, reject)=>{
+						resolve(promiseOrResult)
 					})
 				}
 			} catch (ex){
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					this.error('error calling webclient messagehandler', ex)
 					reject('Error: check server logs')
 				})
 			}
 		} else{
 			this.error('unsupported webclient message type', message.type)
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				reject('unsupported webclient message type', message.type)
 			})
 		}
@@ -122,18 +122,18 @@ module.exports = class C2 extends C2LoggingUtility {
 					return promiseOrResult
 				} else {
 					this.debug('result for "', message.type, '" :', promiseOrResult)
-					return new Promise((fulfill, reject)=>{
-						fulfill(promiseOrResult)
+					return new Promise((resolve, reject)=>{
+						resolve(promiseOrResult)
 					})
 				}
 			} catch (ex){
-				return new Promise((fulfill, reject)=>{
+				return new Promise((resolve, reject)=>{
 					reject(ex)
 				})
 			}
 		} else{
 			this.error('unsupported game message type', message.type)
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				reject('unsupported game message type', message.type)
 			})
 		}

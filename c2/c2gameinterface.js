@@ -6,7 +6,7 @@ module.exports = class C2GameInterface extends C2Interface {
 	/* events:
 		message callback({type: [string], data: [string,number,object,...]})
 
-		(only the first registered callback can respond to a message, either by returing a promise in the callback (which will be fulfilled/rejected later) or by returning the data directly from the callback)
+		(only the first registered callback can respond to a message, either by returing a promise in the callback (which will be resolveed/rejected later) or by returning the data directly from the callback)
 	*/
 
 	constructor(loglevel, app){
@@ -56,8 +56,8 @@ module.exports = class C2GameInterface extends C2Interface {
 			if(promise instanceof Promise){
 				return promise
 			} else {
-				return new Promise((fulfill, reject)=>{
-					fulfill(promise)
+				return new Promise((resolve, reject)=>{
+					resolve(promise)
 				})
 			}
 		})
@@ -65,7 +65,7 @@ module.exports = class C2GameInterface extends C2Interface {
 	
 	sendMessage(token, messageType, data){
 		if(!this.isGameAvailable){
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				reject('Game not available')
 			})
 		}
@@ -73,11 +73,11 @@ module.exports = class C2GameInterface extends C2Interface {
 		this.info(' ->', 'sending messageType', messageType)
 		this.log(data)
 		this.debug(token)
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			this.c2GameHttpHandler.sendCommandToGame(token, messageType, data).then((res)=>{
 				this.info('received result from messageType ', messageType, res)
 
-				fulfill(res)
+				resolve(res)
 			}).catch((err)=>{
 				reject(err)
 			})

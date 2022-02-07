@@ -627,7 +627,7 @@ class C2Module_Test extends C2LoggingUtility {
 	}
 
 	runTestLocal(testName){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			let start = Date.now()
 
 			this.c2.webclient.sendMessage(testName, start).then((data)=>{
@@ -640,7 +640,7 @@ class C2Module_Test extends C2LoggingUtility {
 				let message = 'Test "' + testName + '" finished successful after ' + (Date.now() - start) + 'ms'
 
 				this.info(message)
-				fulfill({
+				resolve({
 					testSuccess: true,
 					testMessage: message
 				})
@@ -655,7 +655,7 @@ class C2Module_Test extends C2LoggingUtility {
 	}
 
 	runTestRemote(testName){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			this.c2.webclient.sendMessage(testName, '').then((data)=>{
 				let parsed = JSON.parse(data)
 
@@ -666,7 +666,7 @@ class C2Module_Test extends C2LoggingUtility {
 				let message = 'Test result: ' + parsed.testMessage
 
 				this.info(message)
-				fulfill({
+				resolve({
 					testSuccess: true,
 					testMessage: parsed.testMessage
 				})

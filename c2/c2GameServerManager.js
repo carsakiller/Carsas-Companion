@@ -31,7 +31,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	}
 
 	spawnGameServer(){
-		let prom = this.makeQuerablePromise( new Promise((fulfill, reject)=>{
+		let prom = this.makeQuerablePromise( new Promise((resolve, reject)=>{
 			this.info('spawnGameServer')
 			this.isGameServerRunning((err, isRunning)=>{
 				if(err){
@@ -104,7 +104,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 							this.dispatch('spawn')
 
 							if(prom.isPending()){
-								fulfill('fork process spawned successful')
+								resolve('fork process spawned successful')
 							}
 						}; break;
 
@@ -167,7 +167,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 				}
 
 				this.killProcess(pid).then(()=>{
-					fulfill()
+					resolve()
 				}).catch(()=>{
 					reject('error check server logs')
 				})
@@ -244,14 +244,14 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	}
 
 	killProcess(pid){
-		let prom = this.makeQuerablePromise( new Promise((fulfill, reject)=>{
+		let prom = this.makeQuerablePromise( new Promise((resolve, reject)=>{
 			ps.kill(pid, (err)=>{
 				if(prom.isPending()){//fixes a bug of ps-node where it might call the error callback even thouhg process is already dead
 					if(err){
 						this.error('error while killing process', err)
 						reject()
 					} else {
-						fulfill()
+						resolve()
 					}
 				}
 			})
@@ -297,17 +297,17 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	 */
 	makeQuerablePromise(promise) {
 	    // Don't modify any promise that has been already modified.
-	    if (promise.isFulfilled) return promise;
+	    if (promise.isResolved) return promise;
 
 	    // Set initial state
 	    var isPending = true;
 	    var isRejected = false;
-	    var isFulfilled = false;
+	    var isResolved = false;
 
-	    // Observe the promise, saving the fulfillment in a closure scope.
+	    // Observe the promise, saving the resolvement in a closure scope.
 	    var result = promise.then(
 	        function(v) {
-	            isFulfilled = true;
+	            isResolved = true;
 	            isPending = false;
 	            return v;
 	        },
@@ -318,7 +318,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	        }
 	    );
 
-	    result.isFulfilled = function() { return isFulfilled; };
+	    result.isResolved = function() { return isResolved; };
 	    result.isPending = function() { return isPending; };
 	    result.isRejected = function() { return isRejected; };
 	    return result;

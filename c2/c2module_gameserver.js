@@ -19,13 +19,13 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('gameserver-start', (client, data)=>{
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				if(!this.clientHasPermission(client)){
 					return reject('You are not allowed to do this')
 				}
 
 				this.c2GameServerManager.spawnGameServer().then(()=>{
-					fulfill()
+					resolve()
 				}).catch((err)=>{
 					reject('Unable to start GameServer: ' + err)
 				})
@@ -33,13 +33,13 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('gameserver-stop', (client, data)=>{
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				if(!this.clientHasPermission(client)){
 					return reject('You are not allowed to do this')
 				}
 
 				this.c2GameServerManager.killGameServer().then(()=>{
-					fulfill()
+					resolve()
 				}).catch((err)=>{
 					reject('Unable to stop game server: ' + err)
 				})

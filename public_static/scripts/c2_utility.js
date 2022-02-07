@@ -357,13 +357,13 @@ let componentMixin_serverMessage = {
 	mixins: [componentMixin_lockable],
 	methods: {
 		sendServerMessage (messageType, data, /* optional */ doNotUnlockAutomatically){
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				this.lockComponent()
 
 				c2.webclient.sendMessage(messageType, data).then((res)=>{
 					this.log('sending messageType', messageType,'was successful')
 					this.debug('data', data, 'result', res)
-					fulfill(res)
+					resolve(res)
 
 					if(doNotUnlockAutomatically !== true){
 						this.unlockComponent()
@@ -403,12 +403,12 @@ let componentMixin_gameCommand = {
 	mixins: [componentMixin_serverMessage],
 	methods: {
 		callGameCommand (command, args){
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 
 				c2.webclient.sendMessage('command-' + command, args).then((res)=>{
 					this.log('executing command', command,'was successful')
 					this.debug('args', args, 'result', res)
-					fulfill(res)
+					resolve(res)
 					this.showNotificationSuccess(command, res)
 				}).catch((err)=>{
 					this.log('executing command', command,'failed')

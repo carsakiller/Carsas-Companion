@@ -5,7 +5,7 @@ module.exports = class C2WebInterface extends C2Interface {
 
 
 	/* events:
-		message (only the first registered callback can respond to an message, either by returing a promise in the callback (which will be fulfilled/rejected later) or by returning the data directly from the callback)
+		message (only the first registered callback can respond to an message, either by returing a promise in the callback (which will be resolveed/rejected later) or by returning the data directly from the callback)
 	*/
 
 	constructor(loglevel, app){
@@ -29,8 +29,8 @@ module.exports = class C2WebInterface extends C2Interface {
 			if(promise instanceof Promise){
 				return promise
 			} else {
-				return new Promise((fulfill, reject)=>{
-					fulfill(promise)
+				return new Promise((resolve, reject)=>{
+					resolve(promise)
 				})
 			}
 		})
@@ -42,7 +42,7 @@ module.exports = class C2WebInterface extends C2Interface {
 	sendMessageTo(clientOrClients, messageType, data){
 		if(!clientOrClients){
 			this.error('clientOrClients is undefined, ignoring send')
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				reject('clientOrClients is undefined')
 			})
 		}
@@ -95,7 +95,7 @@ module.exports = class C2WebInterface extends C2Interface {
 			return this.c2WebSocketHandler.sendToClient(clientOrClients, dataToSend)
 		} else {
 			this.error('unsupported clientOrClients type!', clientOrClients)
-			return new Promise((fulfill, reject)=>{
+			return new Promise((resolve, reject)=>{
 				reject('unsupported clientOrClients type!')
 			})
 		}

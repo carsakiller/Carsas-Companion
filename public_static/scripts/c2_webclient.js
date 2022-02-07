@@ -31,7 +31,7 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 	}
 
 	sendMessage(messageType, data){
-		return new Promise((fulfill, reject)=>{
+		return new Promise((resolve, reject)=>{
 			let dataString = toString(data)
 
 			function toString(it){
@@ -55,7 +55,7 @@ class C2WebClient extends C2EventManagerAndLoggingUtility {
 				data: dataString
 			}).then((res)=>{
 				this.log('received response for', messageType, res)
-				fulfill(res)
+				resolve(res)
 			}).catch((err)=>{
 				this.log('received error for', messageType, err)
 				reject(err)
