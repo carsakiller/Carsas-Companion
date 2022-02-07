@@ -116,8 +116,12 @@ module.exports = class C2 extends C2LoggingUtility {
 				promiseOrResult = this.gameMessageHandlers[message.type](message.data, message.originalType ? message.originalType : message.type)
 
 				if(promiseOrResult instanceof Promise){
+					promiseOrResult.then(res => {
+						this.debug('result for "', message.type, '" (promise):', res)
+					})
 					return promiseOrResult
 				} else {
+					this.debug('result for "', message.type, '" :', promiseOrResult)
 					return new Promise((fulfill, reject)=>{
 						fulfill(promiseOrResult)
 					})

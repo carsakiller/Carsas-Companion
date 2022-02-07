@@ -1,4 +1,6 @@
 const axios = require('axios')
+const fs = require('fs')
+const path = require('path')
 
 const C2LoggingUtility = require('./utility.js').C2LoggingUtility
 
@@ -11,6 +13,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.companionTokens = {}
 		this.roles = {}
+
+		this.SCRIPT_VERSION = undefined
+
+		this.notificationsForSteamId = {}
 
 		this.PERMISSIONS = {
 			Default:  {
@@ -127,12 +133,27 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('user-permissions', (client)=>{
 			return new Promise((resolve, reject)=>{
-				if(this.tokenIsOwner(client.token)){
+				if(this.tokenHasRole(client.token, 'Owner')){
 					return resolve(this.PERMISSIONS.Owner)
 				} else {
 					return resolve(this.PERMISSIONS.Default)
 				}
 			})
+		})
+
+		this.c2.registerWebClientMessageHandler('check-notifications', (client, steamId)=>{
+
+			if(this.companionTokens[steamId] !== client.token){
+				return new Promise((resolve, reject)=>{
+					reject('steamId and token mismatch')
+				})
+			}
+
+			return this.getNotificationsFor(steamId)
+		})
+
+		this.c2.registerGameMessageHandler('check-notifications', (steamId)=>{
+			return this.getNotificationsFor(steamId)
 		})
 
 		this.c2.registerGameMessageHandler('token-sync', (data)=>{
@@ -152,7 +173,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerGameMessageHandler('stream-log', (data, messageType)=>{
 			for(let client of this.c2.c2WebInterface.c2WebSocketHandler.clients){
-				if(this.tokenIsOwner(client.token)){
+				if(this.tokenHasRole(client.token, 'Owner')){
 					this.c2.sendMessageToWebClient(client, messageType, data)
 				}
 			}
@@ -174,6 +195,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 					if(messageType === 'sync-roles'){
 						this.roles = data
+					} else if(messageType === 'sync-SCRIPT_VERSION'){
+						this.SCRIPT_VERSION = data
 					}
 				})
 			} else {
@@ -185,19 +208,128 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 	}
 
-	tokenIsOwner(token){
+	tokenHasRole(token, roleName){
 		if(!token){
 			return false
 		}
 
 		for(let steamId of Object.keys(this.companionTokens)){
 			if(this.companionTokens[steamId] === token){
-				if(this.roles['Owner'] && this.roles['Owner'].members[steamId] === true){
-					return true
-				}
+				return this.steamIdHasRole(steamId, roleName)
 			}
 		}
 
 		return false
 	}
+
+	steamIdHasRole(steamId, roleName){
+		if(!steamId){
+			return false
+		}
+
+		if(this.roles[roleName] && this.roles[roleName].members[steamId] === true){
+			return true
+		}
+
+		return false
+	}
+
+	addNotificationFor(steamId, title, text){
+		if(!this.notificationsForSteamId[steamId]){
+			this.notificationsForSteamId[steamId] = []
+		}
+
+		this.notificationsForSteamId[steamId].push({
+			title: title,
+			text: text
+		})
+	}
+
+	getNotificationsFor(steamId){
+		return new Promise( (resolve, reject)=>{
+
+			//TODO: a bit hacky to generate notification in here, but does the trick
+
+			if(this.steamIdHasRole(steamId, 'Owner') || this.steamIdHasRole(steamId, 'Supervisor')){
+
+				this.getLatestCompanionVersion().then(latestCompanionVersion => {
+					let currentCompanionVersion = this.getCurrentCompanionVersion()
+					if(latestCompanionVersion !== undefined && currentCompanionVersion !== undefined && latestCompanionVersion !== currentCompanionVersion){
+						this.addNotificationFor(steamId, 'Update available', 'New Carsa\'s Companion version available: ' + latestCompanionVersion)
+					}
+
+					this.getLatestScriptVersion().then(latestScriptVersion => {
+						let currentScriptVersion = this.getCurrentScriptVersion()
+						if(latestScriptVersion !== undefined && currentScriptVersion !== undefined && latestScriptVersion !== currentScriptVersion){
+							this.addNotificationFor(steamId, 'Update available', 'New Carsa\'s Commands version available: ' + latestScriptVersion)
+						}
+
+						this.warn('currentCompanionVersion', currentCompanionVersion, 'latestCompanionVersion', latestCompanionVersion)
+						this.warn('currentScriptVersion', currentScriptVersion, 'latestScriptVersion', latestScriptVersion)
+
+						resolve(this.popNotifications(steamId))
+					})
+				})
+			} else {
+				resolve(this.popNotifications(steamId))
+			}
+		})
+	}
+
+	popNotifications(steamId){
+		if(this.notificationsForSteamId[steamId]){
+			let myNotifications = this.notificationsForSteamId[steamId]
+			this.notificationsForSteamId[steamId] = undefined
+			return myNotifications
+		}
+	}
+
+	/* returns undefined on error */
+	getLatestCompanionVersion(){
+		return new Promise((resolve, reject)=>{
+			axios.get('https://raw.githubusercontent.com/carsakiller/Carsas-Companion/master/public_static/version.txt?token=GHSAT0AAAAAABOFVQHQYRL2RCSUKWVJSGYUYQBIZSQ',
+					{ headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0'}}).then(res => {
+				let remoteVersionCompanion = '' + res.data
+
+				resolve(remoteVersionCompanion)
+			}).catch(err=>{
+				this.error('unable to check for companion updates', err)
+				resolve()
+			})
+		})
+	}
+
+	/* returns undefined on error */
+	getLatestScriptVersion(){
+		return new Promise((resolve, reject)=>{
+			axios.get('https://raw.githubusercontent.com/carsakiller/Carsas-CommandsV2/main/src/script.lua?token=GHSAT0AAAAAABOFVQHQGVQELRQ3XNKEIUFEYQBIZRQ',
+					{ headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0'}}).then(res => {
+				let script = '' + res.data
+				let matches = script.match(/local[\s]*ScriptVersion[\s]*=[\s]*"([^"]*)"/)
+
+				if(!matches || !matches[1]){
+					throw new Error('unable to read scriptVersion from github file')
+				}
+
+				let remoteVersionScript = matches[1]
+				this.info('latest script version', remoteVersionScript)
+
+				resolve(remoteVersionScript)
+			}).catch(err=>{
+				this.error('unable to check for script updates', err)
+				resolve()
+			})
+		})
+	}
+
+	/* returns undefined on error */
+	getCurrentCompanionVersion(){
+		return fs.readFileSync(path.join(__dirname, '../public_static/version.txt'), {encoding: 'utf-8'})
+	}
+
+	/* returns undefined on error */
+	getCurrentScriptVersion(){
+		return this.SCRIPT_VERSION
+	}
+
 }

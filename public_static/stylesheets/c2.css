@@ -1936,7 +1936,7 @@ table th:last-child, table td:last-child {
 /* line 181, ../../compass/sass/c2.scss */
 #error-popup {
   position: fixed;
-  z-index: 4000;
+  z-index: 5000;
   top: 0;
   left: 0;
   height: 100vh;
@@ -2854,6 +2854,47 @@ table th:last-child, table td:last-child {
 /* line 536, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry + .status_bar_entry {
   margin-left: 1.5em;
+}
+
+/* line 542, ../../compass/sass/_c2_module_core.scss */
+.notifications {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  width: calc(100vw - 2em);
+  z-index: 4000;
+}
+/* line 549, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5em 2em;
+  background: #07192B;
+  color: #f3f3f3;
+}
+/* line 558, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification:not(:last-child) {
+  margin-bottom: 1em;
+}
+/* line 562, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification .title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #07C5CB;
+  margin-bottom: 0.5em;
+}
+/* line 573, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification .close {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  cursor: pointer;
+}
+/* line 579, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification .close:hover {
+  color: #7a7a7a;
 }
 
 @keyframes status-update-flash {

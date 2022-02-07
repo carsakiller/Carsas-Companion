@@ -6,6 +6,7 @@ class C2Module_Core extends C2LoggingUtility {
 		this.c2 = c2
 
 		this.c2.on('can-register-storable', ()=>{
+			this.c2.registerStorable('notifications', {})
 			this.c2.registerStorable('status')
 			this.c2.registerStorable('userSteamId')
 			this.c2.registerStorable('profile')
@@ -13,6 +14,7 @@ class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-syncable', ()=>{
+			this.c2.registerSyncable('SCRIPT_VERSION')
 			this.c2.registerSyncable('players')
 			this.c2.registerSyncable('vehicles')
 			this.c2.registerSyncable('rules')
@@ -45,6 +47,36 @@ class C2Module_Core extends C2LoggingUtility {
 				GLOBAL
 
 			*/
+
+			this.c2.registerComponent('notifications', {
+				computed: {
+					notifications (){
+						return this.$store.state.notifications
+					}
+				},
+				template: `<div class="notifications">
+					<notification v-for="(notification, id) in notifications" :notification="notification"/>
+				</div>`
+			})
+
+			this.c2.registerComponent('notification', {
+				props: {
+					notification: {
+						type: Object,
+						required: true
+					}
+				},
+				template: `<div class="notification">
+					<icon :icon="'x-mark'" @click="closeNotification" class="close"/>
+					<span class="title">{{notification.title}}</span>
+					<p class="text">{{notification.text}}</p>
+				</div>`,
+				methods: {
+					closeNotification (){
+						delete this.$store.state.notifications[this.notification.id]
+					}
+				}
+			})
 
 			this.c2.registerComponent('status-bar', {
 				template: `<div class="status_bar">
@@ -269,11 +301,14 @@ class C2Module_Core extends C2LoggingUtility {
 
 			this.c2.registerComponent('info', {
 				computed: {
-					version (){
-						return this.$store.state.C2_VERSION
+					companionVersion (){
+						return this.$store.state.COMPANION_VERSION
+					},
+					scriptVersion (){
+						return this.$store.state.SCRIPT_VERSION
 					},
 					commit (){
-						return this.$store.state.C2_COMMIT
+						return this.$store.state.COMPANION_COMMIT
 					},
 					commitShort (){
 						return this.commit ? this.commit.substring(0,8) : undefined
@@ -286,9 +321,15 @@ class C2Module_Core extends C2LoggingUtility {
 						<h1 class="headline">Carsa's Commands - Companion</h1>
 					</div>
 					<division :name="'General'" :startExtended="true">
-						<p>Version:
-							<loading-spinner-or :is-loading-code="'return !this.version'" :parents-depth="3">
-								{{version}}
+						<p>Version (Companion):
+							<loading-spinner-or :is-loading-code="'return !this.companionVersion'" :parents-depth="3">
+								{{companionVersion}}
+							</loading-spinner-or>
+						</p>
+						<spacer-horizontal/>
+						<p>Version (Game Script):
+							<loading-spinner-or :is-loading-code="'return !this.scriptVersion'" :parents-depth="3">
+								{{scriptVersion}}
 							</loading-spinner-or>
 						</p>
 						<spacer-horizontal/>
@@ -1350,7 +1391,6 @@ class C2Module_Core extends C2LoggingUtility {
 					this.setStatus('game', false)
 				}
 			})
-
 		})
 
 		this.c2.on('setup-done', ()=>{

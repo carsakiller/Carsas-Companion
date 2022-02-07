@@ -35,9 +35,10 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.dispatch('can-register-storable')
 		this.registerStorable('pages')
-		this.registerStorable('C2_VERSION')
-		this.registerStorable('C2_COMMIT')
+		this.registerStorable('COMPANION_VERSION')
+		this.registerStorable('COMPANION_COMMIT')
 		this.registerStorable('permissions')
+
 
 		this.syncables = []
 		this.dispatch('can-register-syncable')
@@ -45,6 +46,16 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.store = Vuex.createStore(this.storeConfig)
 		this.store.watch(()=>{return this.store.state.userSteamId}, ()=>{
 			this.updateUserPermissions()
+
+			this.webclient.sendMessage('check-notifications', this.store.state.userSteamId).then(json => {
+				let notifications = JSON.parse(json)
+
+				if(notifications){
+					for(let n of notifications){
+						this.showNotification(n.title, n.text)
+					}
+				}
+			}).catch(err=>this.error)
 		})
 
 		$.get({
@@ -52,7 +63,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			accepts: 'text/plain',
 			async: true,
 			success: (data)=>{
-				this.store.state.C2_VERSION = data
+				this.store.state.COMPANION_VERSION = data
 			},
 			error: (err)=>{
 				this.error('Error checking version', err)
@@ -72,6 +83,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 				}
 			},
 			template: `<div class="c2">
+				<notifications/>
 				<login-popup ref="loginPopup"/>
 				<user-login @show-login="$refs.loginPopup.show()"/>
 				<status-bar/>
@@ -109,9 +121,10 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		setTimeout(()=>{
 			$.get('/static/commit.txt', (data)=>{
-				this.store.state.C2_COMMIT = data
+				this.store.state.COMPANION_COMMIT = data
 			})
 		}, 1000)
+
 
 		setTimeout(()=>{
 			this.dispatch('setup-done')
@@ -176,6 +189,16 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		popup.find('.title').text('An Error has occured (Please contact an admin):')
 		popup.find('.message').val(text)
 		popup.show()
+	}
+
+	showNotification(title, text){
+		let id = C2.uuid()
+
+		this.store.state.notifications[id] = {
+			title: title,
+			text: text,
+			id: id
+		}
 	}
 
 	registerStorable(storableName, /* optional */ initialValue){

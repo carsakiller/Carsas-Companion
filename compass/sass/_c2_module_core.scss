@@ -539,6 +539,50 @@
 	}
 }
 
+.notifications {
+	position: fixed;
+	top: 1em;
+	left: 1em;
+	width: calc(100vw - 2em);
+	z-index: 4000;
+
+	.notification {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 0.5em 2em;
+		background: $tertiary;
+		color: $text-color;
+
+		&:not(:last-child) {
+			margin-bottom: 1em;
+		}
+
+		.title {
+			font-size: 1.2em;
+			font-weight: bold;
+			color: $highlight;
+			margin-bottom: 0.5em;
+		}
+
+		.text {
+
+		}
+
+		.close {
+			position: absolute;
+			top: 0.5em;
+			right: 0.5em;
+			cursor: pointer;
+
+			&:hover {
+				color: shade($text-color, 50%)
+			}
+		}
+	}
+}
+
 @keyframes status-update-flash {
 	0% {
 		filter: brightness(1);
