@@ -366,10 +366,18 @@ class C2Module_Test extends C2LoggingUtility {
 				</div>`,
 				methods: {
 					setCompanionDebug (to){
-						this.sendServerMessage('debug-set-companion', to)
+						this.sendServerMessage('debug-set-companion', to).then(res => {
+							this.showNotificationSuccess('debug-set-companion', res)
+						}).catch(err => {
+							this.showNotificationFailed('debug-set-companion', err)
+						})
 					},
 					setCompanionDebuDetailed (to){
-						this.sendServerMessage('debug-set-companion-detailed', to)
+						this.sendServerMessage('debug-set-companion-detailed', to).then(res => {
+							this.showNotificationSuccess('debug-set-companion-detailed', res)
+						}).catch(err => {
+							this.showNotificationFailed('debug-set-companion-detailed', err)
+						})
 					}
 				},
 				mixins: [componentMixin_serverMessage]

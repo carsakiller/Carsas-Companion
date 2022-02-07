@@ -27,7 +27,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 			}
 		})
 		// GAME -> BACKEND TEST (proxy triggered by webclient)
-		this.c2.registerWebClientMessageHandler('test-performance-game-backend-proxy', ()=>{
+		this.c2.registerWebClientMessageHandler('test-performance-game-backend-proxy', (client)=>{
 			return new Promise((resolve, reject)=>{
 				let start = Math.floor(performance.now())
 
@@ -38,7 +38,7 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 					})
 				}
 
-				this.c2.sendMessageToGame(undefined, 'test-performance-game-backend-proxy', start).catch(err => {
+				this.c2.sendMessageToGame(client.token, 'test-performance-game-backend-proxy', start).catch(err => {
 					this.currentGameBackendTest = undefined
 					reject(err)
 				})
@@ -46,15 +46,15 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 		})
 
 		// GAME <- BACKEND TEST (triggered by webclient)
-		this.c2.registerWebClientMessageHandler('test-performance-backend-game', (data)=>{
-			return this.runGameTest('test-performance-backend-game')
+		this.c2.registerWebClientMessageHandler('test-performance-backend-game', (client)=>{
+			return this.runGameTest('test-performance-backend-game', client)
 		})
 
 		// FRONTEND -> GAME TEST (triggered by webclient), just proxying)
 		this.c2.registerWebClientMessageHandler('test-performance-frontend-game', (client, data)=>{
 			return new Promise((resolve, reject)=>{
 				let dat = JSON.parse(JSON.stringify(data)) //simulate the conversion that would normally happen
-				this.c2.sendMessageToGame(undefined, 'test-performance-frontend-game', dat).then(res => {
+				this.c2.sendMessageToGame(client.token, 'test-performance-frontend-game', dat).then(res => {
 					resolve(JSON.parse(res))
 				}).catch(err => {
 					reject(err)
@@ -63,20 +63,20 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('debug-set-companion', (client, data)=>{
-			return this.c2.sendMessageToGame(undefined, 'debug-set-companion', data)
+			return this.c2.sendMessageToGame(client.token, 'debug-set-companion', data)
 		})
 
 
 		this.c2.registerWebClientMessageHandler('debug-set-companion-detailed', (client, data)=>{
-			return this.c2.sendMessageToGame(undefined, 'debug-set-companion-detailed', data)
+			return this.c2.sendMessageToGame(client.token, 'debug-set-companion-detailed', data)
 		})
 	}
 
-	runGameTest(testName){
+	runGameTest(testName, client){
 		return new Promise((resolve, reject)=>{
 			let start = Date.now()
 
-			this.c2.sendMessageToGame(undefined, testName, start).then((data)=>{
+			this.c2.sendMessageToGame(client.token, testName, start).then((data)=>{
 				let parsed = JSON.parse(data)
 
 				if(parsed !== start){
