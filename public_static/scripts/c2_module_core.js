@@ -66,7 +66,7 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
-				template: `<div class="notification">
+				template: `<div class="notification" :type="notification.type">
 					<icon :icon="'x-mark'" @click="closeNotification" class="close"/>
 					<span class="title">{{notification.title}}</span>
 					<p class="text">{{notification.text}}</p>

@@ -191,14 +191,25 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		popup.show()
 	}
 
-	showNotification(title, text){
+	showNotification(title, text, /* optional */ type){
 		let id = C2.uuid()
 
 		this.store.state.notifications[id] = {
 			title: title,
 			text: text,
+			type: type,
 			id: id
 		}
+
+		return id
+	}
+
+	hideNotification(id){
+		if(id === undefined){
+			return
+		}
+
+		delete this.store.state.notifications[id]
 	}
 
 	registerStorable(storableName, /* optional */ initialValue){

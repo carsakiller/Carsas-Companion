@@ -349,6 +349,11 @@ let componentMixin_lockable = {
 }
 
 let componentMixin_serverMessage = {
+	data (){
+		return {
+			lastNotificationId: undefined
+		}
+	},
 	mixins: [componentMixin_lockable],
 	methods: {
 		sendServerMessage (messageType, data, /* optional */ doNotUnlockAutomatically){
@@ -359,6 +364,7 @@ let componentMixin_serverMessage = {
 					this.log('sending messageType', messageType,'was successful')
 					this.debug('data', data, 'result', res)
 					fulfill(res)
+
 					if(doNotUnlockAutomatically !== true){
 						this.unlockComponent()
 					}
@@ -372,12 +378,29 @@ let componentMixin_serverMessage = {
 		sendServerMessageAndWaitForSync (messageType, data){
 			this.lockComponentUntilSync()
 			return this.sendServerMessage(messageType, data)
+		},
+		showNotification (title, message, type){
+			if(this.lastNotificationId !== undefined){
+				c2.hideNotification(this.lastNotificationId)
+			}
+
+			this.lastNotificationId = c2.showNotification(title, message, type)
+			/*setTimeout(()=>{
+				c2.hideNotification(this.lastNotificationId)
+			}, 1000 * 5)*/
+		},
+		showNotificationSuccess (type, message){
+			this.showNotification('Success: ' + type, message, 'success')
+
+		},
+		showNotificationFailed (type, message){
+			this.showNotification('Failed: ' + type, message, 'error')
 		}
 	}
 }
 
 let componentMixin_gameCommand = {
-	mixins: [componentMixin_lockable],
+	mixins: [componentMixin_serverMessage],
 	methods: {
 		callGameCommand (command, args){
 			return new Promise((fulfill, reject)=>{
@@ -386,11 +409,13 @@ let componentMixin_gameCommand = {
 					this.log('executing command', command,'was successful')
 					this.debug('args', args, 'result', res)
 					fulfill(res)
+					this.showNotificationSuccess(command, res)
 				}).catch((err)=>{
 					this.log('executing command', command,'failed')
 					this.debug('args', args, 'error', err)
 					this.unlockComponent()
 					reject(err)
+					this.showNotificationFailed(command, err)
 				})
 			})
 		},

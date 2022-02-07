@@ -552,17 +552,26 @@
 		flex-direction: column;
 		align-items: center;
 		padding: 0.5em 2em;
-		background: $tertiary;
+		background: $secondary;
+		box-shadow: 5px 5px 15px 5px #000;
 		color: $text-color;
+
+		&[type="success"] {
+			background: $enabled;
+		}
+
+		&[type="error"] {
+			background: $disabled;
+		}
 
 		&:not(:last-child) {
 			margin-bottom: 1em;
 		}
 
 		.title {
+			font-family: $font-secondary;
 			font-size: 1.2em;
 			font-weight: bold;
-			color: $highlight;
 			margin-bottom: 0.5em;
 		}
 

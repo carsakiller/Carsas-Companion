@@ -46,10 +46,18 @@ class C2Module_Gameserver extends C2LoggingUtility {
 				</div>`,
 				methods: {
 					startServer (){
-						this.sendServerMessage('gameserver-start', undefined, true)
+						this.sendServerMessage('gameserver-start', undefined, true).then(res => {
+							this.showNotificationSuccess('gameserver-start', res)
+						}).catch(err => {
+							this.showNotificationFailed('gameserver-start', err)
+						})
 					},
 					stopServer (){
-						this.sendServerMessage('gameserver-stop')
+						this.sendServerMessage('gameserver-stop').then(res => {
+							this.showNotificationSuccess('gameserver-stop', res)
+						}).catch(err => {
+							this.showNotificationFailed('gameserver-stop', err)
+						})
 					}
 				},
 				watch: {

@@ -2871,28 +2871,37 @@ table th:last-child, table td:last-child {
   flex-direction: column;
   align-items: center;
   padding: 0.5em 2em;
-  background: #07192B;
+  background: #00446c;
+  box-shadow: 5px 5px 15px 5px #000;
   color: #f3f3f3;
 }
-/* line 558, ../../compass/sass/_c2_module_core.scss */
+/* line 559, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification[type="success"] {
+  background: #379249;
+}
+/* line 563, ../../compass/sass/_c2_module_core.scss */
+.notifications .notification[type="error"] {
+  background: #c92f2f;
+}
+/* line 567, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification:not(:last-child) {
   margin-bottom: 1em;
 }
-/* line 562, ../../compass/sass/_c2_module_core.scss */
+/* line 571, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification .title {
+  font-family: "Poppins", sans-serif;
   font-size: 1.2em;
   font-weight: bold;
-  color: #07C5CB;
   margin-bottom: 0.5em;
 }
-/* line 573, ../../compass/sass/_c2_module_core.scss */
+/* line 582, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification .close {
   position: absolute;
   top: 0.5em;
   right: 0.5em;
   cursor: pointer;
 }
-/* line 579, ../../compass/sass/_c2_module_core.scss */
+/* line 588, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification .close:hover {
   color: #7a7a7a;
 }

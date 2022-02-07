@@ -264,9 +264,6 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 							this.addNotificationFor(steamId, 'Update available', 'New Carsa\'s Commands version available: ' + latestScriptVersion)
 						}
 
-						this.warn('currentCompanionVersion', currentCompanionVersion, 'latestCompanionVersion', latestCompanionVersion)
-						this.warn('currentScriptVersion', currentScriptVersion, 'latestScriptVersion', latestScriptVersion)
-
 						resolve(this.popNotifications(steamId))
 					})
 				})
