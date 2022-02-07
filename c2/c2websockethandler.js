@@ -89,7 +89,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	sendToClient(client, data){
 		if(client.closed){
 			return new Promise((resolve, reject) => {
-				reject('client is already closed')
+				reject('client is already closed (this is not actually a problem)')
 			})
 		}
 
@@ -99,6 +99,12 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	sendToClientToken(clientToken, data){
 		for(let c of this.clients){
 			if(c.token === clientToken){
+				if(c.closed){
+					return new Promise((resolve, reject) => {
+						reject('client is already closed')
+					})
+				}
+
 				return this.send(c, data)
 			}
 		}
@@ -201,8 +207,19 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		this.error('client #', client.id, client.req.ip, err)
 	}
 
-	handleClose(client){//TODO: remove all pending messsages for this client
+	handleClose(client){
 		this.info('client closed connection: client #', client.id, client.req.ip)
+		let i = this.pendingMessageResponses.length - 1
+		while(i >= 0){
+			let pmr = this.pendingMessageResponses[i]
+			if(pmr.clientId === client.id){
+				pmr.reject('client closed connection')
+				this.pendingMessageResponses.splice(i, 1)
+			}
+
+			i--
+		}
+
 		client.closed = true
 	}
 
