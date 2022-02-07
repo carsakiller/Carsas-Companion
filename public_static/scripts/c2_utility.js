@@ -275,6 +275,10 @@ let componentMixin_lockable = {
 	},
 	methods: {
 		lockComponent (){
+			if(this.isComponentLocked){
+				return
+			}
+
 			this.debug('lockComponent', this.lockableParents)
 			this.isComponentLocked = true
 			for(let lp of this.lockableParents){
@@ -347,18 +351,20 @@ let componentMixin_lockable = {
 let componentMixin_serverMessage = {
 	mixins: [componentMixin_lockable],
 	methods: {
-		sendServerMessage (messageType, data){
+		sendServerMessage (messageType, data, /* optional */ doNotUnlockAutomatically){
 			return new Promise((fulfill, reject)=>{
-				this.lockComponentUntilSync()
+				this.lockComponent()
 
 				c2.webclient.sendMessage(messageType, data).then((res)=>{
 					this.log('sending messageType', messageType,'was successful')
 					this.debug('data', data, 'result', res)
 					fulfill(res)
+					if(doNotUnlockAutomatically !== true){
+						this.unlockComponent()
+					}
 				}).catch((err)=>{
 					this.log('sending messageType', messageType,'failed')
 					this.debug('data', data, 'error', err)
-					this.unlockComponent()
 					reject(err)
 				})
 			})

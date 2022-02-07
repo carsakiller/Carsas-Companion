@@ -46,10 +46,15 @@ class C2Module_Gameserver extends C2LoggingUtility {
 				</div>`,
 				methods: {
 					startServer (){
-						this.sendServerMessageAndWaitForSync('gameserver-start')//todo: this will get unlocked when any gameserver-state update arrives! bad!
+						this.sendServerMessage('gameserver-start', undefined, true)
 					},
 					stopServer (){
-						this.sendServerMessageAndWaitForSync('gameserver-stop')
+						this.sendServerMessage('gameserver-stop')
+					}
+				},
+				watch: {
+					isGameServerRunning (){
+						this.unlockComponent()
 					}
 				},
 				mixins: [componentMixin_serverMessage]

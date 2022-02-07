@@ -201,7 +201,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		this.error('client #', client.id, client.req.ip, err)
 	}
 
-	handleClose(client){//TODO: remove all pending messsages for this client
+	handleClose(client){//TODO: remove all pending messsages for this client (requires us to keep track of which pendingMessageId belongs to which client). Right now it just runs into a timeout
 		this.info('client closed connection: client #', client.id, client.req.ip)
 		client.closed = true
 	}

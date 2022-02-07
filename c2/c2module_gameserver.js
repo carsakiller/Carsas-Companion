@@ -47,8 +47,7 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 		})
 	}
 
-	//TODO
 	clientHasPermission(client){
-		return true
+		return this.c2.c2Module_Core.tokenHasRole(client.token, 'Owner')
 	}
 }

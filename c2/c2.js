@@ -22,7 +22,7 @@ module.exports = class C2 extends C2LoggingUtility {
 		// TODO: only do this when modules are enabled
 		this.c2Module_Core = new C2Module_Core(loglevel, this)
 		this.c2Module_Test = new C2Module_Test(loglevel, this)
-		this.c2Module_Gameserver = new C2Module_Gameserver(0, this)
+		this.c2Module_Gameserver = new C2Module_Gameserver(loglevel, this)
 
 		// catch any unhandledRejection
 		process.on('unhandledRejection', (err) => {

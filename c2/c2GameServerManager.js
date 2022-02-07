@@ -1,6 +1,7 @@
 const { fork } = require('child_process');
 const { C2EventManagerAndLoggingUtility } = require('./utility.js')
 const ps = require('ps-node');
+const fs = require('fs')
 const path = require('path')
 
 module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtility {
@@ -30,18 +31,31 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	}
 
 	spawnGameServer(){
-		return new Promise((fulfill, reject)=>{
+		let prom = this.makeQuerablePromise( new Promise((fulfill, reject)=>{
 			this.info('spawnGameServer')
 			this.isGameServerRunning((err, isRunning)=>{
 				if(err){
-					reject('error: check server logs')
-					return
+					return reject('error: check server logs')
 				}
 
 				if(isRunning){
-					reject('GameServer already running')
-					return
+					return reject('GameServer already running')
 				}
+
+
+				let executableFullPath = path.normalize(path.join(this.executableDirectory, this.executableName64))
+				try {
+					fs.accessSync(executableFullPath, fs.constants.R_OK)
+				} catch (err){
+					return reject('Executable not existing: ' + executableFullPath)
+				}
+
+				try {
+					fs.accessSync(executableFullPath, fs.constants.X_OK)
+				} catch (err){
+					return reject('Executable can not be executed (windows user has no permission): ' + executableFullPath)
+				}
+
 
 				try {
 					this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'),
@@ -58,30 +72,45 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 				this.childProcess.on('spawn', ()=>{
 					this.info('fork process spawned')
 
-					fulfill()
-
 					this.childProcess.unref()
 				})
 
 				this.childProcess.on('close', ()=>{
 					this.info('fork process closed')
+
+					if(prom.isPending()){
+						reject('fork process closed')
+					}
 				})
 
 				this.childProcess.on('exit', ()=>{
 					this.info('fork process exited')
+
+					if(prom.isPending()){
+						reject('fork process exited')
+					}
 				})
 
 				this.childProcess.on('error', (err)=>{
-					this.err('fork process error', err)
+					this.error('fork process error', err)
 				})
 
 				this.childProcess.on('message', (message)=>{
 					this.debug('got message from fork process', message)
 
 					switch(message.type){
+
+						case 'spawn': {
+							this.dispatch('spawn')
+
+							if(prom.isPending()){
+								fulfill('fork process spawned successful')
+							}
+						}; break;
+
 						case 'stdout': {
 
-							let str = message.data.toString()
+							let str = '' + message.data
 
 							//fix that the text will not arrive in one nice piece, instead it will arrive as multiple copies in random positions
 							let start = str.indexOf('Server Version')
@@ -100,13 +129,27 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 							this.dispatch('stdout', fixed)
 						}; break;
 
+						case 'error': {
+							this.dispatch('error', '' + message.data)
+						}; break;
+
+						case 'close': {
+							this.dispatch('close')
+						}; break;
+
+						case 'exit': {
+							this.dispatch('exit')
+						}; break;
+
 						default: {
 							this.error('fork process sent unsupported message type', message.type)
 						}
 					}
 				})
 			})
-		})
+		}))
+
+		return prom
 	}
 
 	killGameServer(){
@@ -201,16 +244,20 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	}
 
 	killProcess(pid){
-		return new Promise((fulfill, reject)=>{
+		let prom = this.makeQuerablePromise( new Promise((fulfill, reject)=>{
 			ps.kill(pid, (err)=>{
-				if(err){
-					this.error('error while killing process', err)
-					reject()
-				} else {
-					fulfill()
+				if(prom.isPending()){//fixes a bug of ps-node where it might call the error callback even thouhg process is already dead
+					if(err){
+						this.error('error while killing process', err)
+						reject()
+					} else {
+						fulfill()
+					}
 				}
 			})
-		})
+		}))
+
+		return prom
 	}
 
 	/*
@@ -240,5 +287,40 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 				}
 			}
 		})
+	}
+
+
+	/**
+	 * This function allow you to modify a JS Promise by adding some status properties.
+	 * Based on: http://stackoverflow.com/questions/21485545/is-there-a-way-to-tell-if-an-es6-promise-is-fulfilled-rejected-resolved
+	 * But modified according to the specs of promises : https://promisesaplus.com/
+	 */
+	makeQuerablePromise(promise) {
+	    // Don't modify any promise that has been already modified.
+	    if (promise.isFulfilled) return promise;
+
+	    // Set initial state
+	    var isPending = true;
+	    var isRejected = false;
+	    var isFulfilled = false;
+
+	    // Observe the promise, saving the fulfillment in a closure scope.
+	    var result = promise.then(
+	        function(v) {
+	            isFulfilled = true;
+	            isPending = false;
+	            return v;
+	        },
+	        function(e) {
+	            isRejected = true;
+	            isPending = false;
+	            throw e;
+	        }
+	    );
+
+	    result.isFulfilled = function() { return isFulfilled; };
+	    result.isPending = function() { return isPending; };
+	    result.isRejected = function() { return isRejected; };
+	    return result;
 	}
 }

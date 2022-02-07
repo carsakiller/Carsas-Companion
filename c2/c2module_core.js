@@ -287,6 +287,9 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 	/* returns undefined on error */
 	getLatestCompanionVersion(){
 		return new Promise((resolve, reject)=>{
+			return resolve()//TODO remove on production
+
+
 			axios.get('https://raw.githubusercontent.com/carsakiller/Carsas-Companion/master/public_static/version.txt?token=GHSAT0AAAAAABOFVQHQYRL2RCSUKWVJSGYUYQBIZSQ',
 					{ headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0'}}).then(res => {
 				let remoteVersionCompanion = '' + res.data
@@ -302,6 +305,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 	/* returns undefined on error */
 	getLatestScriptVersion(){
 		return new Promise((resolve, reject)=>{
+			return resolve()//TODO remove on production
+
 			axios.get('https://raw.githubusercontent.com/carsakiller/Carsas-CommandsV2/main/src/script.lua?token=GHSAT0AAAAAABOFVQHQGVQELRQ3XNKEIUFEYQBIZRQ',
 					{ headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0'}}).then(res => {
 				let script = '' + res.data

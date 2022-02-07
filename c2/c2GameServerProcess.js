@@ -31,6 +31,8 @@ class C2GameServerProcess extends C2LoggingUtility {
 		})
 
 		this.childProcess.on('spawn', ()=>{
+			this.sendToParentProcess('spawn')
+
 			this.childProcess.stdout.on('data', (data) => {
 				let str = data.toString()
 				this.debug('Received chunk ', str);
@@ -39,14 +41,17 @@ class C2GameServerProcess extends C2LoggingUtility {
 		})
 
 		this.childProcess.on('error', (err)=>{
+			this.sendToParentProcess('error', err)
 			this.error('child process error', err)
 		})
 
 		this.childProcess.on('close', ()=>{
+			this.sendToParentProcess('close')
 			this.info('child process has closed')
 		})
 
 		this.childProcess.on('exit', ()=>{
+			this.sendToParentProcess('exit')
 			this.info('child process has ended')
 		})
 	}
