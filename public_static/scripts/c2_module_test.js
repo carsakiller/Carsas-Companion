@@ -20,8 +20,17 @@ class C2Module_Test extends C2LoggingUtility {
 				template: `<div class="tests_management">
 					<module-enableable :name="'tests'">
 						<tabs>
+							<tab :title="'Debugging'">
+								<division :name="'Companion Debugging'" :always-extended="true">
+									<companion-debugging/>
+								</division>
+							</tab>
+
+
+
+
 							<tab :title="'Test runs'">
-								<division :name="'Performance'" :start-extended="true">
+								<division :name="'Performance'" :always-extended="true">
 									<test-run :name="'test-performance-frontend-backend'" :type="'local'"/>
 									<test-run :name="'test-performance-backend-frontend'" :type="'remote'"/>
 									<test-run :name="'test-performance-game-backend-proxy'" :type="'remote'"/>
@@ -340,6 +349,32 @@ class C2Module_Test extends C2LoggingUtility {
 					</tbody>
 				</table>`
 			})
+
+
+			this.c2.registerComponent('companion-debugging', {
+				data (){
+					return {
+						syncables: []
+					}
+				},
+				template: `<div>
+					<button @click="setCompanionDebug(true)">Enable Debug</button>
+					<button @click="setCompanionDebug(false)">Disable Debug</button>
+					<spacer-horizontal/>
+					<button @click="setCompanionDebuDetailed(true)">Enable Debug Detailed</button>
+					<button @click="setCompanionDebuDetailed(false)">Disable Debug Detailed</button>
+				</div>`,
+				methods: {
+					setCompanionDebug (to){
+						this.sendServerMessage('debug-set-companion', to)
+					},
+					setCompanionDebuDetailed (to){
+						this.sendServerMessage('debug-set-companion-detailed', to)
+					}
+				},
+				mixins: [componentMixin_serverMessage]
+			})
+
 
 			/*
 

@@ -62,58 +62,14 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 			})
 		})
 
+		this.c2.registerWebClientMessageHandler('debug-set-companion', (client, data)=>{
+			return this.c2.sendMessageToGame(undefined, 'debug-set-companion', data)
+		})
 
 
-		// OLD TESTS
-		/*
-			if(false){
-				setTimeout(()=>{
-					this.c2.sendMessageToWebClient('all', 'test-timeout', '').then((res)=>{
-						this.info('webclients test-timeout: success', res)
-					}).catch((err)=>{
-						this.info('webclients test-timeout: unsuccessful', err)
-					})
-				}, 5000)
-			}
-
-			if(false){
-				setTimeout(()=>{
-					this.c2.sendMessageToGame(undefined, 'test-timeout', '').then((res)=>{
-						this.info('game test-timeout: success', res)
-					}).catch((err)=>{
-						this.info('game test-timeout: unsuccessful', err)
-					})
-				}, 5000)
-			}
-
-			if(false){
-				setTimeout(()=>{//test performance of http transmission
-					let messageSize = 5000
-					let amountOfMessages = 4
-
-					let message = ""
-					for(let i=0;i<messageSize;i++){
-						message += "Y"
-					}
-
-					let beginTime = new Date().getTime()
-
-					let promises = []
-
-					for(let i=0; i<amountOfMessages; i++){
-						promises.push(this.c2.sendMessageToGame(undefined, 'test', message))
-					}
-
-					Promise.all(promises).then((res)=>{
-						let endTime = new Date().getTime()
-
-						this.info('Performance Test Result: took', Math.floor((endTime - beginTime) / 100) / 10, 's for',amountOfMessages, 'messages with', messageSize, 'chars each')
-					}).catch((err)=>{
-						this.error('Performance Test Failed:', err)
-					})
-				}, 1000)
-			}
-		*/
+		this.c2.registerWebClientMessageHandler('debug-set-companion-detailed', (client, data)=>{
+			return this.c2.sendMessageToGame(undefined, 'debug-set-companion-detailed', data)
+		})
 	}
 
 	runGameTest(testName){
