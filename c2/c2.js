@@ -44,16 +44,17 @@ module.exports = class C2 extends C2LoggingUtility {
 		this.c2GameInterface.on('game-connected', ()=>{
 			this.c2WebInterface.sendMessageTo('all', 'game-connection', true)
 
-			//request initial sync
-			this.sendMessageToGame(undefined, 'command-sync-all')
+			//request initial sync after some time
+			setTimeout(()=>{
+				this.info('triggering initial sync ...')
+				this.sendMessageToGame(undefined, 'command-sync-all').catch(err => {
+					this.error('initial sync failed', err)
+				})
+			}, 1000 * 5)
 		})
 
 		this.c2GameInterface.on('game-disconnected', ()=>{
-			this.c2WebInterface.sendMessageTo('all', 'game-connection', false).then(()=>{
-
-			}).catch((err)=>{
-
-			})
+			this.c2WebInterface.sendMessageTo('all', 'game-connection', false)
 		})
 	}
 

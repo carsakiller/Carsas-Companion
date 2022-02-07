@@ -15,7 +15,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		this.isGameAvailable = false
 		this.lastGameMessage = 0
 
-		this.SERVER_HEARTBEAT_MAX_TIME_UNTIL_TIMEOUT = 1000 * 20 //if we do not get any message for 20s (game heartbeats should happen every 3s)
+		this.SERVER_HEARTBEAT_MAX_TIME_UNTIL_TIMEOUT = 1000 * 5 //if we do not get any message for 20s (game heartbeats should happen every 1s)
 
 		setInterval(()=>{
 			if(Date.now() - this.lastGameMessage > this.SERVER_HEARTBEAT_MAX_TIME_UNTIL_TIMEOUT && this.lastGameMessage > 0){
@@ -30,7 +30,7 @@ module.exports = class C2GameInterface extends C2Interface {
 			}
 		}, 100)
 
-		this.c2GameHttpHandler = new C2GameHttpHandler(loglevel-1)
+		this.c2GameHttpHandler = new C2GameHttpHandler(loglevel, this.SERVER_HEARTBEAT_MAX_TIME_UNTIL_TIMEOUT)
 
 		app.use('/game-api', (req, res)=>{
 			if(!this.isGameAvailable){

@@ -2,14 +2,14 @@ const C2Handler = require('./utility.js').C2Handler
 
 module.exports = class C2GameHttpHandler extends C2Handler {
 
-	constructor(loglevel){
+	constructor(loglevel, heartbeat_timeout){
 		super(loglevel)
 
 		this.commandIdCounter = 0;
 		this.commandsToTransferToGame = []
 		this.pendingCommandResponses = []
 
-		this.PENDING_COMMAND_RESPONSE_TIMEOUT = 1000 * 20
+		this.PENDING_COMMAND_RESPONSE_TIMEOUT = heartbeat_timeout
 
 		this.messageCallback = undefined
 
