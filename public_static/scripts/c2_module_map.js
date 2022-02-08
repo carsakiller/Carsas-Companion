@@ -37,7 +37,9 @@ class C2Module_Map extends C2LoggingUtility {
 						currentInfoComponent: undefined,
 						currentInfoData: undefined,
 						currentInfoDataId: undefined,
-						currentInfoStyle: undefined
+						currentInfoStyle: undefined,
+
+						uuid: C2.uuid()
 					}
 				},
 				computed: {
@@ -56,7 +58,7 @@ class C2Module_Map extends C2LoggingUtility {
 						this.log('refreshLivePlayers', this.livePlayers)
 
 						for(let marker of this.playerMarkers){
-							map.removeMarker(marker)
+							this.getMap().removeMarker(marker)
 						}
 
 						if(!this.livePlayers){
@@ -66,7 +68,7 @@ class C2Module_Map extends C2LoggingUtility {
 						for(let p of Object.keys(this.livePlayers)){
 							let player = this.livePlayers[p]
 							if(player.x && player.y){
-								let marker = this.map.createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
+								let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
 								this.playerMarkers.push(marker)
 
 								marker.on('click', (pos)=>{
@@ -81,7 +83,7 @@ class C2Module_Map extends C2LoggingUtility {
 						this.log('refreshLiveVehicles', this.liveVehicles)
 
 						for(let marker of this.vehicleMarkers){
-							this.map.removeMarker(marker)
+							this.getMap().removeMarker(marker)
 						}
 
 						if(!this.liveVehicles){
@@ -91,7 +93,7 @@ class C2Module_Map extends C2LoggingUtility {
 						for(let v of Object.keys(this.liveVehicles)){
 							let vehicle = this.liveVehicles[v]
 							if(vehicle.x && vehicle.y){
-								let marker = this.map.createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
+								let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
 								this.vehicleMarkers.push(marker)
 
 								marker.on('click', (pos)=>{
@@ -121,17 +123,24 @@ class C2Module_Map extends C2LoggingUtility {
 					},
 					clickVehicle (vehicle, id, pageX, pageY){
 						this.showInfo('vehicle', vehicle, id, pageX, pageY)
+					},
+
+					setMap (map){
+						window['map_' + this.uuid] = map
+					},
+					getMap (){
+						return window['map_' + this.uuid]
 					}
 				},
 				mounted: function (){
-					this.map = new C2CanvasMap(5, this.$el, '/static/tiles/', '/static/icons/')
+					this.setMap( new C2CanvasMap(5, this.$el, '/static/tiles/', '/static/icons/') )
 
 					this.refreshLivePlayers()
 					this.refreshLiveVehicles()
 
 					this.intervalTilePositions = setInterval(()=>{
 						if(this.$store.state.TILE_POSITIONS){
-							this.map.tilemanager.setTilesDefinition(this.$store.state.TILE_POSITIONS)
+							this.getMap().tilemanager.setTilesDefinition(this.$store.state.TILE_POSITIONS)
 							clearInterval(this.intervalTilePositions)
 							this.intervalTilePositions = undefined
 						}
@@ -246,6 +255,10 @@ class C2CanvasMap extends C2LoggingUtility {
 
 	constructor(loglevel, el, tilesDirectory, iconsDirectory){
 		super(loglevel)
+		window.map = this // for debugging
+
+		this.TILE_PIXEL_SIZE = 200
+		this.TILE_METER_SIZE = 1000
 
 		this.container = $(el)
 
@@ -266,14 +279,6 @@ class C2CanvasMap extends C2LoggingUtility {
 		)
 
 		this.dom.appendTo(this.container)
-
-		this.offset = {// offset for center of the map (of the canvas)
-			x: 0,
-			y: 0
-		}
-
-		/* zooming */
-		this.zoomValue = 1
 
 		this.dom.bind('mousewheel DOMMouseScroll', (evt)=>{
 			if(evt.ctrlKey == true){
@@ -304,9 +309,14 @@ class C2CanvasMap extends C2LoggingUtility {
 			}
 		});
 
+		/* zooming
+		must use this.setZoom() to change this value! */
+		this.metersToPixelRatio = 1 // = ratio meter / pixel
+
 		/* dragging */
 
-		this.dragOffset = {
+		// the center of the canvas is at gps (0,0) when dragOffsetGps = (0,0)
+		this.dragOffsetGps = {
 			x: 0,
 			y: 0
 		}
@@ -334,8 +344,8 @@ class C2CanvasMap extends C2LoggingUtility {
 			evt.preventDefault()
 			evt.stopImmediatePropagation()
 
-			this.dragOffset.x -= this.unzoom(this.lastMouseDownX - evt.pageX)
-			this.dragOffset.y -= this.unzoom(this.lastMouseDownY - evt.pageY)
+			this.dragOffsetGps.x -= this.pixelsToMeters(this.lastMouseDownX - evt.pageX)
+			this.dragOffsetGps.y -= this.pixelsToMeters(this.lastMouseDownY - evt.pageY)
 
 			this.lastMouseDownX = evt.pageX
 			this.lastMouseDownY = evt.pageY
@@ -369,8 +379,8 @@ class C2CanvasMap extends C2LoggingUtility {
 				evt.stopImmediatePropagation()
 
 				if(evt.touches.length === 1){
-					this.dragOffset.x -= this.unzoom(this.lastTouches[0].pageX - evt.touches[0].pageX)
-					this.dragOffset.y -= this.unzoom(this.lastTouches[0].pageY - evt.touches[0].pageY)
+					this.dragOffsetGps.x -= this.pixelsToMeters(this.lastTouches[0].pageX - evt.touches[0].pageX)
+					this.dragOffsetGps.y -= this.pixelsToMeters(this.lastTouches[0].pageY - evt.touches[0].pageY)
 				} else if (evt.touches.length === 2){
 					let oldDeltaX = this.lastTouches[0].pageX - this.lastTouches[1].pageX
 					let oldDeltaY = this.lastTouches[0].pageY - this.lastTouches[1].pageY
@@ -380,7 +390,7 @@ class C2CanvasMap extends C2LoggingUtility {
 					let newDeltaY = evt.touches[0].pageY - evt.touches[1].pageY
 					let newDistance = Math.sqrt(newDeltaX ** 2 + newDeltaY ** 2)
 
-					this.setZoom(this.zoomValue * (newDistance / oldDistance) )
+					this.setZoom(this.metersToPixelRatio * (newDistance / oldDistance) )
 				}
 
 				this.lastTouches = evt.touches
@@ -415,7 +425,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 			for(let m of Object.keys(this.markers).reverse()){
 				let marker = this.markers[m]
-				let markerPos = this.relativePosition(marker.x, marker.y)
+				let markerPos = this.convertGpsPositonToCanvasPosition(marker.gpsX, marker.gpsY)
 				if(p.x >= markerPos.x - marker.iconWidth/2 && p.x <= markerPos.x + marker.iconWidth/2
 					&& p.y >= markerPos.y - marker.iconHeight/2 && p.y <= markerPos.y + marker.iconHeight/2){
 
@@ -433,10 +443,6 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.canvas = document.createElement('canvas')
 		$(this.canvas).attr('id', 'canvas_canvasmap_canvas')
 		this.canvas.style = 'background: transparent; position: relative; z-index: 2;'
-		this.resizeCanvas()
-		$(window).on('resize', ()=>{
-			this.resizeCanvas()
-		})
 		this.dom.append(this.canvas)
 
 		this.ctx = this.canvas.getContext('2d')
@@ -456,8 +462,8 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.debugCanvas = document.createElement('canvas')
 		$(this.debugCanvas).attr('id', 'canvas_canvasmap_debugcanvas')
 		this.debugCanvas.style = 'background: transparent; position: absolute; top: 0; left: 0; z-index: 5;'
-		this.debugCanvas.width = 100
-		this.debugCanvas.height = 50
+		this.debugCanvas.width = this.canvas.width
+		this.debugCanvas.height = this.canvas.height
 		this.debugContext = this.debugCanvas.getContext('2d')
 		this.debugContext.font = '10px sans-serif'
 		this.dom.append(this.debugCanvas)
@@ -465,10 +471,10 @@ class C2CanvasMap extends C2LoggingUtility {
 		/* map layer */
 		this.mapCanvas = document.createElement('canvas')
 		$(this.mapCanvas).attr('id', 'canvas_canvasmap_mapcanvas')
-		this.mapCanvas.style = 'background: url("/static/images/tile_placeholder.png"); position: absolute; top: 0; left: 0; z-index: 1;'
+		this.mapCanvas.style = 'background: url("/static/images/tile_placeholder.png"); background-size: 100px 100px; position: absolute; top: 0; left: 0; z-index: 1;'
 		this.dom.append(this.mapCanvas)
 
-		this.tilemanager = new C2TileManager(loglevel, this, tilesDirectory)
+		this.tilemanager = new C2TileManager(loglevel, this, tilesDirectory, this.TILE_PIXEL_SIZE, this.TILE_METER_SIZE)
 
 		this.mustDraw = true
 
@@ -478,15 +484,20 @@ class C2CanvasMap extends C2LoggingUtility {
 			//at least one draw every 2s
 			this.requestDraw()//TODO instead we should only do this when tiles have changed
 		}, 1000 * 2)
+
+
+		this.resizeCanvas()
+
+		$(window).on('resize', ()=>{
+			this.resizeCanvas()
+		})
 	}
 
 	resizeCanvas(){
 		this.canvas.width = this.dom.width()
 		this.canvas.height = this.dom.height()
-		this.offset = {
-			x: this.canvas.width / 2,
-			y: this.canvas.height / 2
-		}
+		this.debugCanvas.width = this.canvas.width
+		this.debugCanvas.height = this.canvas.height
 		this.requestDraw()
 	}
 
@@ -518,16 +529,13 @@ class C2CanvasMap extends C2LoggingUtility {
 		//clear
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
+		$(this.mapCanvas).css('background-size', this.metersToPixels(this.TILE_METER_SIZE) + 'px ' + this.metersToPixels(this.TILE_METER_SIZE) + 'px')
+
 		this.drawMap()
 
 		for(let m of this.markers){
 			this.drawMarker(m)
 		}
-
-		// crosshair
-		this.setStrokeColor('red')
-		this.drawLine(this.percentagePosition(0.5,0), this.percentagePosition(0.5,1))
-		this.drawLine(this.percentagePosition(0,0.5), this.percentagePosition(1,0.5))
 
 		this.queueDraw()
 	}
@@ -536,33 +544,63 @@ class C2CanvasMap extends C2LoggingUtility {
 		//clear
 		this.debugContext.clearRect(0, 0, this.debugCanvas.width, this.debugCanvas.height)
 
-		this.debugContext.fillStyle = 'yellow'
-		this.debugContext.fillText(Math.floor(this.calcFps()) + 'FPS', 1, 1 + 10 * 1)
+		// debug: crosshair
+		this.setStrokeColor('red', this.debugContext)
+		this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0.5,0), this.convertCanvasPercentagePositionToAbsolutePosition(0.5,1), this.debugContext)
+		this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0,0.5), this.convertCanvasPercentagePositionToAbsolutePosition(1,0.5), this.debugContext)
 
-		let pos = this.relativePosition(this.canvas.width/2, this.canvas.height/2)
-		this.debugContext.fillText('x ' + pos.x, 1, 1 + 10 * 2)
-		this.debugContext.fillText('y ' + pos.y, 1, 1 + 10 * 3)
+		let measurePoints = [
+			[0.25, 0.25],
+			[0.75, 0.25],
+			[0.75, 0.75],
+			[0.25, 0.75]
+		]
+
+		this.setFillColor('orange', this.debugContext)
+		for(let mp of measurePoints){
+			let canvasPosition = this.convertCanvasPercentagePositionToAbsolutePosition(mp[0], mp[1])
+			let gpsPosition = this.convertCanvasPositionToGpsPosition(canvasPosition.x, canvasPosition.y)
+
+			this.drawText(canvasPosition, 'x ' + Math.floor(gpsPosition.x), this.debugContext)
+			this.drawText({x: canvasPosition.x, y: canvasPosition.y + 10}, 'y ' + Math.floor(gpsPosition.y), this.debugContext)
+		}
+
+
+		let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
+		let lines = [
+			Math.floor(this.calcFps()) + 'FPS',
+			'x ' + Math.floor(centerGpsPosition.x),
+			'y ' + Math.floor(centerGpsPosition.y),
+			'm/p ' + Math.floor(this.metersToPixelRatio * 100) / 100,
+		]
+
+		this.setFillColor('yellow', this.debugContext)
+		for(let i=0; i < lines.length; i++){
+			this.drawText({x: 1, y: 1 + 10 * (i-1)}, lines[i], this.debugContext)
+		}
 	}
 
-	drawLine(p1, p2){
-		this.ctx.beginPath()
-		this.ctx.moveTo(p1.x, p1.y)
-		this.ctx.lineTo(p2.x, p2.y)
-		this.ctx.closePath()
-		this.ctx.stroke()
+	drawLine(p1, p2, /* optional */ context){
+		let theContext = context || this.ctx
+		theContext.beginPath()
+		theContext.moveTo(p1.x, p1.y)
+		theContext.lineTo(p2.x, p2.y)
+		theContext.closePath()
+		theContext.stroke()
 	}
 
-	drawText(p, text){
+	/* draw text at canvas coordinates */
+	drawText(p, text, /* optional */ context){
 		//instead of p being in the bottom left corner of the text, we convert it to top left corner
-		this.ctx.fillText(text, p.x, p.y + this.cachedFontLineHeight)
+		(context || this.ctx).fillText(text, p.x, p.y + this.cachedFontLineHeight)
 	}
 
 	drawMarker(marker){
-		if(typeof marker.x !== 'number' || typeof marker.y !== 'number'){
+		if(typeof marker.gpsX !== 'number' || typeof marker.gpsY !== 'number'){
 			return
 		}
 
-		let p = this.relativePosition(marker.x, marker.y)
+		let p = this.convertGpsPositonToCanvasPosition(marker.gpsX, marker.gpsY)
 
 		this.debug('drawMarker', p, marker)
 
@@ -583,15 +621,8 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	drawMap(){
-		let offset = this.relativePosition(0,0)
-		this.tilemanager.setPositionAndZoom(offset.x, offset.y, this.zoomValue)
-	}
-
-	totalOffset(){
-		return {
-			x: this.offset.x + this.dragOffset.x,
-			y: this.offset.y + this.dragOffset.y
-		}
+		let canvasPosition = this.convertGpsPositonToCanvasPosition(0, 0)
+		this.tilemanager.setPositionAndZoom(canvasPosition.x, canvasPosition.y, this.metersToPixelRatio)
 	}
 
 	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
@@ -627,69 +658,71 @@ class C2CanvasMap extends C2LoggingUtility {
 	/* please always use this function!! */
 	setFont(value){
 		this.ctx.font = value
+		this.debugContext.font = value
 		this.cachedFontLineHeight = this.calcFontLineHeight(value).height
 	}
 
-	setFillColor(value){
-		this.ctx.fillStyle = value
+	setFillColor(value, /* optional */ context){
+		let theContext = context || this.ctx
+		theContext.fillStyle = value
 	}
 
-	setStrokeColor(value){
-		this.ctx.strokeStyle = value
+	setStrokeColor(value, /* optional */ context){
+		let theContext = context || this.ctx
+		theContext.strokeStyle = value
 	}
 
-	/* from top left, depending on canvas size. 0,0 is top left 0.5,1 is bottom center */
-	percentagePosition(x,y){
+	/* converts gps position to position relative to canvas top left corner */
+	convertGpsPositonToCanvasPosition(gpsX, gpsY){
 		return {
-			x: this.canvas.width * x,
-			y: this.canvas.height * y
+			x: this.metersToPixels(this.dragOffsetGps.x + gpsX) + this.canvas.width/2,
+			y: this.metersToPixels(this.dragOffsetGps.y + gpsY) + this.canvas.height/2,
 		}
 	}
 
-	/* from top left, depending on offset, zoom and canvas size. 0,0 is top left canvas.width/2,canvas.height is bottom center */
-	relativePosition(x,y){
+	/* converts canvas position (relative to top let corner) into gps coordinates */
+	convertCanvasPositionToGpsPosition(canvasX, canvasY){
 		return {
-			x: this.zoom(x + this.dragOffset.x) + this.offset.x,
-			y: this.zoom(y + this.dragOffset.y) + this.offset.y
+			x: this.pixelsToMeters(canvasX -  this.canvas.width/2) - this.dragOffsetGps.x,
+			y: this.pixelsToMeters(canvasY -  this.canvas.height/2) - this.dragOffsetGps.y
 		}
 	}
 
-	/* inverts relativePosition() */
-	absolutePosition(x,y){
+	/* percentage of canvas width/height from 0-1. 0,0 is top left 0.5,1 is bottom center */
+	convertCanvasPercentagePositionToAbsolutePosition(percentX, percentY){
 		return {
-			x: this.unzoom(x - this.offset.x) - this.dragOffset.x,
-			y: this.unzoom(y - this.offset.y) - this.dragOffset.y
+			x: this.canvas.width * percentX,
+			y: this.canvas.height * percentY
 		}
 	}
 
-	/* absolute position in em fontsize */
-	emPositon(x,y){
-		return {
-			x: this.cachedFontLineHeight * x,
-			y: this.cachedFontLineHeight * y
-		}
+
+	/* percentage of canvas width/height from 0-1. 0,0 is top left 0.5,1 is bottom center */
+	convertCanvasPercentagePositionToGpsPosition(percentX, percentY){
+		let absolutePosition = this.convertCanvasPercentagePositionToAbsolutePosition(percentX, percentY)
+		return this.convertCanvasPositionToGpsPosition(absolutePosition.x, absolutePosition.y)
 	}
 
 	/* transform any zoomed length into the length it would have without current zoom */
-	unzoom(value){
-		return value / this.zoomValue
+	metersToPixels(meters){
+		return meters / this.metersToPixelRatio
 	}
 
 	/* transform any length into the length it would have whith current zoom */
-	zoom(value){
-		return value * this.zoomValue
+	pixelsToMeters(pixels){
+		return pixels * this.metersToPixelRatio
 	}
 
 	zoomIn(){
-		this.setZoom(this.zoomValue * 1.1)
+		this.setZoom(this.metersToPixelRatio * 0.9)
 	}
 
 	zoomOut(){
-		this.setZoom(this.zoomValue * 0.9)
+		this.setZoom(this.metersToPixelRatio * 1.1)
 	}
 
 	setZoom(value){
-		this.zoomValue = value
+		this.metersToPixelRatio = value
 		this.requestDraw()
 	}
 
@@ -740,11 +773,11 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 
 	*/
 
-	constructor(absX, absY, /* optional */ iconImageUrl, /* optional */ iconWidth, /* optional */ label, /* optional */ labelColor){
+	constructor(gpsX, gpsY, /* optional */ iconImageUrl, /* optional */ iconWidth, /* optional */ label, /* optional */ labelColor){
 		super()
 
-		this.x = absX
-		this.y = absY
+		this.gpsX = gpsX
+		this.gpsY = gpsY
 		this.iconImageUrl = iconImageUrl
 		this.iconWidth = iconWidth || 10
 		this.iconHeight = this.iconWidth
@@ -787,9 +820,9 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
 	}
 
-	setPosition(absX, absY){
-		this.x = absX
-		this.y = absY
+	setPosition(gpsX, gpsY){
+		this.gpsX = gpsX
+		this.gpsY = gpsY
 		this.dispatch('change')
 	}
 
@@ -802,15 +835,15 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 
 class C2TileManager extends C2LoggingUtility {
 
-	constructor(loglevel, canvasMap, tilesDirectory){
+	constructor(loglevel, canvasMap, tilesDirectory, tilePixelSize, tileMeterSize){
 		super(loglevel)
 
 		this.MAX_CANVAS_SIZE = 268435456
-		this.TILE_PIXEL_SIZE = 500
-		this.TILES_METER_SIZE = 1000
-
 
 		this.tilesDirectory = tilesDirectory
+		this.tilePixelSize = tilePixelSize
+		this.tileMeterSize = tileMeterSize
+		this.tileResolution = tilePixelSize / tileMeterSize
 
 		this.tiles = []
 		this.allTilesLoaded = false
@@ -822,15 +855,15 @@ class C2TileManager extends C2LoggingUtility {
 		this.canvas.width = 1
 		this.canvas.height = 1
 
-		this.tileCanvas = document.createElement('canvas')
-		$(this.tileCanvas).attr('id', 'canvas_tilemanager_tilecanvas')
-		this.tileCanvas.style = 'background: transparent; display: none; position: absolute; bottom: 0; right: 0; z-index: 3;'
-		canvasMap.dom.append(this.tileCanvas)
-
 		this.canvasOffset = {
 			x: 0,
 			y: 0
 		}
+
+		this.tileCanvas = document.createElement('canvas')
+		$(this.tileCanvas).attr('id', 'canvas_tilemanager_tilecanvas')
+		this.tileCanvas.style = 'background: transparent; display: none; position: absolute; bottom: 0; right: 0; z-index: 3;'
+		canvasMap.dom.append(this.tileCanvas)
 
 		this.ctx = this.canvas.getContext('2d')
 	}
@@ -845,7 +878,7 @@ class C2TileManager extends C2LoggingUtility {
 		this.info('setTilesDefinition')
 
 		for(let t of tilesDefinition){
-			this.addTile(t.name, t.x, -t.y, t.name + '.png')//invert tile y
+			this.addTile(t.name, t.x - this.tileMeterSize/2, t.y + this.tileMeterSize/2, t.name + '.png')//convert center x,y to top left x,y
 		}
 
 		setInterval(()=>{
@@ -868,32 +901,44 @@ class C2TileManager extends C2LoggingUtility {
 			if(loadedTilesAndErrorTiles === this.tiles.length){
 				this.allTilesLoaded = true
 				this.info('\nall Tiles have been loaded! ', loadedTiles, 'success, ', loadedTilesAndErrorTiles - loadedTiles, 'errors')
+				this.info('canvasOffset', this.canvasOffset)
 				this.redrawAllTiles()
 			}
 		}, 50)
 	}
 
-	setPositionAndZoom(offsetX,offsetY, zoom){
-		//this.debug('setPositionAndZoom', x, y, zoom)
+	/* tells us where gps (0,0) is on the canvas right now */
+	setPositionAndZoom(gps0XasCanvasX, gps0YasCanvasY, zoom){
+		let invertedZoom = 1 / zoom
 
+		$(this.canvas).css({
+			width: this.invertedTileResolution() * invertedZoom * this.canvas.width,
+			height: this.invertedTileResolution() * invertedZoom * this.canvas.height,
+			left: gps0XasCanvasX - this.invertedTileResolution() * invertedZoom * this.canvasOffset.x,//minus because offset is negative
+			top: gps0YasCanvasY +  this.invertedTileResolution() * invertedZoom * this.canvasOffset.y//positive because offset is negative but canvas y axis is inverted
+		})
+
+		/* so this code kinda works, but uses tile pixel coordinates instead of gps coords (so it does not care about tile resolution)
 		$(this.canvas).css({
 			width: zoom * this.canvas.width,
 			height: zoom * this.canvas.height,
-			left: offsetX + this.canvasOffset.x / zoom,
-			top: offsetY + this.canvasOffset.y / zoom
-		})
+			left: gps0XasCanvasX - this.canvasOffset.x,
+			top: gps0YasCanvasY - this.canvasOffset.y
+		})*/
 	}
 
-	addTile(name, x, y, url){
+	addTile(name, gpsX, gpsY, url){
 		if(!name.startsWith('mega_island')){
 			return //TODO temporary fix to limit tiles
 		}
-		this.debug('addTile', name, x, y)
+		this.info('addTile', name, gpsX, gpsY)
 
 		let tile = {
 			name: name,
-			x: x * (this.TILE_PIXEL_SIZE / this.TILES_METER_SIZE),
-			y: y * (this.TILE_PIXEL_SIZE / this.TILES_METER_SIZE),
+			gpsX: gpsX,
+			gpsY: - gpsY,//game y and canvas y are inverted
+			x: gpsX * this.tileResolution,
+			y: - gpsY * this.tileResolution,//game y and canvas y are inverted
 			url: url
 		}
 
@@ -903,7 +948,6 @@ class C2TileManager extends C2LoggingUtility {
 
 		this.loadTile(tile)
 	}
-
 	loadTile(tile){
 		let image = new Image
 
@@ -942,6 +986,7 @@ class C2TileManager extends C2LoggingUtility {
 		//debug: draw coordinates
 		ctx.fillStyle = '#fffa'
 		ctx.fillText(Math.floor(tile.x) + ',' + Math.floor(tile.y), 7, 17)
+		ctx.fillText('gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY), 7, 27)
 
 		let imageData = this.tileCanvas.getContext('2d').getImageData(0, 0, this.tileCanvas.width, this.tileCanvas.height)
 
@@ -957,7 +1002,7 @@ class C2TileManager extends C2LoggingUtility {
 		let y = tile.y + this.canvasOffset.y
 
 
-		this.warn('drawTile', tile.name, x, y)
+		this.debug('drawTile', tile.name, x, y)
 
 		this.ctx.putImageData(imageData, x, y)
 	}
@@ -977,6 +1022,11 @@ class C2TileManager extends C2LoggingUtility {
 			}, 1)
 		}
 	}
+
+	invertedTileResolution(){
+		return 1 / this.tileResolution
+	}
+
 
 	/* checks if tile can be fitted into the canvas. If not, it will adjist the canvas */
 	checkTileBoundaries(x, y, width, height){
