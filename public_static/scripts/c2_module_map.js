@@ -471,7 +471,7 @@ class C2CanvasMap extends C2LoggingUtility {
 		/* map layer */
 		this.mapCanvas = document.createElement('canvas')
 		$(this.mapCanvas).attr('id', 'canvas_canvasmap_mapcanvas')
-		this.mapCanvas.style = 'background: url("/static/images/tile_placeholder.png"); background-size: 100px 100px; position: absolute; top: 0; left: 0; z-index: 1;'
+		this.mapCanvas.style = 'position: absolute; top: 0; left: 0; z-index: 1;'
 		this.dom.append(this.mapCanvas)
 
 		this.tilemanager = new C2TileManager(loglevel, this, tilesDirectory, this.TILE_PIXEL_SIZE, this.TILE_METER_SIZE)
@@ -494,10 +494,13 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	resizeCanvas(){
-		this.canvas.width = this.dom.width()
-		this.canvas.height = this.dom.height()
-		this.debugCanvas.width = this.canvas.width
-		this.debugCanvas.height = this.canvas.height
+		let width = this.dom.width()
+		let height = this.dom.height()
+		for(let c of [this.canvas, this.debugCanvas, this.mapCanvas]){
+			c.width = width
+			c.height = height
+		}
+
 		this.requestDraw()
 	}
 
@@ -528,8 +531,6 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		//clear
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-
-		$(this.mapCanvas).css('background-size', this.metersToPixels(this.TILE_METER_SIZE) + 'px ' + this.metersToPixels(this.TILE_METER_SIZE) + 'px')
 
 		this.drawMap()
 
@@ -622,7 +623,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 	drawMap(){
 		let canvasPosition = this.convertGpsPositonToCanvasPosition(0, 0)
-		this.tilemanager.setPositionAndZoom(canvasPosition.x, canvasPosition.y, this.metersToPixelRatio)
+		this.tilemanager.redrawAllTiles(canvasPosition.x, canvasPosition.y, this.metersToPixelRatio)
 	}
 
 	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
@@ -852,8 +853,6 @@ class C2TileManager extends C2LoggingUtility {
 		canvasMap.dom.append(this.imagesContainer)
 
 		this.canvas = canvasMap.mapCanvas
-		this.canvas.width = 1
-		this.canvas.height = 1
 
 		this.canvasOffset = {
 			x: 0,
@@ -907,38 +906,15 @@ class C2TileManager extends C2LoggingUtility {
 		}, 50)
 	}
 
-	/* tells us where gps (0,0) is on the canvas right now */
-	setPositionAndZoom(gps0XasCanvasX, gps0YasCanvasY, zoom){
-		let invertedZoom = 1 / zoom
-
-		$(this.canvas).css({
-			width: this.invertedTileResolution() * invertedZoom * this.canvas.width,
-			height: this.invertedTileResolution() * invertedZoom * this.canvas.height,
-			left: gps0XasCanvasX - this.invertedTileResolution() * invertedZoom * this.canvasOffset.x,//minus because offset is negative
-			top: gps0YasCanvasY +  this.invertedTileResolution() * invertedZoom * this.canvasOffset.y//positive because offset is negative but canvas y axis is inverted
-		})
-
-		/* so this code kinda works, but uses tile pixel coordinates instead of gps coords (so it does not care about tile resolution)
-		$(this.canvas).css({
-			width: zoom * this.canvas.width,
-			height: zoom * this.canvas.height,
-			left: gps0XasCanvasX - this.canvasOffset.x,
-			top: gps0YasCanvasY - this.canvasOffset.y
-		})*/
-	}
-
 	addTile(name, gpsX, gpsY, url){
-		if(!name.startsWith('mega_island')){
-			return //TODO temporary fix to limit tiles
-		}
 		this.info('addTile', name, gpsX, gpsY)
 
 		let tile = {
 			name: name,
 			gpsX: gpsX,
-			gpsY: - gpsY,//game y and canvas y are inverted
+			gpsY: gpsY,//game y and canvas y are inverted
 			x: gpsX * this.tileResolution,
-			y: - gpsY * this.tileResolution,//game y and canvas y are inverted
+			y: gpsY * this.tileResolution,//game y and canvas y are inverted
 			url: url
 		}
 
@@ -948,6 +924,7 @@ class C2TileManager extends C2LoggingUtility {
 
 		this.loadTile(tile)
 	}
+
 	loadTile(tile){
 		let image = new Image
 
@@ -957,14 +934,7 @@ class C2TileManager extends C2LoggingUtility {
 			tile.width = image.width
 			tile.height = image.height
 
-			this.imagesContainer.append(image)
-
-			let canBeDrawn = this.checkTileBoundaries(tile.x, tile.y, tile.width, tile.height)
-
-			if(!canBeDrawn){
-				tile.image = undefined
-				tile.loadingError = true
-			}
+			this.imagesContainer.append(image)//debug
 		}
 
 		image.onerror = (err)=>{
@@ -975,51 +945,44 @@ class C2TileManager extends C2LoggingUtility {
 		image.src = this.tilesDirectory + tile.url
 	}
 
-	generateTileImageData(tile, image){
+	drawTile(tile, gps0XasCanvasX, gps0YasCanvasY, zoom){
 
-		this.tileCanvas.width = tile.width
-		this.tileCanvas.height = tile.height
+		let invertedZoom = 1 / zoom
 
-		let ctx = this.tileCanvas.getContext('2d')
-		ctx.drawImage(image, 0, 0)
+		let width = this.invertedTileResolution() * invertedZoom * tile.width
+		let height = this.invertedTileResolution() * invertedZoom * tile.height
+		let left = gps0XasCanvasX + this.invertedTileResolution() * invertedZoom * tile.x
+		let top = gps0YasCanvasY - this.invertedTileResolution() * invertedZoom * tile.y //minus because canvas y axis is inverted
 
-		//debug: draw coordinates
-		ctx.fillStyle = '#fffa'
-		ctx.fillText(Math.floor(tile.x) + ',' + Math.floor(tile.y), 7, 17)
-		ctx.fillText('gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY), 7, 27)
 
-		let imageData = this.tileCanvas.getContext('2d').getImageData(0, 0, this.tileCanvas.width, this.tileCanvas.height)
+		// check if tile is in visible area
+		if(left < this.canvas.width && left + width > 0 && top < this.canvas.height && top + height > 0){
 
-		//debug: mark tile border
-		this.drawBorderOntoImageDate(imageData, tile.width, tile.height, this.generateRandomColor(), 5)
+			this.debug('drawTile', tile.name, left, top)
+			try {
 
-		return imageData
+				this.ctx.drawImage(tile.image, 0,0,tile.width,tile.height, left, top, width, height)
+
+				/*this.ctx.fillStyle = 'white'
+				this.ctx.fillText(Math.floor(tile.x) + ',' + Math.floor(tile.y), left, top + 10)
+				this.ctx.fillText('gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY), left, top + 20)
+				*/
+
+			} catch (err){
+				this.info('error drawing tile', tile.name, err)
+			}
+		}
 	}
 
-	drawTile(tile, imageData){
-
-		let x = tile.x + this.canvasOffset.x
-		let y = tile.y + this.canvasOffset.y
-
-
-		this.debug('drawTile', tile.name, x, y)
-
-		this.ctx.putImageData(imageData, x, y)
-	}
-
-	redrawAllTiles(){
+	redrawAllTiles(gps0XasCanvasX, gps0YasCanvasY, zoom){
 		this.log('redrawAllTiles')
 
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
 		for(let tile of this.tiles){
-			setTimeout(()=>{// when drawing all at the same time, we freeze the UI
-				if(tile.image){
-					this.drawTile(tile, this.generateTileImageData(tile, tile.image))
-				} else {
-					//TODO do we need to draw something else here?
-				}
-			}, 1)
+			if(tile.image && !tile.loadingError){
+				this.drawTile(tile, gps0XasCanvasX, gps0YasCanvasY, zoom)
+			}
 		}
 	}
 
