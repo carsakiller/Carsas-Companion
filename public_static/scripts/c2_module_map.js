@@ -5,9 +5,14 @@ class C2Module_Map extends C2LoggingUtility {
 
 		this.c2 = c2
 
+
 		this.c2.on('can-register-storable', ()=>{
 			this.c2.registerStorable('livePlayers')
 			this.c2.registerStorable('liveVehicles')
+		})
+
+		this.c2.on('can-register-syncable', ()=>{
+			this.c2.registerSyncable('TILE_POSITIONS')
 		})
 
 		this.c2.on('can-register-component', ()=>{
@@ -119,10 +124,18 @@ class C2Module_Map extends C2LoggingUtility {
 					}
 				},
 				mounted: function (){
-					this.map = new C2CanvasMap(loglevel, this.$el, '/static/tiles/', '/static/icons/')
+					this.map = new C2CanvasMap(5, this.$el, '/static/tiles/', '/static/icons/')
 
 					this.refreshLivePlayers()
 					this.refreshLiveVehicles()
+
+					this.intervalTilePositions = setInterval(()=>{
+						if(this.$store.state.TILE_POSITIONS){
+							this.map.tilemanager.setTilesDefinition(this.$store.state.TILE_POSITIONS)
+							clearInterval(this.intervalTilePositions)
+							this.intervalTilePositions = undefined
+						}
+					}, 500)
 				},
 				watch: {
 					livePlayers (){
@@ -418,6 +431,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		/* markers layer */
 		this.canvas = document.createElement('canvas')
+		$(this.canvas).attr('id', 'canvas_canvasmap_canvas')
 		this.canvas.style = 'background: transparent; position: relative; z-index: 2;'
 		this.resizeCanvas()
 		$(window).on('resize', ()=>{
@@ -435,20 +449,22 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.markers = []
 
-		/* FPS layer */
+		/* Debug layer */
 		this.timesBetweenDraws = [0]
 		this.lastDrawTime = performance.now()
 
-		this.fpsCanvas = document.createElement('canvas')
-		this.fpsCanvas.style = 'background: transparent; position: absolute; top: 0; left: 0; z-index: 5;'
-		this.fpsCanvas.width = 100
-		this.fpsCanvas.height = 50
-		this.fpsContext = this.fpsCanvas.getContext('2d')
-		this.fpsContext.font = '10px sans-serif'
-		this.dom.append(this.fpsCanvas)
+		this.debugCanvas = document.createElement('canvas')
+		$(this.debugCanvas).attr('id', 'canvas_canvasmap_debugcanvas')
+		this.debugCanvas.style = 'background: transparent; position: absolute; top: 0; left: 0; z-index: 5;'
+		this.debugCanvas.width = 100
+		this.debugCanvas.height = 50
+		this.debugContext = this.debugCanvas.getContext('2d')
+		this.debugContext.font = '10px sans-serif'
+		this.dom.append(this.debugCanvas)
 
 		/* map layer */
 		this.mapCanvas = document.createElement('canvas')
+		$(this.mapCanvas).attr('id', 'canvas_canvasmap_mapcanvas')
 		this.mapCanvas.style = 'background: url("/static/images/tile_placeholder.png"); position: absolute; top: 0; left: 0; z-index: 1;'
 		this.dom.append(this.mapCanvas)
 
@@ -457,6 +473,11 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.mustDraw = true
 
 		this.queueDraw()
+
+		setInterval(()=>{
+			//at least one draw every 2s
+			this.requestDraw()//TODO instead we should only do this when tiles have changed
+		}, 1000 * 2)
 	}
 
 	resizeCanvas(){
@@ -480,7 +501,7 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	draw(){
-		this.drawFpsCanvas()
+		this.drawDebugCanvas()
 
 		if(!this.mustDraw){
 			this.queueDraw()
@@ -511,12 +532,16 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.queueDraw()
 	}
 
-	drawFpsCanvas(){
+	drawDebugCanvas(){
 		//clear
-		this.fpsContext.clearRect(0, 0, this.fpsCanvas.width, this.fpsCanvas.height)
+		this.debugContext.clearRect(0, 0, this.debugCanvas.width, this.debugCanvas.height)
 
-		this.fpsContext.fillStyle = 'yellow'
-		this.fpsContext.fillText(Math.floor(this.calcFps()) + 'FPS', 1, 1 + 10)
+		this.debugContext.fillStyle = 'yellow'
+		this.debugContext.fillText(Math.floor(this.calcFps()) + 'FPS', 1, 1 + 10 * 1)
+
+		let pos = this.relativePosition(this.canvas.width/2, this.canvas.height/2)
+		this.debugContext.fillText('x ' + pos.x, 1, 1 + 10 * 2)
+		this.debugContext.fillText('y ' + pos.y, 1, 1 + 10 * 3)
 	}
 
 	drawLine(p1, p2){
@@ -752,6 +777,7 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 
 	generateIconImageData(image){
 		let canvas = document.createElement('canvas')
+		$(canvas).attr('id', 'canvas_mapmarker_icon')
 		canvas.width = this.iconWidth
 		this.iconHeight = (image.width / image.height) * this.iconWidth
 		canvas.height = this.iconHeight
@@ -779,35 +805,12 @@ class C2TileManager extends C2LoggingUtility {
 	constructor(loglevel, canvasMap, tilesDirectory){
 		super(loglevel)
 
+		this.MAX_CANVAS_SIZE = 268435456
+		this.TILE_PIXEL_SIZE = 500
+		this.TILES_METER_SIZE = 1000
+
+
 		this.tilesDirectory = tilesDirectory
-
-		/*
-			x & y can be negative
-		*/
-		this.TILE_DEFINITIONS = [{
-			name: 'island_33_tile_21.png',
-			x: 0,
-			y: 0
-		},{
-			name: 'island_33_tile_22.png',
-			x: 500,
-			y: 0
-		},{
-			name: 'island_33_tile_32.png',
-			x: 500,
-			y: 500
-		}]
-
-		//Test
-		for(let y = 0; y < 10; y++){
-			for(let x = 0; x < 20; x++){
-				this.TILE_DEFINITIONS.push({
-					name: 'island_33_tile_32.png',
-					x: 500 + x * 500,
-					y: 1000 + y * 500
-				})
-			}
-		}
 
 		this.tiles = []
 		this.allTilesLoaded = false
@@ -820,6 +823,7 @@ class C2TileManager extends C2LoggingUtility {
 		this.canvas.height = 1
 
 		this.tileCanvas = document.createElement('canvas')
+		$(this.tileCanvas).attr('id', 'canvas_tilemanager_tilecanvas')
 		this.tileCanvas.style = 'background: transparent; display: none; position: absolute; bottom: 0; right: 0; z-index: 3;'
 		canvasMap.dom.append(this.tileCanvas)
 
@@ -829,26 +833,43 @@ class C2TileManager extends C2LoggingUtility {
 		}
 
 		this.ctx = this.canvas.getContext('2d')
+	}
 
-		for(let t of this.TILE_DEFINITIONS){
-			this.addTile(t.name, t.x, t.y, t.name)
+	/* right now this can only be used once*/
+	setTilesDefinition(tilesDefinition){
+		if(this.tiles.length > 0){
+			console.info('C2TileManager is ignoring new tilesDefinition')
+			return
 		}
 
+		this.info('setTilesDefinition')
+
+		for(let t of tilesDefinition){
+			this.addTile(t.name, t.x, -t.y, t.name + '.png')//invert tile y
+		}
 
 		setInterval(()=>{
 			if(this.allTilesLoaded){
 				return
 			}
 
+			let loadedTiles = 0
+			let loadedTilesAndErrorTiles = 0
+
 			for(let tile of this.tiles){
-				if(!tile.image){
-					return
+				if(tile.image){
+					loadedTiles++
+					loadedTilesAndErrorTiles++
+				} else if (tile.loadingError){
+					loadedTilesAndErrorTiles++
 				}
 			}
 
-			this.allTilesLoaded = true
-			// all tile images loaded
-			this.redrawAllTiles()
+			if(loadedTilesAndErrorTiles === this.tiles.length){
+				this.allTilesLoaded = true
+				this.info('\nall Tiles have been loaded! ', loadedTiles, 'success, ', loadedTilesAndErrorTiles - loadedTiles, 'errors')
+				this.redrawAllTiles()
+			}
 		}, 50)
 	}
 
@@ -864,12 +885,15 @@ class C2TileManager extends C2LoggingUtility {
 	}
 
 	addTile(name, x, y, url){
+		if(!name.startsWith('mega_island')){
+			return //TODO temporary fix to limit tiles
+		}
 		this.debug('addTile', name, x, y)
 
 		let tile = {
 			name: name,
-			x: x,
-			y: y,
+			x: x * (this.TILE_PIXEL_SIZE / this.TILES_METER_SIZE),
+			y: y * (this.TILE_PIXEL_SIZE / this.TILES_METER_SIZE),
 			url: url
 		}
 
@@ -891,11 +915,17 @@ class C2TileManager extends C2LoggingUtility {
 
 			this.imagesContainer.append(image)
 
-			this.checkTileBoundaries(tile.x, tile.y, tile.width, tile.height)
+			let canBeDrawn = this.checkTileBoundaries(tile.x, tile.y, tile.width, tile.height)
+
+			if(!canBeDrawn){
+				tile.image = undefined
+				tile.loadingError = true
+			}
 		}
 
 		image.onerror = (err)=>{
 			this.error('unable to load tile', tile.name, err)
+			tile.loadingError = true
 		}
 
 		image.src = this.tilesDirectory + tile.url
@@ -906,7 +936,12 @@ class C2TileManager extends C2LoggingUtility {
 		this.tileCanvas.width = tile.width
 		this.tileCanvas.height = tile.height
 
-		this.tileCanvas.getContext('2d').drawImage(image, 0, 0)
+		let ctx = this.tileCanvas.getContext('2d')
+		ctx.drawImage(image, 0, 0)
+
+		//debug: draw coordinates
+		ctx.fillStyle = '#fffa'
+		ctx.fillText(Math.floor(tile.x) + ',' + Math.floor(tile.y), 7, 17)
 
 		let imageData = this.tileCanvas.getContext('2d').getImageData(0, 0, this.tileCanvas.width, this.tileCanvas.height)
 
@@ -918,12 +953,11 @@ class C2TileManager extends C2LoggingUtility {
 
 	drawTile(tile, imageData){
 
-
 		let x = tile.x + this.canvasOffset.x
 		let y = tile.y + this.canvasOffset.y
 
 
-		this.debug('drawTile', tile, x, y)
+		this.warn('drawTile', tile.name, x, y)
 
 		this.ctx.putImageData(imageData, x, y)
 	}
@@ -935,7 +969,11 @@ class C2TileManager extends C2LoggingUtility {
 
 		for(let tile of this.tiles){
 			setTimeout(()=>{// when drawing all at the same time, we freeze the UI
-				this.drawTile(tile, this.generateTileImageData(tile, tile.image))
+				if(tile.image){
+					this.drawTile(tile, this.generateTileImageData(tile, tile.image))
+				} else {
+					//TODO do we need to draw something else here?
+				}
 			}, 1)
 		}
 	}
@@ -954,6 +992,11 @@ class C2TileManager extends C2LoggingUtility {
 		let mustRecreateCanvas = overflow.left > 0 || overflow.top > 0
 		let mustResizeCanvas = overflow.right > 0 || overflow.bottom > 0
 
+		if((this.canvas.width + overflow.left + overflow.right) * (this.canvas.height + overflow.top + overflow.bottom) >= this.MAX_CANVAS_SIZE){
+			this.warn('canvas is getting too big!')
+			return false
+		}
+
 		if(mustRecreateCanvas){
 			this.canvasOffset.x += overflow.left
 			this.canvasOffset.y += overflow.top
@@ -965,6 +1008,8 @@ class C2TileManager extends C2LoggingUtility {
 			this.canvas.height += overflow.bottom
 			this.log('mustResizeCanvas to', this.canvas.width, this.canvas.height)
 		}
+
+		return true
 	}
 
 	/* color: {r: 0, g: 0, b: 0} */
