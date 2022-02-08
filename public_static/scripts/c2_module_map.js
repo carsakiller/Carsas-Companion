@@ -255,10 +255,11 @@ class C2CanvasMap extends C2LoggingUtility {
 
 	constructor(loglevel, el, tilesDirectory, iconsDirectory){
 		super(loglevel)
-		window.map = this // for debugging
 
 		this.TILE_PIXEL_SIZE = 200
 		this.TILE_METER_SIZE = 1000
+
+		this.isDebugMode = false
 
 		this.container = $(el)
 
@@ -418,6 +419,12 @@ class C2CanvasMap extends C2LoggingUtility {
 			evt.preventDefault()
 			evt.stopImmediatePropagation()
 
+			if(evt.originalEvent.altKey && evt.originalEvent.ctrlKey){
+				this.isDebugMode = !this.isDebugMode
+				this.tilemanager.isDebugMode = !this.tilemanager.isDebugMode
+				this.requestDraw()
+			}
+
 			let p = {
 				x: evt.offsetX,
 				y: evt.offsetY
@@ -545,39 +552,42 @@ class C2CanvasMap extends C2LoggingUtility {
 		//clear
 		this.debugContext.clearRect(0, 0, this.debugCanvas.width, this.debugCanvas.height)
 
-		// debug: crosshair
-		this.setStrokeColor('red', this.debugContext)
-		this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0.5,0), this.convertCanvasPercentagePositionToAbsolutePosition(0.5,1), this.debugContext)
-		this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0,0.5), this.convertCanvasPercentagePositionToAbsolutePosition(1,0.5), this.debugContext)
+		if(this.isDebugMode){
 
-		let measurePoints = [
-			[0.25, 0.25],
-			[0.75, 0.25],
-			[0.75, 0.75],
-			[0.25, 0.75]
-		]
+			// crosshair
+			this.setStrokeColor('red', this.debugContext)
+			this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0.5,0), this.convertCanvasPercentagePositionToAbsolutePosition(0.5,1), this.debugContext)
+			this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0,0.5), this.convertCanvasPercentagePositionToAbsolutePosition(1,0.5), this.debugContext)
 
-		this.setFillColor('orange', this.debugContext)
-		for(let mp of measurePoints){
-			let canvasPosition = this.convertCanvasPercentagePositionToAbsolutePosition(mp[0], mp[1])
-			let gpsPosition = this.convertCanvasPositionToGpsPosition(canvasPosition.x, canvasPosition.y)
+			let measurePoints = [
+				[0.25, 0.25],
+				[0.75, 0.25],
+				[0.75, 0.75],
+				[0.25, 0.75]
+			]
 
-			this.drawText(canvasPosition, 'x ' + Math.floor(gpsPosition.x), this.debugContext)
-			this.drawText({x: canvasPosition.x, y: canvasPosition.y + 10}, 'y ' + Math.floor(gpsPosition.y), this.debugContext)
-		}
+			this.setFillColor('orange', this.debugContext)
+			for(let mp of measurePoints){
+				let canvasPosition = this.convertCanvasPercentagePositionToAbsolutePosition(mp[0], mp[1])
+				let gpsPosition = this.convertCanvasPositionToGpsPosition(canvasPosition.x, canvasPosition.y)
+
+				this.drawText(canvasPosition, 'x ' + Math.floor(gpsPosition.x), this.debugContext)
+				this.drawText({x: canvasPosition.x, y: canvasPosition.y + 10}, 'y ' + Math.floor(gpsPosition.y), this.debugContext)
+			}
 
 
-		let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
-		let lines = [
-			Math.floor(this.calcFps()) + 'FPS',
-			'x ' + Math.floor(centerGpsPosition.x),
-			'y ' + Math.floor(centerGpsPosition.y),
-			'm/p ' + Math.floor(this.metersToPixelRatio * 100) / 100,
-		]
+			let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
+			let lines = [
+				Math.floor(this.calcFps()) + 'FPS',
+				'x ' + Math.floor(centerGpsPosition.x),
+				'y ' + Math.floor(centerGpsPosition.y),
+				'm/p ' + Math.floor(this.metersToPixelRatio * 100) / 100,
+			]
 
-		this.setFillColor('yellow', this.debugContext)
-		for(let i=0; i < lines.length; i++){
-			this.drawText({x: 1, y: 1 + 10 * (i-1)}, lines[i], this.debugContext)
+			this.setFillColor('yellow', this.debugContext)
+			for(let i=0; i < lines.length; i++){
+				this.drawText({x: 1, y: 1 + 10 * (i-1)}, lines[i], this.debugContext)
+			}
 		}
 	}
 
@@ -792,7 +802,7 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 	}
 
 	loadImage(url){
-		let image = new Image
+		let image = new Image()
 
 		image.onload = ()=>{
 			this.debug('loaded icon image', url)
@@ -841,6 +851,8 @@ class C2TileManager extends C2LoggingUtility {
 
 		this.MAX_CANVAS_SIZE = 268435456
 
+		this.isDebugMode = false
+
 		this.tilesDirectory = tilesDirectory
 		this.tilePixelSize = tilePixelSize
 		this.tileMeterSize = tileMeterSize
@@ -849,21 +861,7 @@ class C2TileManager extends C2LoggingUtility {
 		this.tiles = []
 		this.allTilesLoaded = false
 
-		this.imagesContainer = $('<div>').hide()
-		canvasMap.dom.append(this.imagesContainer)
-
 		this.canvas = canvasMap.mapCanvas
-
-		this.canvasOffset = {
-			x: 0,
-			y: 0
-		}
-
-		this.tileCanvas = document.createElement('canvas')
-		$(this.tileCanvas).attr('id', 'canvas_tilemanager_tilecanvas')
-		this.tileCanvas.style = 'background: transparent; display: none; position: absolute; bottom: 0; right: 0; z-index: 3;'
-		canvasMap.dom.append(this.tileCanvas)
-
 		this.ctx = this.canvas.getContext('2d')
 	}
 
@@ -877,7 +875,7 @@ class C2TileManager extends C2LoggingUtility {
 		this.info('setTilesDefinition')
 
 		for(let t of tilesDefinition){
-			this.addTile(t.name, t.x - this.tileMeterSize/2, t.y + this.tileMeterSize/2, t.name + '.png')//convert center x,y to top left x,y
+			this.addTile(t.name, t.x - this.tileMeterSize/2, t.y + this.tileMeterSize/2)//convert center x,y to top left x,y
 		}
 
 		setInterval(()=>{
@@ -906,8 +904,14 @@ class C2TileManager extends C2LoggingUtility {
 		}, 50)
 	}
 
-	addTile(name, gpsX, gpsY, url){
-		this.info('addTile', name, gpsX, gpsY)
+	addTile(name, gpsX, gpsY, rotationInDeg){
+		let matches = name.match(/^(.*)_rot_([0-9])$/)
+		if(matches && matches[2]){
+			this.addTile(matches[1], gpsX, gpsY, parseInt(matches[2]) * 90)
+			return
+		}
+
+		this.debug('addTile', name, gpsX, gpsY, rotationInDeg)
 
 		let tile = {
 			name: name,
@@ -915,7 +919,8 @@ class C2TileManager extends C2LoggingUtility {
 			gpsY: gpsY,//game y and canvas y are inverted
 			x: gpsX * this.tileResolution,
 			y: gpsY * this.tileResolution,//game y and canvas y are inverted
-			url: url
+			url: name + '.png',
+			rotationInDeg: rotationInDeg
 		}
 
 		this.tiles.push(tile)
@@ -933,8 +938,6 @@ class C2TileManager extends C2LoggingUtility {
 			tile.image = image
 			tile.width = image.width
 			tile.height = image.height
-
-			this.imagesContainer.append(image)//debug
 		}
 
 		image.onerror = (err)=>{
@@ -960,13 +963,35 @@ class C2TileManager extends C2LoggingUtility {
 
 			this.debug('drawTile', tile.name, left, top)
 			try {
+				if(tile.rotationInDeg === undefined){
+					this.ctx.drawImage(tile.image, 0,0,tile.width,tile.height, left, top, width, height)
+				} else {
+					this.ctx.save()
 
-				this.ctx.drawImage(tile.image, 0,0,tile.width,tile.height, left, top, width, height)
+					this.ctx.translate(left + width/2, top + height/2)
+	    			this.ctx.rotate(tile.rotationInDeg * Math.PI / 180)
 
-				/*this.ctx.fillStyle = 'white'
-				this.ctx.fillText(Math.floor(tile.x) + ',' + Math.floor(tile.y), left, top + 10)
-				this.ctx.fillText('gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY), left, top + 20)
-				*/
+	    			this.ctx.drawImage(tile.image, 0,0,tile.width,tile.height, -width/2,-height/2,width,height)
+
+					this.ctx.restore()
+				}
+
+				if(this.isDebugMode){
+					this.ctx.fillStyle = 'white'
+
+					let lines = [
+						tile.name,
+						Math.floor(tile.x) + ',' + Math.floor(tile.y),
+						'gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY),
+						tile.rotationInDeg !== undefined ? 'rot ' + Math.floor(tile.rotationInDeg) : '',
+					]
+					for(let i = 0; i < lines.length; i++){
+						this.ctx.fillText(lines[i], left, top + (i + 1) * 10)
+					}
+
+					this.ctx.strokeStyle = 'black'
+					this.ctx.strokeRect(left, top, width, height)
+				}
 
 			} catch (err){
 				this.info('error drawing tile', tile.name, err)
@@ -988,87 +1013,5 @@ class C2TileManager extends C2LoggingUtility {
 
 	invertedTileResolution(){
 		return 1 / this.tileResolution
-	}
-
-
-	/* checks if tile can be fitted into the canvas. If not, it will adjist the canvas */
-	checkTileBoundaries(x, y, width, height){
-		let overflow = {
-			left: Math.max(0, - x - this.canvasOffset.x),
-			top: Math.max(0, - y - this.canvasOffset.y),
-			right: Math.max(0, x + width + this.canvasOffset.x - this.canvas.width),
-			bottom: Math.max(0,  y + height + this.canvasOffset.y - this.canvas.height)
-		}
-
-		this.debug('checkTileBoundaries', x, y, width, height, overflow)
-
-		let mustRecreateCanvas = overflow.left > 0 || overflow.top > 0
-		let mustResizeCanvas = overflow.right > 0 || overflow.bottom > 0
-
-		if((this.canvas.width + overflow.left + overflow.right) * (this.canvas.height + overflow.top + overflow.bottom) >= this.MAX_CANVAS_SIZE){
-			this.warn('canvas is getting too big!')
-			return false
-		}
-
-		if(mustRecreateCanvas){
-			this.canvasOffset.x += overflow.left
-			this.canvasOffset.y += overflow.top
-			this.canvas.width += overflow.right
-			this.canvas.height += overflow.bottom
-			this.log('mustRecreateCanvas to', this.canvas.width, this.canvas.height, this.canvasOffset.x, this.canvasOffset.y)
-		} else if(mustResizeCanvas){
-			this.canvas.width += overflow.right
-			this.canvas.height += overflow.bottom
-			this.log('mustResizeCanvas to', this.canvas.width, this.canvas.height)
-		}
-
-		return true
-	}
-
-	/* color: {r: 0, g: 0, b: 0} */
-	drawBorderOntoImageDate(imageData, width, height, color, borderWidth){
-		for(let x = 0; x < width; x++){
-			// top border
-			for(let y = 0; y < borderWidth; y++){
-				let index = (x + y * height) * 4
-				imageData.data[index + 0] = color.r
-				imageData.data[index + 1] = color.g
-				imageData.data[index + 2] = color.b
-			}
-
-			// bottom border
-			for(let y = height - 1; y > height - borderWidth; y--){
-				let index = (x + (y) * height) * 4
-				imageData.data[index + 0] = color.r
-				imageData.data[index + 1] = color.g
-				imageData.data[index + 2] = color.b
-			}
-		}
-
-		for(let y = 0; y < height; y++){
-			// left border
-			for(let x = 0; x < borderWidth; x++){
-				let index = (x + y * height) * 4
-				imageData.data[index + 0] = color.r
-				imageData.data[index + 1] = color.g
-				imageData.data[index + 2] = color.b
-			}
-
-			//right border
-			for(let x = (width - 1); x > width - borderWidth; x--){
-				let index = (x + y * height) * 4
-				imageData.data[index + 0] = color.r
-				imageData.data[index + 1] = color.g
-				imageData.data[index + 2] = color.b
-			}
-		}
-	}
-
-	generateRandomColor(){
-		return {
-			r: Math.random() * 255,
-			g: Math.random() * 255,
-			b: Math.random() * 255
-		}
 	}
 }

@@ -76,7 +76,7 @@ for(let tile of tileList){
 		'@_tile': 'data/tiles/' + tile + '.xml',
 		'@_name': tile,
 		'@_is_env_mod': 'true',
-		'@_env_mod_spawn_num': '1',
+		'@_env_mod_spawn_num': '0',
 		components: {
 			c: {
 				'@_component_type': '10',
