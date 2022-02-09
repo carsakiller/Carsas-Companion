@@ -2,6 +2,7 @@ const C2GameInterface = require('./C2GameInterface.js')
 const C2WebInterface = require('./C2WebInterface.js')
 const C2Module_Core = require('./C2Module_Core.js')
 const C2Module_Test = require('./C2Module_Test.js')
+const C2Module_Map = require('./C2Module_Map.js')
 const C2Module_Gameserver = require('./C2Module_Gameserver.js')
 
 const C2LoggingUtility = require('./utility.js').C2LoggingUtility
@@ -22,6 +23,7 @@ module.exports = class C2 extends C2LoggingUtility {
 		// TODO: only do this when modules are enabled
 		this.c2Module_Core = new C2Module_Core(loglevel, this)
 		this.c2Module_Test = new C2Module_Test(loglevel, this)
+		this.c2Module_Map = new C2Module_Map(loglevel, this)
 		this.c2Module_Gameserver = new C2Module_Gameserver(loglevel, this)
 
 		// catch any unhandledRejection

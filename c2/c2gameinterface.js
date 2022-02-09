@@ -48,7 +48,7 @@ module.exports = class C2GameInterface extends C2Interface {
 		app.finishSetup()
 
 		this.c2GameHttpHandler.setMessageCallback((message)=>{
-			if(message.type !== 'heartbeat'){
+			if(message.type !== 'heartbeat' && message.type !== 'stream-map'){
 				this.info('<- ', 'got game message', message.type)
 			}
 			let promise = this.dispatch('message', message)

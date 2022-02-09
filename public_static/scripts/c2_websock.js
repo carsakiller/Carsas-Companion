@@ -163,7 +163,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 				try {
 					let parsedInternalData = JSON.parse(parsed.data)
 
-					if(parsedInternalData.type === 'heartbeat'){
+					if(parsedInternalData.type === 'heartbeat' || parsedInternalData.type === 'stream-map'){
 						this.debug('received new message from the server', parsed.serverId)
 					} else {
 						this.info('received new message from the server', parsed.serverId)

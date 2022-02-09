@@ -166,6 +166,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				//script has just reloaded
 				this.info('Game script has restarted, force reloading all webclients ...')
 				c2.c2WebInterface.c2WebSocketHandler.forceReloadAll()
+			} else {
+				if(data && typeof data.queueLength === 'number' && data.queueLength > 500){
+					this.warn('game script queueLength is filling up (please contact a dev):', data.queueLength)
+				}
 			}
 
 			this.c2.sendMessageToWebClient('all', messageType, data)

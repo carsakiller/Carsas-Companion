@@ -137,7 +137,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 	handleMessage(message){
 
-		if(message.type === 'heartbeat'){
+		if(message.type === 'heartbeat' || message.type === 'stream-map'){
 			this.debug('received message', message)
 			this.dispatch('heartbeat')
 		} else {

@@ -111,12 +111,12 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 				}
 			}
 
-			if(parsed.type !== 'heartbeat'){
+			if(parsed.type !== 'heartbeat' && parsed.type !== 'stream-map'){
 				this.log('<- ', 'content part arrived #' + parsed.packetId + ':' + parsed.packetPart, 'of', maxPartsKnown ? omt.max : 'unknown')
 			}
 
 			if(maxPartsKnown && allPartsArrived){//the signal, that this is the last part (yes we count upside down mate!)
-				if(parsed.type !== 'heartbeat'){
+				if(parsed.type !== 'heartbeat' && parsed.type !== 'stream-map'){
 					this.log('final message part arrived for #' + parsed.packetId)
 				}
 
@@ -140,7 +140,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 
 				delete this.ongoingMessageTransfers[parsed.packetId]
 			
-				if(parsed.type !== 'heartbeat'){
+				if(parsed.type !== 'heartbeat' && parsed.type !== 'stream-map'){
 					this.log('final message content (', content.length, ' chars)', content)
 				}
 
@@ -246,7 +246,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 	handleMessage(messageType, parsedContent){		
 		return new Promise((resolve, reject)=>{
 
-			if(messageType !== 'heartbeat'){
+			if(messageType !== 'heartbeat' && messageType !== 'stream-map'){
 				this.info('handleMessage', messageType)
 			}
 

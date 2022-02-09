@@ -53,7 +53,7 @@ module.exports = class C2WebInterface extends C2Interface {
 		}
 
 		if(clientOrClients === 'all'){
-			if(messageType == 'heartbeat'){
+			if(messageType === 'heartbeat' || messageType === 'stream-map'){
 				this.debug(' ->', 'sending data to all', messageType)
 			} else {
 				this.info(' ->', 'sending data to all', messageType)
@@ -61,7 +61,7 @@ module.exports = class C2WebInterface extends C2Interface {
 
 			return this.c2WebSocketHandler.sendToAllClients(dataToSend)
 		} else if(clientOrClients instanceof Array){
-			if(messageType == 'heartbeat'){
+			if(messageType === 'heartbeat' || messageType === 'stream-map'){
 				this.debug(' ->', 'sending data to', clientOrClients, messageType)
 			} else {
 				this.info(' ->', 'sending data to', clientOrClients, messageType)
@@ -76,7 +76,7 @@ module.exports = class C2WebInterface extends C2Interface {
 				Promise.all(promises).finally(resolve)
 			})
 		} else if(typeof clientOrClients === 'string'){
-			if(messageType == 'heartbeat'){
+			if(messageType === 'heartbeat' || messageType === 'stream-map'){
 				this.debug(' ->', 'sending data to', clientOrClients, messageType)
 			} else {
 				this.info(' ->', 'sending data to', clientOrClients, messageType)
@@ -85,7 +85,7 @@ module.exports = class C2WebInterface extends C2Interface {
 
 			return this.c2WebSocketHandler.sendToClientToken(clientOrClients, dataToSend)
 		} else if(clientOrClients.ws){
-			if(messageType == 'heartbeat'){
+			if(messageType === 'heartbeat' || messageType === 'stream-map'){
 				this.debug(' ->', 'sending data to $' + (clientOrClients.token || 'unknown'),'#' + clientOrClients.id, messageType)
 			} else {
 				this.info(' ->', 'sending data to $' + (clientOrClients.token || 'unknown'),'#' + clientOrClients.id, messageType)

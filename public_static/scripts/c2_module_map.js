@@ -7,8 +7,7 @@ class C2Module_Map extends C2LoggingUtility {
 
 
 		this.c2.on('can-register-storable', ()=>{
-			this.c2.registerStorable('livePlayers')
-			this.c2.registerStorable('liveVehicles')
+			this.c2.registerStorable('map', {})
 		})
 
 		this.c2.on('can-register-syncable', ()=>{
@@ -30,9 +29,8 @@ class C2Module_Map extends C2LoggingUtility {
 			this.c2.registerComponent('map-2d', {
 				data: function (){
 					return {
-						map: undefined,
-						playerMarkers: [],
-						vehicleMarkers: [],
+						playerMarkerIds: [],
+						vehicleMarkerIds: [],
 
 						currentInfoComponent: undefined,
 						currentInfoData: undefined,
@@ -42,34 +40,34 @@ class C2Module_Map extends C2LoggingUtility {
 						uuid: C2.uuid()
 					}
 				},
-				computed: {
-					livePlayers (){
-						return this.$store.state.livePlayers
-					},
-					liveVehicles (){
-						return this.$store.state.liveVehicles
-					}
-				},
 				template: `<div class="map_2d">
 					<component v-if="currentInfoComponent" :is="currentInfoComponent" :data="currentInfoData" :data-id="currentInfoDataId" :style="currentInfoStyle" @close="hideInfo"/>
 				</div>`,
 				methods: {
-					refreshLivePlayers (){
-						this.log('refreshLivePlayers', this.livePlayers)
+					getLivePlayers (){
+						return this.$store.state.map ? this.$store.state.map.players : undefined
+					},
+					getLiveVehicles (){
+						return this.$store.state.map ? this.$store.state.map.vehicles : undefined
+					},
 
-						for(let marker of this.playerMarkers){
-							this.getMap().removeMarker(marker)
+					refreshLivePlayers (){
+						this.log('refreshLivePlayers', this.getLivePlayers())
+
+						//TODO instead of deleting all markers, we should try to reuse them
+						for(let markerId of this.playerMarkerIds){
+							this.getMap().removeMarker(markerId)
 						}
 
-						if(!this.livePlayers){
+						if(!this.getLivePlayers()){
 							return
 						}
 
-						for(let p of Object.keys(this.livePlayers)){
-							let player = this.livePlayers[p]
+						for(let p of Object.keys(this.getLivePlayers())){
+							let player = this.getLivePlayers()[p]
 							if(player.x && player.y){
 								let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
-								this.playerMarkers.push(marker)
+								this.playerMarkerIds.push(marker.id)
 
 								marker.on('click', (pos)=>{
 									this.log('clicked player marker', player)
@@ -80,21 +78,22 @@ class C2Module_Map extends C2LoggingUtility {
 
 					},
 					refreshLiveVehicles (){
-						this.log('refreshLiveVehicles', this.liveVehicles)
+						this.log('refreshLiveVehicles', this.getLiveVehicles())
 
-						for(let marker of this.vehicleMarkers){
-							this.getMap().removeMarker(marker)
+						//TODO instead of deleting all markers, we should try to reuse them
+						for(let markerId of this.vehicleMarkerIds){
+							this.getMap().removeMarker(markerId)
 						}
 
-						if(!this.liveVehicles){
+						if(!this.getLiveVehicles()){
 							return
 						}
 
-						for(let v of Object.keys(this.liveVehicles)){
-							let vehicle = this.liveVehicles[v]
+						for(let v of Object.keys(this.getLiveVehicles())){
+							let vehicle = this.getLiveVehicles()[v]
 							if(vehicle.x && vehicle.y){
 								let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
-								this.vehicleMarkers.push(marker)
+								this.vehicleMarkerIds.push(marker.id)
 
 								marker.on('click', (pos)=>{
 									this.log('clicked vehicle marker', vehicle)
@@ -135,6 +134,11 @@ class C2Module_Map extends C2LoggingUtility {
 				mounted: function (){
 					this.setMap( new C2CanvasMap(5, this.$el, '/static/tiles/', '/static/icons/') )
 
+					this.onLiveCallbackId = c2.on('map-update', ()=>{
+						this.refreshLivePlayers()
+						this.refreshLiveVehicles()
+					})
+
 					this.refreshLivePlayers()
 					this.refreshLiveVehicles()
 
@@ -146,13 +150,8 @@ class C2Module_Map extends C2LoggingUtility {
 						}
 					}, 100)
 				},
-				watch: {
-					livePlayers (){
-						this.refreshLivePlayers()
-					},
-					liveVehicles (){
-						this.refreshLiveVehicles()
-					}
+				unmounted: function(){
+					c2.off('map-update', this.onLiveCallbackId)
 				}
 			})
 
@@ -216,7 +215,7 @@ class C2Module_Map extends C2LoggingUtility {
 				},
 				computed: {
 					ownerName (){
-						return this.$store.state.players[this.data.owner] ? this.$store.state.players[this.data.owner].name : this.data.owner
+						return this.$store.state.players && this.$store.state.players[this.data.owner] ? this.$store.state.players[this.data.owner].name : this.data.owner
 					}
 				},
 				template: `<map-view-info class="vehicle" :title="'Vehicle'" @close="$emit('close')">
@@ -242,7 +241,13 @@ class C2Module_Map extends C2LoggingUtility {
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{
-			//TODO register handlers for liveplayers and livevehicles
+			this.c2.registerMessageHandler('stream-map', (data)=>{
+				if(data){
+					this.c2.store.state.map.players = data.playerPositions
+					this.c2.store.state.map.vehicles = data.vehiclePositions
+					this.c2.dispatch('map-update')
+				}
+			})
 		})
 
 		this.c2.on('setup-done', ()=>{
@@ -665,12 +670,12 @@ class C2CanvasMap extends C2LoggingUtility {
 		return marker
 	}
 
-	removeMarker(marker){
+	removeMarker(markerId){
 		for(let i in this.markers){
-			if(this.markers[i] === marker){
+			if(this.markers[i].id === markerId){
 				this.markers[i].off('change')
 
-				delete this.markers[i]
+				this.markers.splice(i, 1)
 
 				this.requestDraw()
 
@@ -818,6 +823,7 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 			this.loadImage(this.iconImageUrl)
 		}
 
+		this.id = C2.uuid()
 	}
 
 	loadImage(url){
@@ -895,7 +901,11 @@ class C2TileManager extends C2LoggingUtility {
 			return
 		}
 
-		this.info('setTilesDefinition')
+		if(tilesDefinition instanceof Array === false){
+			return
+		}
+
+		this.info('setTilesDefinition', tilesDefinition)
 
 		for(let t of tilesDefinition){
 			this.addTile(t.name, t.x - this.tileMeterSize/2, t.y + this.tileMeterSize/2)//convert center x,y to top left x,y
