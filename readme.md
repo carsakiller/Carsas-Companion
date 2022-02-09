@@ -42,6 +42,15 @@ Procedure is similar for vuex (https://unpkg.com/browse/vuex@4.0.2/dist/).
 ## run
 `pkg .`
 
+# Update playlist.xml (locations)
+
+For every tile, we define a zone, which is required to show the tiles in the webclient live map at the right position. The ingame script finds all those zones and their positions. In case new tiles are added (game update), you need to update the playlist.xml (automated with a script of course).
+
+After you did build the playlist.xml (see Readme of Carsas-CommandsV2) then you can run
+`node build-tools/make-playlist-with-zones.js`
+The above command will read `%appdata%/Roaming/Stormworks/data/missions/Carsa's Commands/playlist.xml` inject the env_mods/locations and write the ouput to `%appdata%/Roaming/Stormworks/data/missions/Carsa's Commands/playlist_with_zones.xml`
+Now you have to replace the original `playlist.xml` with the `playlist_with_zones.xml`.
+
 # Documentation (haha)
 
 ## Workflow for data sync from browser to game:
