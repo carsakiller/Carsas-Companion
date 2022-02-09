@@ -319,10 +319,10 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		/* dragging */
 
-		// the center of the canvas is at gps (0,0) when dragOffsetGps = (0,0). Can be used to set an initial gps position
+		// the center of the canvas is at gps (0,0) when dragOffsetGps = (0,0). Can be used to set an initial gps position (but then you must use * -1)
 		this.dragOffsetGps = {
-			x: -7000,
-			y: -3000
+			x: 7000,
+			y: 3000
 		}
 
 		this.mouseDown =false
