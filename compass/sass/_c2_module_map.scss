@@ -22,6 +22,20 @@
 		flex-flow: column;
 		flex: 1 1 auto;
 
+		.info {
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 10;
+			padding: 0.3em;
+			display: flex;
+			flex-direction: column;
+
+			span:not(:lasst-child){
+				margin-bottom: 0.3em;
+			}
+		}
+
 		.map_view_info {
 			font-size: 0.8em;
 			position: fixed;

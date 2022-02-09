@@ -2944,6 +2944,20 @@ table th:last-child, table td:last-child {
   flex: 1 1 auto;
 }
 /* line 25, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0.3em;
+  display: flex;
+  flex-direction: column;
+}
+/* line 34, ../../compass/sass/_c2_module_map.scss */
+.map_view .map_2d .info span:not(:lasst-child) {
+  margin-bottom: 0.3em;
+}
+/* line 39, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info {
   font-size: 0.8em;
   position: fixed;
@@ -2952,27 +2966,27 @@ table th:last-child, table td:last-child {
   background: #000c;
   color: #f3f3f3;
 }
-/* line 33, ../../compass/sass/_c2_module_map.scss */
+/* line 47, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info > * {
   display: flex;
   flex-direction: row;
   padding: 0.3em;
 }
-/* line 39, ../../compass/sass/_c2_module_map.scss */
+/* line 53, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info .title {
   justify-content: space-between;
   font-size: 1.2em;
   font-weight: 600;
   color: #929292;
 }
-/* line 45, ../../compass/sass/_c2_module_map.scss */
+/* line 59, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info .title .close {
   margin-left: 1em;
   cursor: pointer;
   color: #f3f3f3;
   transition: all 0.2s ease 0s;
 }
-/* line 51, ../../compass/sass/_c2_module_map.scss */
+/* line 65, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info .title .close:hover {
   color: #07C5CB;
 }

@@ -144,7 +144,7 @@ class C2Module_Map extends C2LoggingUtility {
 							clearInterval(this.intervalTilePositions)
 							this.intervalTilePositions = undefined
 						}
-					}, 500)
+					}, 100)
 				},
 				watch: {
 					livePlayers (){
@@ -273,6 +273,9 @@ class C2CanvasMap extends C2LoggingUtility {
 			background: '#40535f'
 		})
 
+		this.information = $('<div class="info">')
+		this.dom.append(this.information)
+
 		this.dom.append(
 			$('<div class="zoom_hint" style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; background: #fffa; color: #222; font-size: 2em;">Use <span style="font-weight: 800; margin: 0 1em;">ctrl + scroll</span> to zoom</div>').css({
 				display: 'flex'
@@ -312,14 +315,14 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		/* zooming
 		must use this.setZoom() to change this value! */
-		this.metersToPixelRatio = 1 // = ratio meter / pixel
+		this.metersToPixelRatio = 30 // = ratio meter / pixel
 
 		/* dragging */
 
-		// the center of the canvas is at gps (0,0) when dragOffsetGps = (0,0)
+		// the center of the canvas is at gps (0,0) when dragOffsetGps = (0,0). Can be used to set an initial gps position
 		this.dragOffsetGps = {
-			x: 0,
-			y: 0
+			x: -7000,
+			y: -3000
 		}
 
 		this.mouseDown =false
@@ -346,7 +349,7 @@ class C2CanvasMap extends C2LoggingUtility {
 			evt.stopImmediatePropagation()
 
 			this.dragOffsetGps.x -= this.pixelsToMeters(this.lastMouseDownX - evt.pageX)
-			this.dragOffsetGps.y -= this.pixelsToMeters(this.lastMouseDownY - evt.pageY)
+			this.dragOffsetGps.y += this.pixelsToMeters(this.lastMouseDownY - evt.pageY)
 
 			this.lastMouseDownX = evt.pageX
 			this.lastMouseDownY = evt.pageY
@@ -381,7 +384,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 				if(evt.touches.length === 1){
 					this.dragOffsetGps.x -= this.pixelsToMeters(this.lastTouches[0].pageX - evt.touches[0].pageX)
-					this.dragOffsetGps.y -= this.pixelsToMeters(this.lastTouches[0].pageY - evt.touches[0].pageY)
+					this.dragOffsetGps.y += this.pixelsToMeters(this.lastTouches[0].pageY - evt.touches[0].pageY)
 				} else if (evt.touches.length === 2){
 					let oldDeltaX = this.lastTouches[0].pageX - this.lastTouches[1].pageX
 					let oldDeltaY = this.lastTouches[0].pageY - this.lastTouches[1].pageY
@@ -420,8 +423,17 @@ class C2CanvasMap extends C2LoggingUtility {
 			evt.stopImmediatePropagation()
 
 			if(evt.originalEvent.altKey && evt.originalEvent.ctrlKey){
-				this.isDebugMode = !this.isDebugMode
-				this.tilemanager.isDebugMode = !this.tilemanager.isDebugMode
+				if(this.isDebugMode){
+					if(this.tilemanager.isDebugMode){
+						this.isDebugMode = false
+						this.tilemanager.isDebugMode = false
+					} else {
+						this.tilemanager.isDebugMode = true
+					}
+				} else {
+					this.isDebugMode = true
+				}
+
 				this.requestDraw()
 			}
 
@@ -486,12 +498,7 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.mustDraw = true
 
 		this.queueDraw()
-
-		setInterval(()=>{
-			//at least one draw every 2s
-			this.requestDraw()//TODO instead we should only do this when tiles have changed
-		}, 1000 * 2)
-
+		this.requestDraw()
 
 		this.resizeCanvas()
 
@@ -539,7 +546,20 @@ class C2CanvasMap extends C2LoggingUtility {
 		//clear
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
+
+		// crosshair
+		this.setStrokeColor('white')
+		let crosshairLength = 20
+		let center = this.convertCanvasPercentagePositionToAbsolutePosition(0.5,0.5)
+		this.drawLine({x: center.x - crosshairLength, y: center.y}, {x: center.x + crosshairLength, y: center.y}, )
+		this.drawLine({x: center.x, y: center.y - crosshairLength}, {x: center.x, y: center.y + crosshairLength}, )
+
+
 		this.drawMap()
+
+
+		let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
+		this.information.html(`<span>X ${Math.floor(centerGpsPosition.x)}</span><span>Y ${Math.floor(centerGpsPosition.y)}</span>`)
 
 		for(let m of this.markers){
 			this.drawMarker(m)
@@ -553,11 +573,6 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.debugContext.clearRect(0, 0, this.debugCanvas.width, this.debugCanvas.height)
 
 		if(this.isDebugMode){
-
-			// crosshair
-			this.setStrokeColor('red', this.debugContext)
-			this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0.5,0), this.convertCanvasPercentagePositionToAbsolutePosition(0.5,1), this.debugContext)
-			this.drawLine(this.convertCanvasPercentagePositionToAbsolutePosition(0,0.5), this.convertCanvasPercentagePositionToAbsolutePosition(1,0.5), this.debugContext)
 
 			let measurePoints = [
 				[0.25, 0.25],
@@ -575,18 +590,16 @@ class C2CanvasMap extends C2LoggingUtility {
 				this.drawText({x: canvasPosition.x, y: canvasPosition.y + 10}, 'y ' + Math.floor(gpsPosition.y), this.debugContext)
 			}
 
-
-			let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
 			let lines = [
-				Math.floor(this.calcFps()) + 'FPS',
-				'x ' + Math.floor(centerGpsPosition.x),
-				'y ' + Math.floor(centerGpsPosition.y),
-				'm/p ' + Math.floor(this.metersToPixelRatio * 100) / 100,
+				Math.floor(this.calcFps()) + ' FPS',
+				'dX ' + Math.floor(this.dragOffsetGps.x),
+				'dY ' + Math.floor(this.dragOffsetGps.y),
+				'm/px ' + Math.floor(this.metersToPixelRatio * 100) / 100,
 			]
 
 			this.setFillColor('yellow', this.debugContext)
 			for(let i=0; i < lines.length; i++){
-				this.drawText({x: 1, y: 1 + 10 * (i-1)}, lines[i], this.debugContext)
+				this.drawText({x: 1, y: 50 + 10 * (i-1)}, lines[i], this.debugContext)
 			}
 		}
 	}
@@ -687,16 +700,22 @@ class C2CanvasMap extends C2LoggingUtility {
 	convertGpsPositonToCanvasPosition(gpsX, gpsY){
 		return {
 			x: this.metersToPixels(this.dragOffsetGps.x + gpsX) + this.canvas.width/2,
-			y: this.metersToPixels(this.dragOffsetGps.y + gpsY) + this.canvas.height/2,
+			y: - this.metersToPixels(this.dragOffsetGps.y + gpsY) + this.canvas.height/2,
 		}
 	}
 
-	/* converts canvas position (relative to top let corner) into gps coordinates */
+	/* converts canvas position (relative to top left corner) into gps coordinates */
 	convertCanvasPositionToGpsPosition(canvasX, canvasY){
 		return {
-			x: this.pixelsToMeters(canvasX -  this.canvas.width/2) - this.dragOffsetGps.x,
-			y: this.pixelsToMeters(canvasY -  this.canvas.height/2) - this.dragOffsetGps.y
+			x: this.pixelsToMeters(canvasX - this.canvas.width/2) - this.dragOffsetGps.x,
+			y:  - this.pixelsToMeters(canvasY - this.canvas.height/2) - this.dragOffsetGps.y
 		}
+
+		/* old and buggy
+		return {
+			x: this.pixelsToMeters(canvasX - this.canvas.width/2) - this.dragOffsetGps.x,
+			y: this.pixelsToMeters(canvasY - this.canvas.height/2) - this.dragOffsetGps.y
+		}*/
 	}
 
 	/* percentage of canvas width/height from 0-1. 0,0 is top left 0.5,1 is bottom center */
@@ -733,7 +752,7 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	setZoom(value){
-		this.metersToPixelRatio = value
+		this.metersToPixelRatio = Math.max(0.01, Math.min(10000, value))
 		this.requestDraw()
 	}
 
@@ -861,6 +880,10 @@ class C2TileManager extends C2LoggingUtility {
 		this.tiles = []
 		this.allTilesLoaded = false
 
+		this.imageCacheContainer = $('<div style="display: none" image-cache-container>')
+		this.imageCacheContainer.appendTo(canvasMap.dom)
+
+		this.canvasMap = canvasMap
 		this.canvas = canvasMap.mapCanvas
 		this.ctx = this.canvas.getContext('2d')
 	}
@@ -885,11 +908,15 @@ class C2TileManager extends C2LoggingUtility {
 
 			let loadedTiles = 0
 			let loadedTilesAndErrorTiles = 0
+			let loadedTilesFromCache = 0
 
 			for(let tile of this.tiles){
 				if(tile.image){
 					loadedTiles++
 					loadedTilesAndErrorTiles++
+					if(tile.fromCache){
+						loadedTilesFromCache++
+					}
 				} else if (tile.loadingError){
 					loadedTilesAndErrorTiles++
 				}
@@ -897,11 +924,24 @@ class C2TileManager extends C2LoggingUtility {
 
 			if(loadedTilesAndErrorTiles === this.tiles.length){
 				this.allTilesLoaded = true
-				this.info('\nall Tiles have been loaded! ', loadedTiles, 'success, ', loadedTilesAndErrorTiles - loadedTiles, 'errors')
+				this.info('\nall Tiles have been loaded! ', loadedTiles, 'success, ', loadedTilesAndErrorTiles - loadedTiles, 'errors', loadedTilesFromCache, 'from cache')
 				this.info('canvasOffset', this.canvasOffset)
-				this.redrawAllTiles()
+				this.canvasMap.requestDraw()
+			} else {
+				this.setLoadingMessage(`${loadedTilesAndErrorTiles} / ${this.tiles.length} tiles loaded`)
 			}
 		}, 50)
+	}
+
+	setLoadingMessage(msg){
+		if(this.allTilesLoaded){
+			return
+		}
+
+		this.ctx.clearRect(0,0, this.canvas.width, this.canvas.height)
+		this.ctx.font = '12px sans-serif'
+		this.ctx.fillStyle = 'black'
+		this.ctx.fillText(msg, this.canvas.width/2 - msg.length * 3, this.canvas.height*0.75 + 6)
 	}
 
 	addTile(name, gpsX, gpsY, rotationInDeg){
@@ -931,6 +971,17 @@ class C2TileManager extends C2LoggingUtility {
 	}
 
 	loadTile(tile){
+		if(!window.c2tilemanager_cache){
+			window.c2tilemanager_cache = {}
+		} else if(window.c2tilemanager_cache[tile.name]){
+			tile.image = window.c2tilemanager_cache[tile.name]
+			tile.width = tile.image.width
+			tile.height = tile.image.height
+			tile.fromCache = true
+			return
+		}
+
+
 		let image = new Image
 
 		image.onload = ()=>{
@@ -938,6 +989,12 @@ class C2TileManager extends C2LoggingUtility {
 			tile.image = image
 			tile.width = image.width
 			tile.height = image.height
+
+			if(!window.c2tilemanager_cache){
+				window.c2tilemanager_cache = {}
+			}
+
+			window.c2tilemanager_cache[tile.name] = image
 		}
 
 		image.onerror = (err)=>{
@@ -946,6 +1003,8 @@ class C2TileManager extends C2LoggingUtility {
 		}
 
 		image.src = this.tilesDirectory + tile.url
+
+		this.imageCacheContainer.append(image)
 	}
 
 	drawTile(tile, gps0XasCanvasX, gps0YasCanvasY, zoom){
@@ -1008,6 +1067,10 @@ class C2TileManager extends C2LoggingUtility {
 			if(tile.image && !tile.loadingError){
 				this.drawTile(tile, gps0XasCanvasX, gps0YasCanvasY, zoom)
 			}
+		}
+
+		if(!this.allTilesLoaded){
+			this.setLoadingMessage('waiting for tile positions from game ...')
 		}
 	}
 
