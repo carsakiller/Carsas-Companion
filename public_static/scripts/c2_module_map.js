@@ -34,6 +34,7 @@ class C2Module_Map extends C2LoggingUtility {
 
 						currentInfoComponent: undefined,
 						currentInfoData: undefined,
+						currentInfoDataType: undefined,
 						currentInfoDataId: undefined,
 						currentInfoStyle: undefined,
 
@@ -75,7 +76,6 @@ class C2Module_Map extends C2LoggingUtility {
 								})
 							}
 						}
-
 					},
 					refreshLiveVehicles (){
 						this.log('refreshLiveVehicles', this.getLiveVehicles())
@@ -101,13 +101,13 @@ class C2Module_Map extends C2LoggingUtility {
 								})
 							}
 						}
-
 					},
 					showInfo (type, data, dataId, pageX, pageY){
 						this.log('showInfo', type)
 						this.debug(data, pageX, pageY)
 						this.currentInfoComponent = 'map-view-info-' + type
 						this.currentInfoData = data
+						this.currentInfoDataType = type
 						this.currentInfoDataId = dataId
 						this.currentInfoStyle = 'top: ' + pageY +'px; left: ' + pageX + 'px;'
 					},
@@ -115,7 +115,35 @@ class C2Module_Map extends C2LoggingUtility {
 						this.log('hideInfo')
 						this.currentInfoComponent = undefined
 						this.currentInfoData = undefined
+						this.currentInfoDataType = undefined
+						this.currentInfoDataId = undefined
 						this.currentInfoStyle = undefined
+					},
+					updateInfo (){
+						this.log('updateInfo', this.currentInfoDataType, this.currentInfoDataId)
+						if(this.currentInfoDataType && this.currentInfoDataId){
+							switch(this.currentInfoDataType){
+								case 'player': {
+									let livePlayers = this.getLivePlayers()
+									let newData = livePlayers ? livePlayers[this.currentInfoDataId] : undefined
+									if(newData){
+										this.currentInfoData = newData
+									} else {
+										this.hideInfo()
+									}
+								}; break;
+
+								case 'vehicle': {
+									let liveVehicles = this.getLiveVehicles()
+									let newData = liveVehicles ? liveVehicles[this.currentInfoDataId] : undefined
+									if(newData){
+										this.currentInfoData = newData
+									} else {
+										this.hideInfo()
+									}
+								}; break;
+							}
+						}
 					},
 					clickPlayer (player, id, pageX, pageY){
 						this.showInfo('player', player, id, pageX, pageY)
@@ -137,6 +165,8 @@ class C2Module_Map extends C2LoggingUtility {
 					this.onLiveCallbackId = c2.on('map-update', ()=>{
 						this.refreshLivePlayers()
 						this.refreshLiveVehicles()
+
+						this.updateInfo()
 					})
 
 					this.refreshLivePlayers()
@@ -170,39 +200,11 @@ class C2Module_Map extends C2LoggingUtility {
 			})
 
 			this.c2.registerComponent('map-view-info-player', {
-				emits: ['close'],
-				props: {
-					data: {
-						type: Object,
-						required: true
-					},
-					'data-id': {
-						required: true
+				data: function(){
+					return {
+						syncables: []
 					}
 				},
-				template: `<map-view-info class="player" :title="'Player'" @close="$emit('close')">
-					<div>Name: {{data.name}}</div>
-					<div>GPS: ({{data.x}}, {{data.y}})</div>
-					<div>Altitude: {{data.z}}</div>
-					<div>Peer Id: {{data.peer_id}}</div>
-					<div>SteamId: <steamid :steamid="dataId"/></div>
-					<div><confirm-button class="small_button" @click="kick" :disabled="isComponentLocked">Kick</confirm-button></div>
-					<div><confirm-button class="small_button" @click="ban" :time="2" :disabled="isComponentLocked">Ban</confirm-button></div>
-				</map-view-info>`,
-				methods: {
-					kick (){
-						alert('not implemented')
-						this.$emit('close')
-					},
-					ban (){
-						this.callGameCommand('banPlayer', this.dataId)
-						this.$emit('close')
-					}
-				},
-				mixins: [componentMixin_gameCommand]
-			})
-
-			this.c2.registerComponent('map-view-info-vehicle', {
 				emits: ['close'],
 				props: {
 					data: {
@@ -214,22 +216,77 @@ class C2Module_Map extends C2LoggingUtility {
 					}
 				},
 				computed: {
+					thePlayer (){
+						return this.$store.state.players ? this.$store.state.players[this.dataId] : undefined
+					},
+					playerName (){
+						return this.thePlayer ? this.thePlayer.name : ''
+					},
+					playerPeerID (){
+						return this.thePlayer ? this.thePlayer.peerID : ''
+					}
+				},
+				template: `<map-view-info class="player" :title="'Player'" @close="$emit('close')">
+					<div>Name: {{playerName}}</div>
+					<div>GPS: X {{Math.floor(data.x)}}, Y {{Math.floor(data.y)}}</div>
+					<div>Altitude: {{Math.floor(data.alt)}}</div>
+					<div>Peer Id: {{playerPeerID}}</div>
+					<div>SteamId: <steamid :steamid="dataId"/></div>
+					<div><confirm-button class="small_button" @click="kick" :disabled="isComponentLocked">Kick</confirm-button></div>
+					<div><confirm-button class="small_button" @click="ban" :time="2" :disabled="isComponentLocked">Ban</confirm-button></div>
+				</map-view-info>`,
+				methods: {
+					kick (){
+						this.callGameCommand('kickPlayer', this.dataId).then(_=>{
+							this.$emit('close')
+						})
+					},
+					ban (){
+						this.callGameCommand('banPlayer', this.dataId).then(_=>{
+							this.$emit('close')
+						})
+					}
+				},
+				mixins: [componentMixin_gameCommand]
+			})
+
+			this.c2.registerComponent('map-view-info-vehicle', {
+				data: function(){
+					return {
+						syncables: []
+					}
+				},
+				emits: ['close'],
+				props: {
+					data: {
+						type: Object,
+						required: true
+					},
+					'data-id': {
+						required: true
+					}
+				},
+				computed: {
+					theVehicle (){
+						return this.$store.state.vehicles ? this.$store.state.vehicles[this.dataId] : undefined
+					},
 					ownerName (){
-						return this.$store.state.players && this.$store.state.players[this.data.owner] ? this.$store.state.players[this.data.owner].name : this.data.owner
+						return this.theVehicle && this.$store.state.players && this.$store.state.players[this.theVehicle.owner] ? this.$store.state.players[this.theVehicle.owner].name : ( this.theVehicle ? '<steamid:' + this.theVehicle.owner + '>' : '')
 					}
 				},
 				template: `<map-view-info class="vehicle" :title="'Vehicle'" @close="$emit('close')">
 					<div>Name: {{data.name}}</div>
-					<div>GPS: ({{data.x}}, {{data.y}})</div>
-					<div>Altitude: {{data.z}}</div>
+					<div>GPS: X {{Math.floor(data.x)}}, Y {{Math.floor(data.y)}}</div>
+					<div>Altitude: {{Math.floor(data.alt)}}</div>
 					<div>Owner: {{ownerName}}</div>
 					<div>Vehicle Id: {{dataId}}</div>
 					<div><confirm-button class="small_button" @click="despawn" :disabled="isComponentLocked">Despawn</confirm-button></div>
 				</map-view-info>`,
 				methods: {
 					despawn (){
-						alert('not implemented')
-						this.$emit('close')
+						this.callGameCommand('clearVehicle', [this.dataId]).then(_=>{
+							this.$emit('close')
+						})
 					}
 				},
 				mixins: [componentMixin_gameCommand]
@@ -470,6 +527,7 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.dom.append(this.canvas)
 
 		this.ctx = this.canvas.getContext('2d')
+		this.ctx.globalAlpha = 0.5
 
 		this.ctx.font = '1.5em sans-serif'
 
@@ -633,8 +691,8 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.debug('drawMarker', p, marker)
 
-		if(marker.iconImageData){
-			this.ctx.putImageData(marker.iconImageData, p.x - marker.iconWidth / 2, p.y - marker.iconHeight/2)
+		if(marker.iconImage){
+			this.ctx.drawImage(marker.iconImage, p.x - marker.iconWidth / 2, p.y - marker.iconHeight/2, marker.iconWidth, marker.iconHeight)
 		} else {
 			this.setFillColor(marker.labelColor)
 			this.ctx.fillRect(p.x - marker.iconWidth/2, p.y - marker.iconHeight/2, marker.iconWidth, marker.iconHeight)
@@ -832,7 +890,6 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		image.onload = ()=>{
 			this.debug('loaded icon image', url)
 			this.iconImage = image
-			this.iconImageData = this.generateIconImageData(this.iconImage)
 
 			this.dispatch('change')
 		}
@@ -842,18 +899,6 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		}
 
 		image.src = url
-	}
-
-	generateIconImageData(image){
-		let canvas = document.createElement('canvas')
-		$(canvas).attr('id', 'canvas_mapmarker_icon')
-		canvas.width = this.iconWidth
-		this.iconHeight = (image.width / image.height) * this.iconWidth
-		canvas.height = this.iconHeight
-
-		canvas.getContext('2d').drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height)
-
-		return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
 	}
 
 	setPosition(gpsX, gpsY){
