@@ -1966,12 +1966,13 @@ table th:last-child, table td:last-child {
 #error-popup .inner .message {
   height: 100%;
   width: 100%;
+  max-width: calc(100vw - 40px);
   resize: none;
   background: #c28d8d;
   color: #222;
   margin: 2em 0;
 }
-/* line 217, ../../compass/sass/c2.scss */
+/* line 218, ../../compass/sass/c2.scss */
 #error-popup .inner button {
   font-size: inherit;
 }
@@ -3199,49 +3200,49 @@ table th:last-child, table td:last-child {
   white-space: pre-line;
 }
 
-/* line 229, ../../compass/sass/c2.scss */
+/* line 230, ../../compass/sass/c2.scss */
 body {
   font-size: 29px;
 }
 
 @media (min-width: 576px) {
-  /* line 234, ../../compass/sass/c2.scss */
+  /* line 235, ../../compass/sass/c2.scss */
   body {
     font-size: 21px;
   }
 }
 @media (min-width: 768px) {
-  /* line 240, ../../compass/sass/c2.scss */
+  /* line 241, ../../compass/sass/c2.scss */
   body {
     font-size: 19px;
   }
 }
 @media (min-width: 992px) {
-  /* line 246, ../../compass/sass/c2.scss */
+  /* line 247, ../../compass/sass/c2.scss */
   body {
     font-size: 18px;
   }
 }
 @media (min-width: 1200px) {
-  /* line 252, ../../compass/sass/c2.scss */
+  /* line 253, ../../compass/sass/c2.scss */
   body {
     font-size: 19px;
   }
 }
 @media (min-width: 1400px) {
-  /* line 258, ../../compass/sass/c2.scss */
+  /* line 259, ../../compass/sass/c2.scss */
   body {
     font-size: 20px;
   }
 }
 @media (min-width: 1800px) {
-  /* line 264, ../../compass/sass/c2.scss */
+  /* line 265, ../../compass/sass/c2.scss */
   body {
     font-size: 23px;
   }
 }
 @media (min-width: 2200px) {
-  /* line 270, ../../compass/sass/c2.scss */
+  /* line 271, ../../compass/sass/c2.scss */
   body {
     font-size: 27px;
   }

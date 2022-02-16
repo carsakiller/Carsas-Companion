@@ -27,6 +27,7 @@ let ConsoleLogger = (()=>{
 			}
 
 			logs.push({
+				timestamp: new Date().toLocaleTimeString(),
 				type: stream,
 				args: cleanArgs
 			})
@@ -44,7 +45,7 @@ let ConsoleLogger = (()=>{
 			let str = ''
 
 			for(let l of logs){
-				str += `[${l.type}] ` + l.args.join(' ') + '\n'
+				str += `${l.timestamp} [${l.type}] ` + l.args.join(' ') + '\n'
 			}
 
 			return str

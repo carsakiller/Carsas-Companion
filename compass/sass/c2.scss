@@ -208,6 +208,7 @@ table {
 		.message {
 			height: 100%;
 			width: 100%;
+			max-width: calc(100vw - 40px);
 			resize: none;
 			background: #c28d8d;
 			color: #222;
