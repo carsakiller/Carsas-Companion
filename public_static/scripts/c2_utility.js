@@ -349,11 +349,6 @@ let componentMixin_lockable = {
 }
 
 let componentMixin_serverMessage = {
-	data (){
-		return {
-			lastNotificationId: undefined
-		}
-	},
 	mixins: [componentMixin_lockable],
 	methods: {
 		sendServerMessage (messageType, data, /* optional */ doNotUnlockAutomatically){
@@ -380,11 +375,11 @@ let componentMixin_serverMessage = {
 			return this.sendServerMessage(messageType, data)
 		},
 		showNotification (title, message, type){
-			if(this.lastNotificationId !== undefined){
-				c2.hideNotification(this.lastNotificationId)
+			if(c2.lastNotificationId !== undefined){
+				c2.hideNotification(c2.lastNotificationId)
 			}
 
-			this.lastNotificationId = c2.showNotification(title, message, type)
+			c2.lastNotificationId = c2.showNotification(title, message, type)
 			/*setTimeout(()=>{
 				c2.hideNotification(this.lastNotificationId)
 			}, 1000 * 5)*/
