@@ -187,7 +187,8 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		}
 		let popup = $('#error-popup')
 		popup.find('.title').text('An Error has occured (Please contact an admin):')
-		popup.find('.message').val(text)
+		popup.find('.message').val(text + '\n\n' + ConsoleLogger.getLatestLogAsString())
+		popup.find('.message').scrollTop(0)
 		popup.show()
 	}
 
