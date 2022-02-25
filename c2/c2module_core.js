@@ -2,7 +2,7 @@ const axios = require('axios')
 const fs = require('fs')
 const path = require('path')
 
-const C2LoggingUtility = require('./utility.js').C2LoggingUtility
+const C2LoggingUtility = require('./C2_Utility.js').C2LoggingUtility
 
 module.exports = class C2Module_Core extends C2LoggingUtility {
 	

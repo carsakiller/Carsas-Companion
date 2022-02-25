@@ -1,4 +1,4 @@
-const C2LoggingUtility = require('./utility.js').C2LoggingUtility
+const C2LoggingUtility = require('./C2_Utility.js').C2LoggingUtility
 const C2GameServerManager = require('./C2GameServerManager.js')
 
 module.exports = class C2Module_Gameserver extends C2LoggingUtility {

@@ -1,5 +1,5 @@
 const { fork } = require('child_process');
-const { C2EventManagerAndLoggingUtility } = require('./utility.js')
+const { C2EventManagerAndLoggingUtility } = require('./C2_Utility.js')
 const ps = require('ps-node');
 const fs = require('fs')
 const path = require('path')

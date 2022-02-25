@@ -1,5 +1,5 @@
 const C2GameHttpHandler = require('./C2GameHttpHandler.js')
-const C2Interface = require('./utility.js').C2Interface
+const C2Interface = require('./C2_Utility.js').C2Interface
 
 module.exports = class C2GameInterface extends C2Interface {
 

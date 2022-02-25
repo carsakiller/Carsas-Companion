@@ -5,7 +5,7 @@ const C2Module_Test = require('./C2Module_Test.js')
 const C2Module_Map = require('./C2Module_Map.js')
 const C2Module_Gameserver = require('./C2Module_Gameserver.js')
 
-const C2LoggingUtility = require('./utility.js').C2LoggingUtility
+const C2LoggingUtility = require('./C2_Utility.js').C2LoggingUtility
 
 const gameApp = require('./C2GameWebServer.js')
 

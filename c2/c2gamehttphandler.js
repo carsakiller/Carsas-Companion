@@ -1,4 +1,4 @@
-const C2Handler = require('./utility.js').C2Handler
+const C2Handler = require('./C2_Utility.js').C2Handler
 
 module.exports = class C2GameHttpHandler extends C2Handler {
 
