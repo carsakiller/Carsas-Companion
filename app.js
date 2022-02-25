@@ -129,19 +129,6 @@ app.get('/c2', (req, res, next)=>{
 
 
 
-/*
-app.use('/', index);
-app.use('/login', dontCacheThisRoute);
-app.use('/register', dontCacheThisRoute);
-app.use('/login', login);
-app.use('/logout', logout);
-app.use('/register', register);
-app.use('/imprint', imprint);
-app.use('/about', about);
-app.use('/user', user);
-app.use('/drinks', drinks);
-*/
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
