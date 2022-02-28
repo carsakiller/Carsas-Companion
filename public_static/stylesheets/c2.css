@@ -2402,9 +2402,9 @@ table th:last-child, table td:last-child {
 .info .intro .logo {
   position: relative;
   overflow: hidden;
-  width: 10em;
-  height: 10em;
-  background-image: url("/static/images/logo.svg");
+  width: 14em;
+  height: 8em;
+  background-image: url("/static/images/c2_banner.jpg");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

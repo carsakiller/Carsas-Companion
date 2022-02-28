@@ -996,7 +996,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 							localStorage.setItem('lastPageIndex', this.selectedIndex)
 						}
 
-						document.title = 'Carsa\'s Commands - ' + this.pages[this.selectedIndex].title
+						document.title = 'Carsa\'s Companion - ' + this.pages[this.selectedIndex].title
 					},
 					isPageVisible (name){
 						return this.$store.state.permissions && this.$store.state.permissions['page-' + name] === true

@@ -319,7 +319,7 @@ class C2Module_Core extends C2LoggingUtility {
 					<div class="intro">
 						<div class="logo">
 						</div>
-						<h1 class="headline">Carsa's Commands - Companion</h1>
+						<h1 class="headline">Carsa's Companion</h1>
 					</div>
 					<division :name="'General'" :startExtended="true">
 						<p>Version (Companion):
