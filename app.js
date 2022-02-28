@@ -81,9 +81,6 @@ if (app.get('env') === 'production') {
 }
 
 
-
-//app.use(session(sessionOptions))
-
 // Register '.handlebars' extension with Handlebars
 app.engine('handlebars', handlebars({defaultLayout: 'default', helpers: require('./handlebar_helpers.js')}));
 
@@ -124,14 +121,40 @@ let C2 = require('./c2/c2.js')
 c2 = new C2( 3 /* loglevel "info" */, app)
 
 app.get('/c2', (req, res, next)=>{
-  res.render('c2');
+
+  if(c2.isAccessAllowedForIp(req.ip)){
+    res.render('c2');
+  } else {
+    let err = new Error('Forbidden: The games owner has not allowed external access.');
+    err.status = 403;
+
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    res.status(403)
+    res.render('error')
+  }
 });
 
+app.get('/ws', (req, res, next)=>{
+  if(c2.isAccessAllowedForIp(req.ip)){
+    next()
+  } else {
+    let err = new Error('Forbidden: The games owner has not allowed external access.');
+    err.status = 403;
+
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    res.status(403)
+    res.render('error')
+  }
+})
 
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  let err = new Error('Not Found');
   err.status = 404;
 
   res.locals.message = err.message;

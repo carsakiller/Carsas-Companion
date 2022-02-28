@@ -2819,8 +2819,8 @@ table th:last-child, table td:last-child {
   position: fixed;
   z-index: 3000;
   bottom: 0;
-  left: 0;
-  width: 100vw;
+  right: 0;
+  width: 95vw;
   padding: 0.7em 2em;
   display: flex;
   flex-direction: row;

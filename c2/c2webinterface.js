@@ -22,7 +22,7 @@ module.exports = class C2WebInterface extends C2Interface {
 		})
 
 		this.c2WebSocketHandler.setMessageCallback((client, message)=>{
-			this.info('<- ', 'got web client message #' + client.id)
+			this.info('<- ', `got web client (#${client.id}) message`, message.type)
 			this.log(message)
 			let promise = this.dispatch('message', client, message)
 

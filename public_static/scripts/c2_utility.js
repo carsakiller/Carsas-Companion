@@ -453,6 +453,7 @@ let componentMixin_serverMessage = {
 let componentMixin_gameCommand = {
 	mixins: [componentMixin_serverMessage],
 	methods: {
+		/* does never reject but instead shows an error message) */
 		callGameCommand (command, args){
 			return new Promise((resolve, reject)=>{
 
@@ -465,11 +466,12 @@ let componentMixin_gameCommand = {
 					this.log('executing command', command,'failed')
 					this.debug('args', args, 'error', err)
 					this.unlockComponent()
-					reject(err)
 					this.showNotificationFailed(command, err)
+					//reject(err) dont reject, since we show the error message
 				})
 			})
 		},
+		/* does never reject but instead shows an error message) */
 		callGameCommandAndWaitForSync (command, args){
 			this.lockComponentUntilSync()
 			return this.callGameCommand(command, args)

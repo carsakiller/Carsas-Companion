@@ -15,6 +15,8 @@ module.exports = class C2GameInterface extends C2Interface {
 		this.isGameAvailable = false
 		this.lastGameMessage = 0
 
+		this.firstGameAvailable = true //true until first time a message from the game has been received
+
 		this.SERVER_HEARTBEAT_MAX_TIME_UNTIL_TIMEOUT = 1000 * 5 //if we do not get any message for 20s (game heartbeats should happen every 1s)
 
 		setInterval(()=>{
@@ -36,6 +38,11 @@ module.exports = class C2GameInterface extends C2Interface {
 			if(!this.isGameAvailable){
 				this.info('Game is available again')
 
+				if(this.firstGameAvailable){
+					console.log('\nGame script is now connected to the server!!!\n')
+					this.firstGameAvailable = false
+				}
+
 				this.isGameAvailable = true
 				this.dispatch('game-connected')
 			}
@@ -46,6 +53,12 @@ module.exports = class C2GameInterface extends C2Interface {
 		});
 
 		app.finishSetup()
+
+		setTimeout(()=>{
+			if(!this.isGameAvailable){
+				console.log('waiting for game script ...')
+			}
+		}, 100)
 
 		this.c2GameHttpHandler.setMessageCallback((message)=>{
 			if(message.type !== 'heartbeat' && message.type !== 'stream-map'){

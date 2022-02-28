@@ -247,7 +247,7 @@ module.exports = class C2GameHttpHandler extends C2Handler {
 		return new Promise((resolve, reject)=>{
 
 			if(messageType !== 'heartbeat' && messageType !== 'stream-map'){
-				this.info('handleMessage', messageType)
+				this.log('handleMessage', messageType)
 			}
 
 			if(typeof this.messageCallback === 'function'){

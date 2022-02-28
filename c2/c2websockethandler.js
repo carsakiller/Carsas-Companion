@@ -180,6 +180,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					promise.then((result)=>{
 						answer(true, result)
 					}).catch((err)=>{
+						this.error(err)
 						answer(false, err)
 					})
 				}
@@ -208,7 +209,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 	}
 
 	handleClose(client){
-		this.info('client closed connection: client #', client.id, client.req.ip)
+		this.info('client closed connection: client #', client.id, client.ip)
 		let i = this.pendingMessageResponses.length - 1
 		while(i >= 0){
 			let pmr = this.pendingMessageResponses[i]
@@ -221,6 +222,12 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 		}
 
 		client.closed = true
+
+		let index = this.clients.indexOf(client)
+
+		if(index >= 0){
+			this.clients.splice(index, 1)
+		}
 	}
 
 	send(client, data){

@@ -9,6 +9,9 @@ const C2LoggingUtility = require('./C2_Utility.js').C2LoggingUtility
 
 const gameApp = require('./C2GameWebServer.js')
 
+const os = require('os')
+const ipLib = require('ip')
+
 module.exports = class C2 extends C2LoggingUtility {
 
 	constructor(loglevel, app){
@@ -69,7 +72,6 @@ module.exports = class C2 extends C2LoggingUtility {
 	}
 
 	handleWebClientMessage(client, message){
-		this.log('handleWebClientMessage client #', client.id, message.type)
 
 		if(! this.webClientMessageHandlers[message.type] && this.webClientMessageHandlers['*']){
 			message.originalType = message.type
@@ -174,5 +176,49 @@ module.exports = class C2 extends C2LoggingUtility {
 		}
 
 		this.webClientMessageHandlers[messageType] = callback
+	}
+
+	getMyIpv4Interfaces(){
+		let interfaces = os.networkInterfaces()
+
+		let ret = []
+
+		if(interfaces){
+			for(let name of Object.keys(interfaces)){
+				for(let iface of interfaces[name]){
+					if(iface.family === 'IPv4'){
+						ret.push({
+							ip: iface.address,
+							mask: iface.netmask
+						})
+					}
+				}
+			}
+		}
+
+		return ret
+	}
+
+	isAccessAllowedForIp(ip){
+		if(this.c2Module_Core.getCurrentServerSetting('allow-external-access') === true){
+			return true
+		} else {
+
+			//check for localhost
+			if(ipLib.isPrivate(ip)){
+				return true
+			}
+
+			let myInterfaces = this.getMyIpv4Interfaces()
+
+			//check for same network
+			for(let iface of myInterfaces){
+				if(ipLib.isEqual(ipLib.mask(ip, iface.mask), ipLib.mask(iface.ip, iface.mask))){
+					return true
+				}
+			}
+		}
+
+		return false
 	}
 }

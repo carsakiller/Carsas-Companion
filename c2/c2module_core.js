@@ -1,5 +1,6 @@
 const axios = require('axios')
 const fs = require('fs')
+const fsPromises = require('fs/promises')
 const path = require('path')
 
 const C2LoggingUtility = require('./C2_Utility.js').C2LoggingUtility
@@ -11,6 +12,33 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2 = c2
 
+		this.SETTINGS_FILE_PATH = path.join(__dirname, '..', 'settings.json')
+
+		this.settingsCache = undefined
+
+		this.DEFAULT_SETTINGS = {
+			'allow-external-access': {
+				type: 'boolean',
+				value: false,
+				description: 'Allow anyone from the internet access the companion website (if not enabled, only the device you are running the companion on and devices in the same network)'
+			},
+			'allow-live-map': {
+				type: 'boolean',
+				value: false,
+				description: 'Shows page with live map of players and vehicles for everyone'
+			},
+			'enable-test-mode': {
+				type: 'boolean',
+				value: false,
+				description: 'Shows page used for testing and debugging the companion and the connection to the game script'
+			},
+			'gameserver-executable-path': {
+				type: 'string',
+				value: '',
+				description: 'Set the path to the executable of the dedicated stormworks server (required if you want to use the gameserver management)'
+			}
+		}
+
 		this.companionTokens = {}
 		this.roles = {}
 
@@ -18,6 +46,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.notificationsForSteamId = {}
 
+		//permissions must be inflated (which replaces the functions with actually values) before being used
 		this.PERMISSIONS = {
 			Default:  {
 				'page-home': true,
@@ -27,7 +56,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-rules': true,
 				'page-preferences': true,
 				'page-gamesettings': true,
-				'page-live-map': true
+				'page-live-map': ()=>{return this.getCurrentServerSetting('allow-live-map') === true}
 			},
 			Owner: {
 				'page-home': true,
@@ -41,7 +70,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 				'page-logs': true,
 				'page-gameserver-management': true,
-				'page-tests': true
+				'page-tests': ()=>{return this.getCurrentServerSetting('enable-test-mode') === true},
+				'page-settings': true
 			}
 		}
 
@@ -133,12 +163,37 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('user-permissions', (client)=>{
 			return new Promise((resolve, reject)=>{
-				if(this.tokenHasRole(client.token, 'Owner')){
-					return resolve(this.PERMISSIONS.Owner)
+				if(this.clientIsOwner(client)){
+					return resolve(this.inflatePermissions(this.PERMISSIONS.Owner))
 				} else {
-					return resolve(this.PERMISSIONS.Default)
+					return resolve(this.inflatePermissions(this.PERMISSIONS.Default))
 				}
 			})
+		})
+
+		this.c2.registerWebClientMessageHandler('server-settings', (client)=>{
+			if(this.clientIsOwner(client)){
+				return this.getServerSettings()
+			} else {
+				return {}
+			}
+		})
+
+		this.c2.registerWebClientMessageHandler('set-server-setting', (client, data)=>{
+			if(this.clientIsOwner(client)){
+				try {
+					let parsed = JSON.parse(data)
+					return this.setServerSetting(parsed.key, parsed.value)
+				} catch (ex) {
+					return new Promise((resolve, reject)=>{
+						reject('invalid JSON for set-server-setting, please contact a dev')
+					})
+				}
+			} else {
+				return new Promise((resolve, reject)=>{
+					reject('you are not allowed to do that')
+				})
+			}
 		})
 
 		this.c2.registerWebClientMessageHandler('check-notifications', (client, steamId)=>{
@@ -210,11 +265,36 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				})
 			}
 		})
+
+
+		this.getServerSettings().then(settingsObject => this.setServerSettingsTo(settingsObject))
+	}
+
+	inflatePermissions(permissions){
+		let ret = {}
+
+		for(let key of Object.keys(permissions)){
+			if(typeof permissions[key] === 'function'){
+				ret[key] = permissions[key]()
+			} else {
+				ret[key] = permissions[key]
+			}
+		}
+
+		return ret
+	}
+
+	clientIsOwner(client){
+		return this.tokenHasRole(client.token, 'Owner') || client.ip === 'localhost' || client.ip === '127.0.0.1' || client.ip === '::1' || client.ip === '::ffff:127.0.0.1'
 	}
 
 	tokenHasRole(token, roleName){
 		if(!token){
 			return false
+		}
+
+		if(roleName === undefined){
+			throw new Error('roleName is undefined')
 		}
 
 		for(let steamId of Object.keys(this.companionTokens)){
@@ -231,11 +311,91 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			return false
 		}
 
+		if(roleName === undefined){
+			throw new Error('roleName is undefined')
+		}
+
 		if(this.roles[roleName] && this.roles[roleName].members[steamId] === true){
 			return true
 		}
 
 		return false
+	}
+
+	getServerSettings(){
+		return new Promise((resolve, reject)=>{
+			fsPromises.readFile(this.SETTINGS_FILE_PATH).then(content=>{
+				try {
+					let parsed = JSON.parse(content)
+
+					// cleanup
+					for(let key of Object.keys(parsed)){
+						if(!this.DEFAULT_SETTINGS[key]){
+							delete parsed[key]
+						}
+					}
+
+					// add missing
+					for(let key of Object.keys(this.DEFAULT_SETTINGS)){
+						if(!parsed[key]){
+							parsed[key] = JSON.parse(JSON.stringify(this.DEFAULT_SETTINGS[key]))
+						}
+					}
+
+					this.settingsCache = JSON.parse(JSON.stringify(parsed))
+
+					this.log('Current Settings: ', parsed)
+					resolve(parsed)
+				} catch (err){
+					this.warn('unable to read server settings, using default settings', err)
+					this.resetServerSettings().then(settingsObject => {
+
+						this.settingsCache = JSON.parse(JSON.stringify(settingsObject))
+
+						resolve(settingsObject)
+					}).catch(err => reject(err))
+				}
+			}).catch(err => {
+				this.warn('unable to read server settings file, using default settings', err)
+				resolve(this.DEFAULT_SETTINGS)
+			})
+		})
+	}
+
+	setServerSetting(key, value){
+		return new Promise((resolve, reject)=>{
+			if(!this.DEFAULT_SETTINGS[key]){
+				return reject('invalid settings key: ' + key)
+			}
+
+			this.getServerSettings().then(settingsObject => {
+				this.info(`set server setting [${key}] to '${value}'`)
+
+				settingsObject[key].value = value
+
+				this.setServerSettingsTo(settingsObject).then(settingsObject => resolve(settingsObject)).catch(err => reject(err))
+			}).catch(err => reject(err))
+		})
+	}
+
+	setServerSettingsTo(settingsObject){
+		return new Promise((resolve, reject)=>{
+			fsPromises.writeFile(this.SETTINGS_FILE_PATH, JSON.stringify(settingsObject, null, 2)).then(_=>{
+				this.settingsCache = JSON.parse(JSON.stringify(settingsObject))
+				resolve( JSON.parse(JSON.stringify(settingsObject)) )
+			}).catch(err => reject(err))
+		})
+	}
+
+	resetServerSettings(){
+		return this.setServerSettingsTo(this.DEFAULT_SETTINGS)
+	}
+
+	getCurrentServerSetting(key){
+		if(! this.DEFAULT_SETTINGS[key]){
+			throw new Error('invalid settings key: ' + key)
+		}
+		return this.settingsCache ? this.settingsCache[key].value : undefined
 	}
 
 	addNotificationFor(steamId, title, text){

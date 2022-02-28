@@ -15,19 +15,33 @@ class C2 extends C2EventManagerAndLoggingUtility {
 	}
 
 	updateUserPermissions(){
-		this.log('userSteamId has changed. Updating permissions ...')
+		this.log('updating user permissions ...')
 
 		this.webclient.sendMessage('user-permissions').then((permissions)=>{
 			this.store.state.permissions = JSON.parse(permissions)
 			this.info('updating user permissions to', this.store.state.permissions)
 		}).catch(err=>{
-			this.error(err)
+			this.error('Error updating user permissions: ', err)
+			this.showError('Error updating user permissions: ' + err)
 			this.store.state.permissions = undefined
 		})
 	}
 
+	updateSettings(){
+		this.log('updating server settings ...')
+
+		this.webclient.sendMessage('server-settings').then((settings)=>{
+			this.store.state.settings = JSON.parse(settings)
+			this.info('updating server settings to', this.store.state.settings)
+		}).catch(err=>{
+			this.error('Error updating server settings: ', err)
+			this.showError('Error updating server settings: ' + err)
+			this.store.state.settings = undefined
+		})
+	}
+
 	setup(el){
-		this.log('[C2] setup', el)
+		this.log('setup', el)
 
 		this.storeConfig = {
 			state: {}
@@ -46,6 +60,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.store = Vuex.createStore(this.storeConfig)
 		this.store.watch(()=>{return this.store.state.userSteamId}, ()=>{
 			this.updateUserPermissions()
+			this.updateSettings()
 
 			this.webclient.sendMessage('check-notifications', this.store.state.userSteamId).then(json => {
 				let notifications = JSON.parse(json)
@@ -132,6 +147,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.webclient.ws.on('open', ()=>{
 			this.updateUserPermissions()
+			this.updateSettings()
 		})
 	}
 

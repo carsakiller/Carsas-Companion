@@ -11,6 +11,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerStorable('userSteamId')
 			this.c2.registerStorable('profile')
 			this.c2.registerStorable('logs', [])
+			this.c2.registerStorable('settings')
 		})
 
 		this.c2.on('can-register-syncable', ()=>{
@@ -1363,6 +1364,136 @@ class C2Module_Core extends C2LoggingUtility {
 					<div class="message">{{entry.message}}</div>
 				</div>`
 			})
+
+			/*
+
+				PAGE SETTINGS MANAGEMENT
+
+			*/
+
+			this.c2.registerComponent('settings-management', {
+				computed: {
+					settings (){
+						return this.$store.state.settings
+					}
+				},
+				template: `<div class="settings_management">
+					<setting-list :settings="settings"></setting-list>
+				</div>`
+			})
+
+			this.c2.registerComponent('setting-list', {
+				props: {
+					settings: {
+						type: Object
+					}
+				},
+				template: `<div class="setting_list">
+					<setting v-if="settings" v-for="(setting, settingName) of settings" :setting="setting" :settingName="settingName"></setting>
+				</div>`
+			})
+
+			this.c2.registerComponent('setting', {
+				props: {
+					setting: {
+						type: Object,
+						required: true
+					},
+					settingName: {
+						type: String,
+						required: true
+					}
+				},
+				computed: {
+					settingComponent (){
+						switch(this.setting.type){
+							case 'boolean': return 'setting-bool';
+							case 'string': return 'setting-string';
+							default: {
+								this.error('invalid setting type', this.setting.type)
+								return
+							}
+						}
+					}
+				},
+				template: `<division class="setting" :name="settingName" :alwaysExtended="true">
+					<lockable-by-childs>
+						<component :is="settingComponent" :setting="setting" :settingName="settingName"/>
+					</lockable-by-childs>
+				</division>`
+			})
+
+			this.c2.registerComponent('setting-bool', {
+				data: function(){
+					return {
+						syncables: []
+					}
+				},
+				props: {
+					setting: {
+						type: Object,
+						required: true
+					},
+					settingName: {
+						type: String,
+						required: true
+					}
+				},
+				template: `<toggleable-element class="setting_bool" :value-object="setting" :value-object-key="'value'" :on-value-change="settingChanged"/>`,
+				methods: {
+					settingChanged (_, value){
+						this.sendServerMessage('set-server-setting', JSON.stringify({key: this.settingName, value: value})).then(settings => {
+							this.$store.state.settings = JSON.parse(settings)
+						}).catch(err => {
+							this.showNotificationFailed('set-server-setting', err)
+						}).finally(_=>{
+							this.unlockComponent()
+							c2.updateUserPermissions()
+						})
+					}
+				},
+				mixins: [componentMixin_serverMessage]
+			})
+
+			this.c2.registerComponent('setting-string', {
+				data: function (){
+					return {
+						val: '',
+						syncables: []
+					}
+				},
+				props: {
+					setting: {
+						type: Object,
+						required: true
+					},
+					settingName: {
+						type: String,
+						required: true
+					}
+				},
+				template: `<div class="setting_string">
+					<textarea v-model="val" cols="30" rows="5" :disabled="isComponentLocked"/>
+					<spacer-vertical/>
+					<lockable-button @click="update">Update</lockable-button>
+				</div>`,
+				created: function (){
+					this.val = this.setting.value
+				},
+				methods: {
+					update (){
+						this.sendServerMessage('set-server-setting', JSON.stringify({key: this.settingName, value: this.val})).then(settings => {
+							this.$store.state.settings = JSON.parse(settings)
+						}).catch(err => {
+							this.showNotificationFailed('set-server-setting', err)
+						}).finally(_=>{
+							this.unlockComponent()
+							c2.updateUserPermissions()
+						})
+					}
+				},
+				mixins: [componentMixin_gameCommand]
+			})
 		})
 
 		this.c2.on('can-register-page', ()=>{
@@ -1374,6 +1505,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerPage('preferences', 'Preferences', 'control-panel', 'preferences-management')
 			this.c2.registerPage('gamesettings', 'Game Settings', 'wrench', 'gamesettings-management')
 			this.c2.registerPage('logs', 'Logs', 'note-o', 'logs-management')
+			this.c2.registerPage('settings', 'Settings', 'gear', 'settings-management')
 		})
 
 		this.c2.on('can-register-messagehandler', ()=>{
