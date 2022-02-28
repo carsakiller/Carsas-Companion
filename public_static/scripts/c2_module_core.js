@@ -342,8 +342,30 @@ class C2Module_Core extends C2LoggingUtility {
 					</division>
 					<division :name="'Help'" :startExtended="false">
 						You can find a manual <a-link :url="'#'" :text="'here (TODO)'"/>
+						<spacer-horizontal/>
+						<button @click="exportLogs">Export Logs</button>
 					</division>
-				</div>`
+				</div>`,
+				methods: {
+					exportLogs (){
+						let link = document.createElement('a')
+						$(link).attr('download', 'c2_companion_log.txt')
+
+						let blob = new Blob(['' + ConsoleLogger.getLatestLogAsString()], {type: 'text/plain'})
+
+						let url = URL.createObjectURL(blob)
+						$(link).attr('href', url)
+
+						document.body.appendChild(link)
+
+						link.click()
+
+						setTimeout(()=>{
+							link.remove()
+							URL.revokeObjectURL(url)
+						}, 100)
+					}
+				}
 			})
 
 			/*
