@@ -9,12 +9,16 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 
 		// FRONTEND -> BACKEND TEST (triggered by webclient)
 		this.c2.registerWebClientMessageHandler('test-performance-frontend-backend', (client, data)=>{
-			return JSON.parse(data)
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return JSON.parse(data)
+			}
 		})
 
 		// FRONTEND <- BACKEND TEST (triggered by webclient)
 		this.c2.registerWebClientMessageHandler('test-performance-backend-frontend', (client, data)=>{
-			return this.runWebClientTest(client, 'test-performance-backend-frontend')
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return this.runWebClientTest(client, 'test-performance-backend-frontend')
+			}
 		})
 
 
@@ -22,53 +26,65 @@ module.exports = class C2Module_Test extends C2LoggingUtility {
 
 		// GAME -> BACKEND TEST (triggered see below)
 		this.c2.registerGameMessageHandler('test-performance-game-backend', (data)=>{
-			if(typeof this.currentGameBackendTest === 'function'){
-				this.currentGameBackendTest(JSON.parse(data))
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				if(typeof this.currentGameBackendTest === 'function'){
+					this.currentGameBackendTest(JSON.parse(data))
+				}
 			}
 		})
 		// GAME -> BACKEND TEST (proxy triggered by webclient)
 		this.c2.registerWebClientMessageHandler('test-performance-game-backend-proxy', (client)=>{
-			return new Promise((resolve, reject)=>{
-				let start = Math.floor(performance.now())
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return new Promise((resolve, reject)=>{
+					let start = Math.floor(performance.now())
 
-				this.currentGameBackendTest = (data)=>{
-					resolve({
-						testSuccess: data === start,
-						testMessage: 'executed via proxy (companion server)'
+					this.currentGameBackendTest = (data)=>{
+						resolve({
+							testSuccess: data === start,
+							testMessage: 'executed via proxy (companion server)'
+						})
+					}
+
+					this.c2.sendMessageToGame(client.token, 'test-performance-game-backend-proxy', start).catch(err => {
+						this.currentGameBackendTest = undefined
+						reject(err)
 					})
-				}
-
-				this.c2.sendMessageToGame(client.token, 'test-performance-game-backend-proxy', start).catch(err => {
-					this.currentGameBackendTest = undefined
-					reject(err)
 				})
-			})
+			}
 		})
 
 		// GAME <- BACKEND TEST (triggered by webclient)
 		this.c2.registerWebClientMessageHandler('test-performance-backend-game', (client)=>{
-			return this.runGameTest('test-performance-backend-game', client)
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return this.runGameTest('test-performance-backend-game', client)
+			}
 		})
 
 		// FRONTEND -> GAME TEST (triggered by webclient), just proxying)
 		this.c2.registerWebClientMessageHandler('test-performance-frontend-game', (client, data)=>{
-			return new Promise((resolve, reject)=>{
-				let dat = JSON.parse(JSON.stringify(data)) //simulate the conversion that would normally happen
-				this.c2.sendMessageToGame(client.token, 'test-performance-frontend-game', dat).then(res => {
-					resolve(JSON.parse(res))
-				}).catch(err => {
-					reject(err)
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return new Promise((resolve, reject)=>{
+					let dat = JSON.parse(JSON.stringify(data)) //simulate the conversion that would normally happen
+					this.c2.sendMessageToGame(client.token, 'test-performance-frontend-game', dat).then(res => {
+						resolve(JSON.parse(res))
+					}).catch(err => {
+						reject(err)
+					})
 				})
-			})
+			}
 		})
 
 		this.c2.registerWebClientMessageHandler('debug-set-companion', (client, data)=>{
-			return this.c2.sendMessageToGame(client.token, 'debug-set-companion', data)
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return this.c2.sendMessageToGame(client.token, 'debug-set-companion', data)
+			}
 		})
 
 
 		this.c2.registerWebClientMessageHandler('debug-set-companion-detailed', (client, data)=>{
-			return this.c2.sendMessageToGame(client.token, 'debug-set-companion-detailed', data)
+			if(this.c2.c2Module_Core.getCurrentServerSetting('enable-test-mode') === true){
+				return this.c2.sendMessageToGame(client.token, 'debug-set-companion-detailed', data)
+			}
 		})
 	}
 

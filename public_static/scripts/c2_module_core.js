@@ -1418,6 +1418,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<division class="setting" :name="settingName" :alwaysExtended="true">
 					<lockable-by-childs>
+						<p class="description" v-if="setting.description">{{setting.description}}</p>
 						<component :is="settingComponent" :setting="setting" :settingName="settingName"/>
 					</lockable-by-childs>
 				</division>`

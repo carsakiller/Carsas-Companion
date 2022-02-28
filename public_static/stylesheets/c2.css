@@ -2703,7 +2703,12 @@ table th:last-child, table td:last-child {
   margin-right: 1em;
 }
 
-/* line 388, ../../compass/sass/_c2_module_core.scss */
+/* line 390, ../../compass/sass/_c2_module_core.scss */
+.settings_management .setting .description {
+  margin-bottom: 0.5em;
+}
+
+/* line 396, ../../compass/sass/_c2_module_core.scss */
 .user_login {
   position: absolute;
   top: 0.3em;
@@ -2718,11 +2723,11 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   transition: all 0.2s ease 0s;
 }
-/* line 402, ../../compass/sass/_c2_module_core.scss */
+/* line 410, ../../compass/sass/_c2_module_core.scss */
 .user_login:hover {
   filter: brightness(50%);
 }
-/* line 406, ../../compass/sass/_c2_module_core.scss */
+/* line 414, ../../compass/sass/_c2_module_core.scss */
 .user_login .user_container {
   height: 2em;
   display: flex;
@@ -2730,7 +2735,7 @@ table th:last-child, table td:last-child {
   justify-content: flex-end;
   align-items: center;
 }
-/* line 413, ../../compass/sass/_c2_module_core.scss */
+/* line 421, ../../compass/sass/_c2_module_core.scss */
 .user_login .user_container .profile_image {
   height: 2em;
   width: 2em;
@@ -2741,7 +2746,7 @@ table th:last-child, table td:last-child {
   border: 0.2em solid #07C5CB;
 }
 
-/* line 425, ../../compass/sass/_c2_module_core.scss */
+/* line 433, ../../compass/sass/_c2_module_core.scss */
 .login_popup {
   position: fixed;
   z-index: 2000;
@@ -2754,7 +2759,7 @@ table th:last-child, table td:last-child {
   align-items: center;
   background: #000a;
 }
-/* line 437, ../../compass/sass/_c2_module_core.scss */
+/* line 445, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner {
   position: relative;
   display: flex;
@@ -2766,23 +2771,23 @@ table th:last-child, table td:last-child {
   color: #f3f3f3;
   text-align: center;
 }
-/* line 448, ../../compass/sass/_c2_module_core.scss */
+/* line 456, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .close {
   position: absolute;
   top: 1em;
   right: 1em;
   cursor: pointer;
 }
-/* line 454, ../../compass/sass/_c2_module_core.scss */
+/* line 462, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .close:hover {
   color: #7a7a7a;
 }
-/* line 459, ../../compass/sass/_c2_module_core.scss */
+/* line 467, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .title {
   font-size: 1.7em;
   margin-bottom: 1em;
 }
-/* line 464, ../../compass/sass/_c2_module_core.scss */
+/* line 472, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .profile_image {
   width: 3em;
   height: 3em;
@@ -2792,7 +2797,7 @@ table th:last-child, table td:last-child {
   overflow: hidden;
   border: 0.2em solid #07C5CB;
 }
-/* line 474, ../../compass/sass/_c2_module_core.scss */
+/* line 482, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message {
   color: #f3f3f3;
   margin: 1em 0;
@@ -2800,21 +2805,21 @@ table th:last-child, table td:last-child {
   border: 0.1em solid #f3f3f3;
   border-radius: 0.3em;
 }
-/* line 481, ../../compass/sass/_c2_module_core.scss */
+/* line 489, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message.type_success {
   background: #379249;
 }
-/* line 485, ../../compass/sass/_c2_module_core.scss */
+/* line 493, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner .message.type_error {
   background: #c92f2f;
 }
-/* line 490, ../../compass/sass/_c2_module_core.scss */
+/* line 498, ../../compass/sass/_c2_module_core.scss */
 .login_popup .inner button {
   font-size: inherit;
   margin-top: 1em;
 }
 
-/* line 497, ../../compass/sass/_c2_module_core.scss */
+/* line 505, ../../compass/sass/_c2_module_core.scss */
 .status_bar {
   position: fixed;
   z-index: 3000;
@@ -2827,37 +2832,37 @@ table th:last-child, table td:last-child {
   justify-content: flex-end;
   font-size: 0.7em;
 }
-/* line 511, ../../compass/sass/_c2_module_core.scss */
+/* line 519, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry .name {
   margin-right: 0.5em;
 }
-/* line 515, ../../compass/sass/_c2_module_core.scss */
+/* line 523, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry .circle {
   display: inline-block;
   border-radius: 100%;
   width: 0.7em;
   height: 0.7em;
 }
-/* line 522, ../../compass/sass/_c2_module_core.scss */
+/* line 530, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_on .circle {
   background: #379249;
 }
-/* line 526, ../../compass/sass/_c2_module_core.scss */
+/* line 534, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_off .circle {
   background: #c92f2f;
 }
-/* line 530, ../../compass/sass/_c2_module_core.scss */
+/* line 538, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry.state_update .circle {
   animation-name: status-update-flash;
   animation-duration: 0.3s;
   animation-iteration-count: 1;
 }
-/* line 536, ../../compass/sass/_c2_module_core.scss */
+/* line 544, ../../compass/sass/_c2_module_core.scss */
 .status_bar .status_bar_entry + .status_bar_entry {
   margin-left: 1.5em;
 }
 
-/* line 542, ../../compass/sass/_c2_module_core.scss */
+/* line 550, ../../compass/sass/_c2_module_core.scss */
 .notifications {
   position: fixed;
   top: 1em;
@@ -2865,7 +2870,7 @@ table th:last-child, table td:last-child {
   width: calc(100vw - 2em);
   z-index: 4000;
 }
-/* line 549, ../../compass/sass/_c2_module_core.scss */
+/* line 557, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification {
   position: relative;
   display: flex;
@@ -2876,33 +2881,33 @@ table th:last-child, table td:last-child {
   box-shadow: 5px 5px 15px 5px #000;
   color: #f3f3f3;
 }
-/* line 559, ../../compass/sass/_c2_module_core.scss */
+/* line 567, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification[type="success"] {
   background: #379249;
 }
-/* line 563, ../../compass/sass/_c2_module_core.scss */
+/* line 571, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification[type="error"] {
   background: #c92f2f;
 }
-/* line 567, ../../compass/sass/_c2_module_core.scss */
+/* line 575, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification:not(:last-child) {
   margin-bottom: 1em;
 }
-/* line 571, ../../compass/sass/_c2_module_core.scss */
+/* line 579, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification .title {
   font-family: "Poppins", sans-serif;
   font-size: 1.2em;
   font-weight: bold;
   margin-bottom: 0.5em;
 }
-/* line 582, ../../compass/sass/_c2_module_core.scss */
+/* line 590, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification .close {
   position: absolute;
   top: 0.5em;
   right: 0.5em;
   cursor: pointer;
 }
-/* line 588, ../../compass/sass/_c2_module_core.scss */
+/* line 596, ../../compass/sass/_c2_module_core.scss */
 .notifications .notification .close:hover {
   color: #7a7a7a;
 }
