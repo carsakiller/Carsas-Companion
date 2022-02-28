@@ -407,6 +407,7 @@ let componentMixin_lockable = {
 let componentMixin_serverMessage = {
 	mixins: [componentMixin_lockable],
 	methods: {
+		/* does never reject but instead shows an error message) */
 		sendServerMessage (messageType, data, /* optional */ doNotUnlockAutomatically){
 			return new Promise((resolve, reject)=>{
 				this.lockComponent()
@@ -422,10 +423,15 @@ let componentMixin_serverMessage = {
 				}).catch((err)=>{
 					this.log('sending messageType', messageType,'failed')
 					this.debug('data', data, 'error', err)
-					reject(err)
+					if(err === '#websocket-not-open'){
+						this.showNotificationFailed(messageType, 'Lost connection to the webserver')
+					} else {
+						reject(err)
+					}
 				})
 			})
 		},
+		/* does never reject but instead shows an error message) */
 		sendServerMessageAndWaitForSync (messageType, data){
 			this.lockComponentUntilSync()
 			return this.sendServerMessage(messageType, data)

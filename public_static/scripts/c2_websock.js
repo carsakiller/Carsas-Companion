@@ -224,7 +224,7 @@ class C2WebSock extends C2EventManagerAndLoggingUtility {
 	send(data){
 		return new Promise((resolve, reject)=>{
 			if(this.isOpen() === false){
-				return reject('WebSocket not open')
+				return reject('#websocket-not-open')//do not change this string!
 			}
 
 			const myMessageId = this.messageIdCounter++
