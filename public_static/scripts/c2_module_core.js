@@ -232,8 +232,8 @@ class C2Module_Core extends C2LoggingUtility {
 
 						this.isCurrentlyLoggingIn = true
 						this.sendServerMessage('companion-login', this.token).then(json => {
-							let steamId = JSON.parse(json)
-							this.setMessage('success', steamId)
+							let parsed = JSON.parse(json)
+							this.setMessage('success', 'Welcome ' + parsed.name)
 							localStorage.companionToken = this.token
 							c2.webclient.ws.token = this.token
 
@@ -241,7 +241,7 @@ class C2Module_Core extends C2LoggingUtility {
 								this.hide()
 								this.setMessage(undefined, undefined)
 
-								this.$store.state.userSteamId = steamId
+								this.$store.state.userSteamId = parsed.steamId
 							}, 1000)
 
 						}).catch(err => {
