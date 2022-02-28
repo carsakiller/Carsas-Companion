@@ -118,7 +118,7 @@ function dontCacheThisRoute(req, res, next){
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2( 3 /* loglevel "info" */, app)
+c2 = new C2( 2 /* loglevel "warn" */, app)
 
 app.get('/c2', (req, res, next)=>{
 

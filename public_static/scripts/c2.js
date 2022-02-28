@@ -58,7 +58,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.dispatch('can-register-syncable')
 
 		this.store = Vuex.createStore(this.storeConfig)
-		this.store.watch(()=>{return this.store.state.userSteamId}, ()=>{
+		this.store.watch(function (state){return state.userSteamId}, ()=>{
 			this.updateUserPermissions()
 			this.updateSettings()
 

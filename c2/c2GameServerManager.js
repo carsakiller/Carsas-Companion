@@ -6,16 +6,13 @@ const path = require('path')
 
 module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtility {
 	
-	constructor(loglevel){
+	constructor(loglevel, c2){
 		super(loglevel)
+
+		this.c2 = c2
 
 		this.isRunning = false
 		this.pid = undefined // '12345'
-		this.type = undefined // 'x64' or 'x32'
-
-		this.executableDirectory = "C:\\condenser\\server\\stormworks_dedicated_server"
-		this.executableName32 = 'server.exe'
-		this.executableName64 = 'server64.exe'
 
 		this.autoRestartServer = false
 
@@ -30,7 +27,24 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 		}, 1000 * 10)
 	}
 
+	getExecutableFullPath(){
+		let pathSetting = this.c2.c2Module_Core.getCurrentServerSetting('gameserver-executable-path')
+		return pathSetting ? path.normalize(pathSetting) : undefined
+	}
+
+	getExecutableName(){
+		return this.getExecutableFullPath() ? path.basename(this.getExecutableFullPath()) : undefined
+	}
+
 	spawnGameServer(){
+		if(!this.getExecutableFullPath()){
+			// executable not set
+			return new Promise((resolve, reject)=>{
+				reject('executable path not set')
+			})
+		}
+
+
 		let prom = this.makeQuerablePromise( new Promise((resolve, reject)=>{
 			this.info('spawnGameServer')
 			this.isGameServerRunning((err, isRunning)=>{
@@ -43,7 +57,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 				}
 
 
-				let executableFullPath = path.normalize(path.join(this.executableDirectory, this.executableName64))
+				let executableFullPath = this.getExecutableFullPath()
 				try {
 					fs.accessSync(executableFullPath, fs.constants.R_OK)
 				} catch (err){
@@ -59,7 +73,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 
 				try {
 					this.childProcess = fork(path.join(__dirname, './c2GameServerProcess.js'),
-						['executableDirectory=' + this.executableDirectory, 'executableName=' + this.executableName64],
+						['executableFullPath=' + executableFullPath],
 						{
 							detached: true
 						}
@@ -152,8 +166,15 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 		return prom
 	}
 
+	//force kills child processes
+	forceExit(){
+		if(this.childProcess){
+			this.childProcess.kill()
+		}
+	}
+
 	killGameServer(){
-		return new Promise(()=>{
+		return new Promise((resolve, reject)=>{
 			this.info('killGameServer')
 			this.isGameServerRunning((err, isRunning, pid)=>{
 				if(err){
@@ -176,7 +197,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	}
 
 	checkIfGameServerIsRunning(){
-		this.isGameServerRunning((err, isRunning, pid, type)=>{
+		this.isGameServerRunning((err, isRunning, pid)=>{
 			if(err){ return }
 
 			if(this.isRunning && !isRunning){
@@ -197,19 +218,13 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 
 			this.isRunning = isRunning
 			this.pid = pid
-			this.type = type
 		})
 	}
 
 	/*
-		callback(err, isRunning, pid, type)
+		callback(err, isRunning, pid)
 	*/
 	isGameServerRunning(callback){
-		let promises = []
-
-		let x32
-		let x64
-
 		/*
 			TODO: when we start the executable, we include the full path name, but others might not do that
 
@@ -218,28 +233,18 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 			cool in windows: if you double click the executable, it also includes the full path name.
 			So only when someone starts the server like via cmd.exe `server64.exe` we cannot be sure.
 		*/
-		this.isProcessRunning(this.executableName32, path.join(this.executableDirectory, this.executableName32), (err, isRunning, task)=>{
+
+		if(!this.getExecutableFullPath()){
+			return callback('executable path not set', false)
+		}
+
+		this.isProcessRunning(this.getExecutableName(), this.getExecutableFullPath(), (err, isRunning, task)=>{
 			if(!err && isRunning){
-				x32 = task.pid
+				this.log('found running server executable')
+				callback(false, true, task.pid)
+			} else {
+				callback(false, false)
 			}
-
-			this.isProcessRunning(this.executableName64, path.join(this.executableDirectory, this.executableName64), (err, isRunning, task)=>{
-				if(!err && isRunning){
-					x64 = task.pid
-				}
-
-				if(x32 && x64){
-					this.warn('32bit and 64bit version of server running, we will use 64bit')
-				} else if(x64){
-					this.log('found x64 version running')
-					callback(false, true, x64, 'x64')
-				} else if (x32){
-					this.log('found x32 version running')
-					callback(false, true, x32, 'x32')
-				} else {
-					callback(false, false)
-				}
-			})
 		})
 	}
 

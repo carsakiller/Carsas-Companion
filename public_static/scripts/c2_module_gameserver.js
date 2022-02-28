@@ -12,13 +12,22 @@ class C2Module_Gameserver extends C2LoggingUtility {
 
 		this.c2.on('can-register-component', ()=>{
 			this.c2.registerComponent('gameserver-management', {
+				computed: {
+					settingsOkay (){
+						return this.$store.state.settings && this.$store.state.settings['gameserver-executable-path'] && this.$store.state.settings['gameserver-executable-path'].value != ''
+					}
+				},
 				template: `<div class="gameserver_management">
 					<module-enableable :name="'gameserver'">
-						<division class="controls" :name="'Control GameServer'" :always-extended="true">
+						<division v-if="!settingsOkay" :name="'Error'" :always-extended="true">
+							<p>Executable path not set (please do this on the settings page).</p>
+						</division>
+
+						<division v-if="settingsOkay" class="controls" :name="'Control GameServer'" :always-extended="true">
 							<gameserver-control/>
 						</division>
 
-						<division :name="'Console Output'" :start-extended="true">
+						<division v-if="settingsOkay" :name="'Console Output'" :start-extended="true">
 							<gameserver-status/>
 						</division>
 					</module-enableable>

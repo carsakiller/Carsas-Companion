@@ -8,7 +8,7 @@ class ConsoleLogger {
 
 
 		try {
-			fs.accessSync(this.LOG_FILE_PATH, fs.constants.R_OK)
+			fs.accessSync(this.LOG_FILE_PATH, fs.constants.W_OK)
 
 			try {
 				fs.unlinkSync(this.LOG_FILE_PATH)
@@ -170,7 +170,7 @@ let mixin_LoggingUtility = Base => class extends Base {
 		if(this.loglevel < 5){
 			return
 		}
-		console.log.apply(null, [
+		console.debug.apply(null, [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')

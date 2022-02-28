@@ -180,7 +180,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					promise.then((result)=>{
 						answer(true, result)
 					}).catch((err)=>{
-						this.error(err)
+						this.warn('game script responded with an error:', err)
 						answer(false, err)
 					})
 				}

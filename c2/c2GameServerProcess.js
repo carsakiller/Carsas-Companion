@@ -1,32 +1,21 @@
 const { exec } = require('child_process');
 const path = require('path');
 
-const C2LoggingUtility = require('./C2_Utility.js').C2LoggingUtility
-
-class C2GameServerProcess extends C2LoggingUtility {
+class C2GameServerProcess {
 	
-	constructor(loglevel, executableDirectory, executableName){
-		super(loglevel)
+	constructor(loglevel, executableFullPath){
+		this.loglevel = loglevel
 
-		if(!executableDirectory){
-			this.error('executableDirectory is not defined')
+		if(!executableFullPath){
+			this.error('executableFullPath is not defined')
 			return
 		}
 
-		if(!executableName){
-			this.error('executableName is not defined')
-			return
-		}
-
-		this.info('executableDirectory:', executableDirectory)
-		this.info('executableName:', executableName)
-
-		this.executableDirectory = executableDirectory
-		this.executableName = executableName
+		this.info('executableFullPath:', executableFullPath)
 
 
-		this.childProcess = exec(path.join(this.executableDirectory, this.executableName), {
-			cwd: this.executableDirectory,
+		this.childProcess = exec(executableFullPath, {
+			cwd: path.dirname(executableFullPath),
 			windowsHide: false
 		})
 
@@ -62,6 +51,47 @@ class C2GameServerProcess extends C2LoggingUtility {
 			data: data
 		})
 	}
+
+
+	error(...args){
+		if(this.loglevel < 1){
+			return
+		}
+
+		console.error.apply(null, [this.constructor.name, 'Error'].concat(args))
+	}
+
+	warn(...args){
+		if(this.loglevel < 2){
+			return
+		}
+
+		console.warn.apply(null, [this.constructor.name, 'Warn'].concat(args))
+	}
+
+	info(...args){
+		if(this.loglevel < 3){
+			return
+		}
+
+		console.info.apply(null, [this.constructor.name, 'Info'].concat(args))
+	}
+
+	log(...args){
+		if(this.loglevel < 4){
+			return
+		}
+
+		console.log.apply(null, [this.constructor.name, 'Log'].concat(args))
+	}
+
+	debug(...args){
+		if(this.loglevel < 5){
+			return
+		}
+
+		console.debug.apply(null, [this.constructor.name, 'Debug'].concat(args))
+	}
 }
 
 
@@ -72,4 +102,4 @@ for(let i=2; i<process.argv.length; i++){
 	args[arg[0]] = arg[1]
 }
 
-let c2GameServerProcess = new C2GameServerProcess(4, args.executableDirectory, args.executableName)
+let c2GameServerProcess = new C2GameServerProcess(2, args.executableFullPath)

@@ -372,7 +372,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list player_list">
-					<player v-for="(player, steamid) in players" :player="player" :steamid="steamid" :key="steamid"/>
+					<player v-for="(player, steamid) in players" :player="player" :steamid="steamid"/>
 				</div>`
 			})
 
@@ -420,7 +420,7 @@ class C2Module_Core extends C2LoggingUtility {
 						steamid: this.steamid
 					}
 				},
-				template: `<extendable v-slot="extendableProps" class="player" key="{{player.steamID}}" :class="[{is_banned: isBanned}]">
+				template: `<extendable v-slot="extendableProps" class="player" :class="[{is_banned: isBanned}]">
 
 					<lockable-by-parent/>
 
@@ -452,7 +452,7 @@ class C2Module_Core extends C2LoggingUtility {
 						<tabs>
 							<tab :title="'Roles'">
 								<lockable-by-childs>
-									<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :key="roleName" :steamid="steamid"/>
+									<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :steamid="steamid"/>
 								</lockable-by-childs>
 							</tab>
 						</tabs>
@@ -553,7 +553,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="list vehicle_list">
 					<lockable-by-childs>
-						<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)" :key="vehicleId"/>
+						<vehicle v-for="(vehicle, vehicleId) of vehicles" :vehicle="vehicle" :vehicleId="parseInt(vehicleId)"/>
 						<span v-if="Object.keys(vehicles).length === 0">No vehicles</span>
 					</lockable-by-childs>
 				</div>`
@@ -647,7 +647,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list role_list">
-					<role v-for="(role, roleName) of roles" :role="role" :roleName="roleName" :key="roleName"/>
+					<role v-for="(role, roleName) of roles" :role="role" :roleName="roleName"/>
 				</div>`
 			})
 
@@ -819,7 +819,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="list command_list">
 					<lockable-by-childs>
-						<command v-for="(isCommand, commandName) of commands" :commands="commands" :key="commandName" :isCommand="isCommand" :commandName="commandName"/>
+						<command v-for="(isCommand, commandName) of commands" :commands="commands" :isCommand="isCommand" :commandName="commandName"/>
 					</lockable-by-childs>
 				</div>`
 			})
@@ -861,7 +861,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="list member_list">
-					<member v-for="val, steamid of members" :key="steamid" :steamid="steamid"/>
+					<member v-for="val, steamid of members" :steamid="steamid"/>
 				</div>`
 			})
 
@@ -1348,7 +1348,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="log_list">
-					<log-entry v-for="(entry, entry_index) of logs" :entry="entry" :key="entry_index"></log-entry>
+					<log-entry v-for="(entry, entry_index) of logs" :entry="entry""></log-entry>
 				</div>`
 			})
 

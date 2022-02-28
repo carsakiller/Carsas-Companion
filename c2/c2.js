@@ -61,6 +61,23 @@ module.exports = class C2 extends C2LoggingUtility {
 		this.c2GameInterface.on('game-disconnected', ()=>{
 			this.c2WebInterface.sendMessageTo('all', 'game-connection', false)
 		})
+
+		//do something when app is closing
+		process.on('exit', this.handleExit.bind(this));
+
+		//catches ctrl+c event
+		process.on('SIGINT', this.handleExit.bind(this));
+
+		// catches "kill pid" (for example: nodemon restart)
+		process.on('SIGUSR1', this.handleExit.bind(this));
+		process.on('SIGUSR2', this.handleExit.bind(this));
+
+		//catches uncaught exceptions
+		process.on('uncaughtException', this.handleExit.bind(this));
+	}
+
+	handleExit() {
+	    this.c2Module_Gameserver.forceExit()
 	}
 
 	sendMessageToGame(...args){

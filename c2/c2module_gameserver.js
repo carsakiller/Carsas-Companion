@@ -8,7 +8,7 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 
 		this.c2 = c2
 
-		this.c2GameServerManager = new C2GameServerManager(loglevel)
+		this.c2GameServerManager = new C2GameServerManager(loglevel, c2)
 
 		this.c2GameServerManager.on('stdout', (data)=>{
 			this.c2.sendMessageToWebClient('all', 'gameserver-stdout', data)
@@ -48,6 +48,11 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 	}
 
 	clientHasPermission(client){
-		return this.c2.c2Module_Core.tokenHasRole(client.token, 'Owner')
+		return this.c2.c2Module_Core.clientIsOwner(client)
+	}
+
+	//force kills child processes
+	forceExit(){
+		this.c2GameServerManager.forceExit()
 	}
 }
