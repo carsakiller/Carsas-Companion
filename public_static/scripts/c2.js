@@ -24,6 +24,8 @@ class C2 extends C2EventManagerAndLoggingUtility {
 			this.error('Error updating user permissions: ', err)
 			this.showError('Error updating user permissions: ' + err)
 			this.store.state.permissions = undefined
+		}).finally(()=>{
+			this.dispatch('user-permissions-changed')
 		})
 	}
 

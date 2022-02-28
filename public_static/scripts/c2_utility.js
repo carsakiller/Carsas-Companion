@@ -960,7 +960,8 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			this.c2.registerComponent('pages', {
 				data: function (){
 					return {
-						selectedIndex: -1
+						selectedIndex: 0,
+						userHasSelectedPage: false
 					}
 				},
 				props: {
@@ -971,7 +972,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				},
 				template: `<div class="pages">
 					<div class="sidebar">
-						<pages-sidebar-entry v-for="(page, index) in pages" @click="selectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :page="page" @visibility-change="checkSelectedPageVisible"/>
+						<pages-sidebar-entry v-for="(page, index) in pages" @click="userSelectPage(index)" :class="['entry', {selected: (index === selectedIndex)}]" :page="page" @visibility-change="checkSelectedPageVisible"/>
 					</div>
 
 					<page v-for="(page, index) in pages" :name="page.name" :title="page.title" :icon="page.icon" :is-selected="index === selectedIndex">
@@ -980,6 +981,11 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				</div>`,
 				emits: ['page-change'],
 				methods: {
+					userSelectPage (i){
+						this.userHasSelectedPage = true
+						this.selectPage(i)
+						localStorage.setItem('lastPageIndex', this.selectedIndex)
+					},
 					selectPage (i){
 						let newSelected = Math.max(0, Math.min(this.pages.length - 1, i))
 
@@ -993,7 +999,6 @@ let componentMixin_disabledWhenAnyParentLocked = {
 							this.selectedIndex = newSelected
 
 						    this.debug('page change', this.selectedIndex)
-							localStorage.setItem('lastPageIndex', this.selectedIndex)
 						}
 
 						document.title = 'Carsa\'s Companion - ' + this.pages[this.selectedIndex].title
@@ -1006,8 +1011,12 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					}
 				},
 				created: function (){
-					let saved = parseInt(localStorage.getItem('lastPageIndex'))
-					this.selectPage(isNaN(saved) ? 0 : saved)
+					this.selectPage(0)
+					c2.on('user-permissions-changed', ()=>{
+
+						let saved = parseInt(localStorage.getItem('lastPageIndex'))
+						this.selectPage(isNaN(saved) ? 0 : saved)
+					})
 				},
 				mixins: [componentMixin_logging]
 			})
