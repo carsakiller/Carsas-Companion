@@ -11,9 +11,6 @@ app.listen(PORT, () => {
 const path = require('path')
 const handlebars = require('express-handlebars')
 const morgan = require('morgan')
-const cookieParser = require('cookie-parser')
-const bodyParser = require('body-parser')
-const express_json = require('express-json')
 const serveStatic = require('serve-static')
 
 
@@ -22,11 +19,6 @@ app.disable('x-powered-by');//dont tell client that i use express
 //http://expressjs.com/de/advanced/best-practice-security.html#helmet-verwenden
 const helmet = require('helmet');
 app.use(helmet());
-
-const hsts = require('hsts')
-app.use(hsts({
-  maxAge: 15552000  // 180 days in seconds
-}))
 
 const ienoopen = require('ienoopen')
 app.use(ienoopen())
@@ -38,21 +30,13 @@ const frameguard = require('frameguard')
 // Only let me be framed by people of the same origin:
 app.use(frameguard({ action: 'sameorigin' }))
 
-const cors = require('cors')
-app.use(
-  cors({
-    origin: '*',//must be * because we use localhost
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  })
-)
 
 const csp = require('helmet-csp')
 
-// set production only settings
 if (app.get('env') === 'production') {
-  app.set('trust proxy', 1) // trust first proxy (if we have a nginx between)
-  //sessionOptions.secure = true // serve secure cookies (only works with https, else cookies wont work!)
-  //sessionOptions.proxy = true // serve secure cookies (only works with https, else cookies wont work!)
+  // set production only settings
+
+  //app.set('trust proxy', 1) // trust first proxy (if we have a nginx between)
 
   app.use(csp({
     useDefaults: true,
@@ -97,23 +81,10 @@ app.use(morgan('dev', {
     }
   }
 }))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cookieParser())
-app.use(express_json())
 
 app.use('/static', serveStatic(path.join(__dirname, 'public_static'), {
   maxAge: '6h'
 }))
-
-/* load routes */
-function dontCacheThisRoute(req, res, next){
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
-  res.setHeader('Pragma', 'no-cache')
-  res.setHeader('Expires', 0)
-  next()
-}
-
 
 app.get('/', (req, res, next)=>{
   res.render('index', {title: 'Carsa\'s Companion'})
@@ -131,7 +102,7 @@ c2 = new C2( 2 /* loglevel "warn" */, app)
 app.get('/c2', (req, res, next)=>{
 
   if(c2.isAccessAllowedForIp(req.ip)){
-    res.render('c2');
+    res.render('c2', {title: 'Carsa\'s Companion'});
   } else {
     let err = new Error('Forbidden: The games owner has not allowed external access.');
     err.status = 403;
@@ -153,6 +124,7 @@ app.get('/ws', (req, res, next)=>{
 
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.locals.title = 'Error'
 
     res.status(403)
     res.render('error')
@@ -167,6 +139,7 @@ app.use(function(req, res, next) {
 
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.title = 'Error'
 
   res.status(404);
   res.render('error');
