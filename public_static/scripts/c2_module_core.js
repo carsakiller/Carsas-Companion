@@ -375,12 +375,61 @@ class C2Module_Core extends C2LoggingUtility {
 			*/
 
 			this.c2.registerComponent('players-management', {
+				data (){
+					return {
+						filters: {
+							all: (players)=>{
+								return players
+							},
+							online: (players)=>{
+								let filtered = {}
+
+								for(let steamId of Object.keys(players)){
+									let player = players[steamId]
+									if(player.peerID !== undefined){
+										filtered[steamId] = player
+									}
+								}
+
+								return filtered
+							},
+							offline: (players)=>{
+								let filtered = {}
+
+								for(let steamId of Object.keys(players)){
+									let player = players[steamId]
+									if(player.peerID === undefined){
+										filtered[steamId] = player
+									}
+								}
+
+								return filtered
+							},
+							banned: (players)=>{
+								let filtered = {}
+
+								for(let steamId of Object.keys(players)){
+									let player = players[steamId]
+									if(player.banned){
+										filtered[steamId] = player
+									}
+								}
+
+								return filtered
+							}
+						},
+						currentFilter: 'all'
+					}
+				},
 				computed: {
 					players (){
-						return this.$store.state.players
+						return this.$store.state.players ? this.filters[this.currentFilter](this.$store.state.players) : undefined
 					}
 				},
 				template: `<div class="players_management">
+					<div class="filter_selection">
+						<div v-for="(_, filtername) in filters" @click="currentFilter = filtername" :class="['filter', {selected: currentFilter === filtername}]">{{filtername}}</div>
+					</div>
 					<player-list v-if="players" v-bind:players="players"/>
 					<span v-else>Not synced</span>
 				</div>`

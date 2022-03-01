@@ -28,7 +28,29 @@
 
 .players_management {
 
+	.filter_selection {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: center;
+		margin-top: 0.5em;
+
+		.filter {
+			margin: 0.5em;
+			padding: 0.3em 1em;
+			border-radius: 10000px;
+			border: 0.2em solid $secondary;
+			color: $text-color;
+			cursor: pointer;
+			transition: all 0.2s ease 0s;
+
+			&.selected, &:hover {
+				background: $secondary;
+			}
+		}
+	}
+
 	.player_list {
+		margin-top: 0.5em;
 
 		.player {
 			background: $tertiary;
