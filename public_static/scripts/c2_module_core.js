@@ -455,7 +455,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				computed: {
 					isBanned (){
-						return !!this.player.banned
+						return this.player.banned !== undefined
 					},
 					bannedBy (){
 						return this.isBanned ? this.player.banned : ''

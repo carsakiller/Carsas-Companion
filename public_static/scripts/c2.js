@@ -334,6 +334,45 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 		this.messageHandlers[messageType] = callback
 	}
+
+
+	__generateFakePlayersAndVehicles(){
+		let newPlayers = {}
+		for(let i=0; i<10; i++){
+			let steamId = '' + Math.floor(Math.random()*1000000)
+			newPlayers[steamId] = {
+				admin: Math.random() > 0.5,
+				auth: Math.random() > 0.5,
+				name: 'generated player #' + (Object.keys(newPlayers).length + 1),
+				peerID: Math.random() > 0.5 ? Math.floor(Math.random()*10) : undefined,
+				steamID: steamId,
+				banned: Math.random() > 0.5 ? Object.keys(newPlayers)[Math.floor(Math.random() * Object.keys(newPlayers).length)] : undefined,
+			}
+		}
+
+		this.store.state.players = newPlayers
+		this.dispatch('sync-arrived', 'players')
+
+		let newVehicles = {}
+		for(let i=0; i<10; i++){
+			let vehicleId = '' + Math.floor(Math.random()*100)
+			newVehicles[vehicleId] = {
+				cost: 0,
+				owner: Object.keys(newPlayers)[Math.floor(Math.random() * Object.keys(newPlayers).length)],
+				name: 'generated vehicle #' + (Object.keys(newVehicles).length + 1),
+				prettyName: 'rand #' + (Object.keys(newVehicles).length + 1) + '(' + vehicleId + ')',
+				ui_id: Math.floor(Math.random()*100),
+				vehicleID: vehicleId
+			}
+		}
+
+		this.store.state.vehicles = newVehicles
+		this.dispatch('sync-arrived', 'vehicles')
+	}
+
+	__generateFakeVehicles(){
+
+	}
 }
 
 C2.uuid = function (){
