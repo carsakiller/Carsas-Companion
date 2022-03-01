@@ -17,12 +17,10 @@ class C2Module_Map extends C2LoggingUtility {
 		this.c2.on('can-register-component', ()=>{
 			this.c2.registerComponent('map-view', {
 				template: `<div class="map_view" style="height: 100%; width: 100%">
-					<module-enableable :name="'map'" style="height: 100%; width: 100%">
-						<div class="controls">
+					<div class="controls">
 
-						</div>
-						<map-2d/>
-					</module-enableable>
+					</div>
+					<map-2d/>
 				</div>`
 			})
 

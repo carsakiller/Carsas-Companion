@@ -180,7 +180,7 @@ module.exports = class C2WebSocketHandler extends C2Handler {
 					promise.then((result)=>{
 						answer(true, result)
 					}).catch((err)=>{
-						this.warn('game script responded with an error:', err)
+						this.warn('game script responded with an error:', err)//TODO we should only do this when the command was handled on the server and not by the game script (since we only want to track exceptions happening on the server without being noticed)
 						answer(false, err)
 					})
 				}

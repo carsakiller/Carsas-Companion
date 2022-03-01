@@ -421,17 +421,3 @@
 		z-index: 1;
 	}
 }
-
-.module_enableable {
-
-	.module_not_enabled {
-		padding: 0.5em 1em;
-		background: shade($disabled, 30%);
-
-		.name {
-			font-size: 1.3em;
-			font-weight: 600;
-			font-style: italic;
-		}
-	}
-}

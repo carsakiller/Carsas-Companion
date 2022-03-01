@@ -18,262 +18,252 @@ class C2Module_Test extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="tests_management">
-					<module-enableable :name="'tests'">
-						<tabs>
-							<tab :title="'Debugging'">
-								<division :name="'Companion Debugging'" :always-extended="true">
-									<companion-debugging/>
-								</division>
-							</tab>
+					<tabs>
+						<tab :title="'Debugging'">
+							<division :name="'Companion Debugging'" :always-extended="true">
+								<companion-debugging/>
+							</division>
+						</tab>
 
 
 
 
-							<tab :title="'Test runs'">
-								<division :name="'Performance'" :always-extended="true">
-									<test-run :name="'test-performance-frontend-backend'" :type="'local'"/>
-									<test-run :name="'test-performance-backend-frontend'" :type="'remote'"/>
-									<test-run :name="'test-performance-game-backend-proxy'" :type="'remote'"/>
-									<test-run :name="'test-performance-backend-game'" :type="'remote'"/>
-									<test-run :name="'test-performance-frontend-game'" :type="'local'"/>
-								</division>
-							</tab>
+						<tab :title="'Test runs'">
+							<division :name="'Performance'" :always-extended="true">
+								<test-run :name="'test-performance-frontend-backend'" :type="'local'"/>
+								<test-run :name="'test-performance-backend-frontend'" :type="'remote'"/>
+								<test-run :name="'test-performance-game-backend-proxy'" :type="'remote'"/>
+								<test-run :name="'test-performance-backend-game'" :type="'remote'"/>
+								<test-run :name="'test-performance-frontend-game'" :type="'local'"/>
+							</division>
+						</tab>
 
 
 
 
-							<tab :title="'Test Custom commands'">
-								<division :name="'Run custom command'" :always-extended="true">
-									<run-custom-command/>
-								</division>
-							</tab>
+						<tab :title="'Test Custom commands'">
+							<division :name="'Run custom command'" :always-extended="true">
+								<run-custom-command/>
+							</division>
+						</tab>
 
 
 
 
-							<tab :title="'Structural Components'">
-								<test-component-group :title="'tabs'">
-									<test-component>
-										<tabs>
-											<tab :title="'Tab A'">Content of A</tab>
-											<tab :title="'Tab B'">Content of B</tab>
-											<tab :title="'Tab C'">Content of C</tab>
-										</tabs>
-									</test-component>
-								</test-component-group>
+						<tab :title="'Structural Components'">
+							<test-component-group :title="'tabs'">
+								<test-component>
+									<tabs>
+										<tab :title="'Tab A'">Content of A</tab>
+										<tab :title="'Tab B'">Content of B</tab>
+										<tab :title="'Tab C'">Content of C</tab>
+									</tabs>
+								</test-component>
+							</test-component-group>
 
-								<test-component-group :title="'extendable'">
-									<test-component>
-										<extendable>
-											<extendable-trigger>
-												<p style="border: 1px solid; padding: 0.5em">Click me to extend</p>
+							<test-component-group :title="'extendable'">
+								<test-component>
+									<extendable>
+										<extendable-trigger>
+											<p style="border: 1px solid; padding: 0.5em">Click me to extend</p>
+										</extendable-trigger>
+
+										<br/>
+
+										<extendable-body>
+											This shows when extended.
+										</extendable-body>
+
+									</extendable>
+								</test-component>
+
+								<test-component :options="{startExtended: true}">
+									<extendable :start-extended="true">
+										<p style="border: 1px solid; padding: 0.5em">Just a heading
+											<extendable-trigger style="display: inline-block">
+												<span style="padding: 0.1em 0.2em; border: 0.1em solid;">Toggle Extended</span>
 											</extendable-trigger>
+										</p>
 
-											<br/>
-
-											<extendable-body>
-												This shows when extended.
-											</extendable-body>
-
-										</extendable>
-									</test-component>
-
-									<test-component :options="{startExtended: true}">
-										<extendable :start-extended="true">
-											<p style="border: 1px solid; padding: 0.5em">Just a heading
-												<extendable-trigger style="display: inline-block">
-													<span style="padding: 0.1em 0.2em; border: 0.1em solid;">Toggle Extended</span>
-												</extendable-trigger>
-											</p>
-
-											<br/>
-
-											<extendable-body>
-												This shows when extended.
-											</extendable-body>
-
-										</extendable>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'division'" :description="'A simple container that can be extendable or not.'">
-									<test-component>
-										<division>
-											Some content.
-										</division>
-									</test-component>
-
-									<test-component :options="{name: 'Name'}">
-										<division :name="'Name'">
-											Some content.
-										</division>
-									</test-component>
-
-									<test-component :options="{alwaysExtended: true, name: 'Name'}">
-										<division :name="'Name'" :always-extended="true">
-											Some content.
-										</division>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'spacer-horizontal'" :description="'A simple horizontal block with a margin.'">
-									<test-component>
-										<div style="display: flex; flex-direction: column;">
-											<div style="background: grey">Before</div>
-											<spacer-horizontal/>
-											<div style="background: grey">After</div>
-										</div>
-									</test-component>
-
-									<test-component :options="{height: '2em'}">
-										<div style="display: flex; flex-direction: column;">
-											<div style="background: grey">Before</div>
-											<spacer-horizontal :height="'2em'"/>
-											<div style="background: grey">After</div>
-										</div>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'spacer-vertical'" :description="'A simple vertical block with a margin.'">
-									<test-component>
-										<div style="display: flex; flex-direction: row;">
-											<div style="background: grey">Before</div>
-											<spacer-vertical/>
-											<div style="background: grey">After</div>
-										</div>
-									</test-component>
-
-									<test-component :options="{width: '2em'}">
-										<div style="display: flex; flex-direction: row;">
-											<div style="background: grey">Before</div>
-											<spacer-vertical :width="'2em'"/>
-											<div style="background: grey">After</div>
-										</div>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'todo'" :description="'A placeholder that shows something that has yet to be implemented.'">
-									<test-component>
-										<todo>bla bla blubb</todo>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'icon'" :description="'Just an icon.'">
-									<test-component>
-										<icon :icon="'users'"/>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'input'" :description="'Different inputs.'">
-									<test-component>
-										<input type="number"/>
 										<br/>
-										<br/>
-										<input type="text"/>
-									</test-component>
-								</test-component-group>
 
-								<test-component-group :title="'textarea'">
-									<test-component>
-										<textarea cols="20" rows="5"/>
-									</test-component>
-								</test-component-group>
-							</tab>
+										<extendable-body>
+											This shows when extended.
+										</extendable-body>
+
+									</extendable>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'division'" :description="'A simple container that can be extendable or not.'">
+								<test-component>
+									<division>
+										Some content.
+									</division>
+								</test-component>
+
+								<test-component :options="{name: 'Name'}">
+									<division :name="'Name'">
+										Some content.
+									</division>
+								</test-component>
+
+								<test-component :options="{alwaysExtended: true, name: 'Name'}">
+									<division :name="'Name'" :always-extended="true">
+										Some content.
+									</division>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'spacer-horizontal'" :description="'A simple horizontal block with a margin.'">
+								<test-component>
+									<div style="display: flex; flex-direction: column;">
+										<div style="background: grey">Before</div>
+										<spacer-horizontal/>
+										<div style="background: grey">After</div>
+									</div>
+								</test-component>
+
+								<test-component :options="{height: '2em'}">
+									<div style="display: flex; flex-direction: column;">
+										<div style="background: grey">Before</div>
+										<spacer-horizontal :height="'2em'"/>
+										<div style="background: grey">After</div>
+									</div>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'spacer-vertical'" :description="'A simple vertical block with a margin.'">
+								<test-component>
+									<div style="display: flex; flex-direction: row;">
+										<div style="background: grey">Before</div>
+										<spacer-vertical/>
+										<div style="background: grey">After</div>
+									</div>
+								</test-component>
+
+								<test-component :options="{width: '2em'}">
+									<div style="display: flex; flex-direction: row;">
+										<div style="background: grey">Before</div>
+										<spacer-vertical :width="'2em'"/>
+										<div style="background: grey">After</div>
+									</div>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'todo'" :description="'A placeholder that shows something that has yet to be implemented.'">
+								<test-component>
+									<todo>bla bla blubb</todo>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'icon'" :description="'Just an icon.'">
+								<test-component>
+									<icon :icon="'users'"/>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'input'" :description="'Different inputs.'">
+								<test-component>
+									<input type="number"/>
+									<br/>
+									<br/>
+									<input type="text"/>
+								</test-component>
+							</test-component-group>
+
+							<test-component-group :title="'textarea'">
+								<test-component>
+									<textarea cols="20" rows="5"/>
+								</test-component>
+							</test-component-group>
+						</tab>
 
 
 
 
-							<tab :title="'Functional Components'">
-								<test-component-group :title="'toggleable-element'" :description="'Nice looking version of a checkbox.'">
-									<test-component>
-										<toggleable-element :value-object="toggleStateObject" :value-object-key="'value'" :on-value-change="toggleStateChange">{{toggleStateObject.value}}</toggleable-element>
-									</test-component>
-								</test-component-group>
+						<tab :title="'Functional Components'">
+							<test-component-group :title="'toggleable-element'" :description="'Nice looking version of a checkbox.'">
+								<test-component>
+									<toggleable-element :value-object="toggleStateObject" :value-object-key="'value'" :on-value-change="toggleStateChange">{{toggleStateObject.value}}</toggleable-element>
+								</test-component>
+							</test-component-group>
 
-								<test-component-group :title="'confirm-button'" :description="'Button which requires to hover over it for a certain time before it can be clicked (mobile devices need to click twice).'">
-									<test-component>
-										<confirm-button @click="isConfirmed = !isConfirmed">
-											<span v-if="isConfirmed">Unconfirm</span>
-											<span v-else>Confirm</span>
-										</confirm-button>
-										<br/>
-										<br/>
-										<span v-if="isConfirmed">Confirmed</span>
-										<span v-else>Not confirmed</span>
-									</test-component>
+							<test-component-group :title="'confirm-button'" :description="'Button which requires to hover over it for a certain time before it can be clicked (mobile devices need to click twice).'">
+								<test-component>
+									<confirm-button @click="isConfirmed = !isConfirmed">
+										<span v-if="isConfirmed">Unconfirm</span>
+										<span v-else>Confirm</span>
+									</confirm-button>
+									<br/>
+									<br/>
+									<span v-if="isConfirmed">Confirmed</span>
+									<span v-else>Not confirmed</span>
+								</test-component>
 
-									<test-component :options="{time: 5}">
-										<confirm-button @click="isConfirmed = !isConfirmed" :time="5">
-											<span v-if="isConfirmed">Unconfirm</span>
-											<span v-else>Confirm</span>
-										</confirm-button>
-										<br>
-										<br/>
-										<span v-if="isConfirmed">Confirmed</span>
-										<span v-else>Not confirmed</span>
-									</test-component>
+								<test-component :options="{time: 5}">
+									<confirm-button @click="isConfirmed = !isConfirmed" :time="5">
+										<span v-if="isConfirmed">Unconfirm</span>
+										<span v-else>Confirm</span>
+									</confirm-button>
+									<br>
+									<br/>
+									<span v-if="isConfirmed">Confirmed</span>
+									<span v-else>Not confirmed</span>
+								</test-component>
 
-									<test-component :description="'Small version of confirm-button'">
-										<confirm-button class="small_button">Small Button</confirm-button>
-									</test-component>
+								<test-component :description="'Small version of confirm-button'">
+									<confirm-button class="small_button">Small Button</confirm-button>
+								</test-component>
 
-									<test-component :description="'Mini version of confirm-button'" :options="{mini: true}">
-										<confirm-button :mini="true"><icon :icon="'plus'"/></confirm-button>
-									</test-component>
+								<test-component :description="'Mini version of confirm-button'" :options="{mini: true}">
+									<confirm-button :mini="true"><icon :icon="'plus'"/></confirm-button>
+								</test-component>
 
-									<test-component :description="'Small Mini version of confirm-button'" :options="{mini: true}">
-										<confirm-button class="small_button" :mini="true"><icon :icon="'plus'"/></confirm-button>
-									</test-component>
-								</test-component-group>
+								<test-component :description="'Small Mini version of confirm-button'" :options="{mini: true}">
+									<confirm-button class="small_button" :mini="true"><icon :icon="'plus'"/></confirm-button>
+								</test-component>
+							</test-component-group>
 
-								<test-component-group :title="'lockable'" :description="'A component that can lock itself.'">
-									<test-component :title="'lockable'">
-										<test-example-lockable/>
-									</test-component>
+							<test-component-group :title="'lockable'" :description="'A component that can lock itself.'">
+								<test-component :title="'lockable'">
+									<test-example-lockable/>
+								</test-component>
 
-									<test-component :title="'lockable-by-childs'" :description="'A component that can lock itself or get locked by any of his children.'">
-										<test-example-lockable-by-childs/>
-									</test-component>
+								<test-component :title="'lockable-by-childs'" :description="'A component that can lock itself or get locked by any of his children.'">
+									<test-example-lockable-by-childs/>
+								</test-component>
 
-									<test-component :title="'lockable-by-parent'" :description="'A component that can lock itself or get locked by a parent.'">
-										<test-example-lockable-by-parent/>
-									</test-component>
+								<test-component :title="'lockable-by-parent'" :description="'A component that can lock itself or get locked by a parent.'">
+									<test-example-lockable-by-parent/>
+								</test-component>
 
-									<test-component :title="'disabled-when-any-parent-locked'" :description="'Anything inside this component can access this components prop \`isDisabled\` and use it to control any inputs disabled attribute.'">
-										<test-example-disabled-when-any-parent-locked/>
-									</test-component>
-								</test-component-group>
+								<test-component :title="'disabled-when-any-parent-locked'" :description="'Anything inside this component can access this components prop \`isDisabled\` and use it to control any inputs disabled attribute.'">
+									<test-example-disabled-when-any-parent-locked/>
+								</test-component>
+							</test-component-group>
 
-								<test-component-group :title="'loading-spinner'">
-									<test-component>
-										<loading-spinner/>
-									</test-component>
-								</test-component-group>
+							<test-component-group :title="'loading-spinner'">
+								<test-component>
+									<loading-spinner/>
+								</test-component>
+							</test-component-group>
 
-								<test-component-group :title="'loading-spinner-or'" :description="'Shows a loading spinner or the content when the evaluated code returns false'">
-									<test-component :options="{'is-loading-code': 'return (Date.now()/1000) % 6 > 2'}">
-										<loading-spinner-or :is-loading-code="'return (Date.now()/1000) % 6 > 2'">
-											<span>Loading has finished</span>
-										</loading-spinner-or>
-									</test-component>
-								</test-component-group>
+							<test-component-group :title="'loading-spinner-or'" :description="'Shows a loading spinner or the content when the evaluated code returns false'">
+								<test-component :options="{'is-loading-code': 'return (Date.now()/1000) % 6 > 2'}">
+									<loading-spinner-or :is-loading-code="'return (Date.now()/1000) % 6 > 2'">
+										<span>Loading has finished</span>
+									</loading-spinner-or>
+								</test-component>
+							</test-component-group>
 
-								<test-component-group :title="'steamid'" :description="'A link to the steam profile.'">
-									<test-component>
-										<steamid :steamid="'x42'"/>
-									</test-component>
-								</test-component-group>
-
-								<test-component-group :title="'module-enableable'" :description="'Wrapper for modules.'">
-									<test-component>
-										<module-enableable :name="'examplemodule'">
-											Content of the module.
-										</module-enableable>
-									</test-component>
-								</test-component-group>
-							</tab>
-						</tabs>
-					</module-enableable>
+							<test-component-group :title="'steamid'" :description="'A link to the steam profile.'">
+								<test-component>
+									<steamid :steamid="'x42'"/>
+								</test-component>
+							</test-component-group>
+						</tab>
+					</tabs>
 				</div>`,
 				methods: {
 					toggleStateChange (key, val){

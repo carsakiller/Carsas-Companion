@@ -2378,18 +2378,6 @@ table th:last-child, table td:last-child {
   z-index: 1;
 }
 
-/* line 427, ../../compass/sass/_c2_utility.scss */
-.module_enableable .module_not_enabled {
-  padding: 0.5em 1em;
-  background: #8d2121;
-}
-/* line 431, ../../compass/sass/_c2_utility.scss */
-.module_enableable .module_not_enabled .name {
-  font-size: 1.3em;
-  font-weight: 600;
-  font-style: italic;
-}
-
 /* line 3, ../../compass/sass/_c2_module_core.scss */
 .info .intro {
   margin: 1em;

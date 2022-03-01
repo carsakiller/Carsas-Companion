@@ -931,27 +931,6 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				mixins: [componentMixin_logging]
 			})
 
-			// TODO remove this component
-			this.c2.registerComponent('module-enableable', {
-				props: {
-					name: {
-						type: String,
-						required: true
-					}
-				},
-				computed: {
-					isModuleEnabled (){
-						return true
-					}
-				},
-				template: `<div class="module_enableable">
-					<slot v-if="isModuleEnabled"/>
-					<div v-else class="module_not_enabled">
-						<p><icon :icon="'x-mark-circle'"/> Module <span class="name">{{name}}</span> is not enabled. You can enable this module in the addon settings when you create a new game in Stormworks.</p>
-					</div>
-				</div>`
-			})
-
 			/*
 
 				STRUCTURAL COMPONENTS

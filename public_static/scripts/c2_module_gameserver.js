@@ -18,19 +18,17 @@ class C2Module_Gameserver extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="gameserver_management">
-					<module-enableable :name="'gameserver'">
-						<division v-if="!settingsOkay" :name="'Error'" :always-extended="true">
-							<p>Executable path not set (please do this on the settings page).</p>
-						</division>
+					<division v-if="!settingsOkay" :name="'Error'" :always-extended="true">
+						<p>Executable path not set (please do this on the settings page).</p>
+					</division>
 
-						<division v-if="settingsOkay" class="controls" :name="'Control GameServer'" :always-extended="true">
-							<gameserver-control/>
-						</division>
+					<division v-if="settingsOkay" class="controls" :name="'Control GameServer'" :always-extended="true">
+						<gameserver-control/>
+					</division>
 
-						<division v-if="settingsOkay" :name="'Console Output'" :start-extended="true">
-							<gameserver-status/>
-						</division>
-					</module-enableable>
+					<division v-if="settingsOkay" :name="'Console Output'" :start-extended="true">
+						<gameserver-status/>
+					</division>
 				</div>`
 			})
 
