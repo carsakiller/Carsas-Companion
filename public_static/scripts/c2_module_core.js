@@ -377,20 +377,65 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('players-management', {
 				data (){
 					return {
-						filters: ['all', 'online', 'offline', 'not banned', 'banned'], //must match defined filters in player components
+						filters: {
+							'all': (player)=>{ return true },
+							'online': (player)=>{ return player.peerID !== undefined },
+							'offline': (player)=>{ return player.peerID === undefined },
+							'not banned': (player)=>{ return player.banned === undefined },
+							'banned': (player)=>{ return player.banned !== undefined }
+						},
 						currentFilter: 'all'
 					}
 				},
 				computed: {
 					players (){
 						return this.$store.state.players
+					},
+					orderedPlayerArray (){
+						if(!this.players){
+							return undefined
+						}
+
+						let ret = []
+
+						for(let p of Object.keys(this.players)){
+							if(this.filters[this.currentFilter](this.players[p])){
+								ret.push(this.players[p])
+							}
+						}
+
+						ret.sort((a,b)=>{
+							if(a.peerID !== undefined && b.peerID === undefined){
+								return -1
+							}
+
+							if(a.peerID === undefined && b.peerID !== undefined){
+								return 1
+							}
+
+							if(a.peerID === undefined && b.peerID === undefined){
+								return ('' + a.name).localeCompare('' + b.name)
+							}
+
+							if(parseInt(a.peerID) < parseInt(b.peerID)){
+								return -1
+							}
+
+							if(parseInt(a.peerID) > parseInt(b.peerID)){
+								return 1
+							}
+
+							return 0
+						})
+
+						return ret
 					}
 				},
 				template: `<div class="players_management">
 					<div class="filter_selection">
-						<div v-for="filtername of filters" @click="currentFilter = filtername" :class="['filter', {selected: currentFilter === filtername}]">{{filtername}}</div>
+						<div v-for="(_, filtername) of filters" @click="currentFilter = filtername" :class="['filter', {selected: currentFilter === filtername}]">{{filtername}}</div>
 					</div>
-					<player-list v-if="players" :players="players" :filter="currentFilter"/>
+					<player-list v-if="orderedPlayerArray" :players="orderedPlayerArray"/>
 					<span v-else>Not synced</span>
 				</div>`
 			})
@@ -398,16 +443,12 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('player-list', {
 				props: {
 					players: {
-						type: Object,
-						required: true
-					},
-					filter: {
-						type: String,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list player_list">
-					<player v-for="(player, steamid) in players" :player="player" :steamid="steamid" :filter="filter"/>
+					<player v-for="(player) in players" :player="player"/>
 				</div>`
 			})
 
@@ -418,18 +459,8 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				computed: {
-					isVisibleThroughFilter (){
-						switch(this.filter){
-							case 'all': return true;
-							case 'online': return this.player.peerID !== undefined;
-							case 'offline': return this.player.peerID === undefined;
-							case 'not banned': return this.player.banned === undefined;
-							case 'banned': return this.player.banned !== undefined;
-							default: {
-								this.error('invalid filter value', this.filter)
-								return true
-							}
-						}
+					steamid (){
+						return this.player.steamID
 					},
 					isBanned (){
 						return this.player.banned !== undefined
@@ -456,14 +487,6 @@ class C2Module_Core extends C2LoggingUtility {
 					player: {
 						type: Object,
 						required: true
-					},
-					steamid: {
-						type: String,
-						required: true
-					},
-					filter: {
-						type: String,
-						required: true
 					}
 				},
 				provide: function (){
@@ -472,7 +495,7 @@ class C2Module_Core extends C2LoggingUtility {
 						steamid: this.steamid
 					}
 				},
-				template: `<extendable v-if="isVisibleThroughFilter" v-slot="extendableProps" class="player" :class="[{is_banned: isBanned}]">
+				template: `<extendable v-slot="extendableProps" class="player" :class="[{is_banned: isBanned}]">
 
 					<lockable-by-parent/>
 
