@@ -23,7 +23,6 @@ module.exports = class C2 extends C2LoggingUtility {
 		this.c2GameInterface = new C2GameInterface(loglevel, gameApp)
 		this.c2WebInterface = new C2WebInterface(loglevel, app)
 
-		// TODO: only do this when modules are enabled
 		this.c2Module_Core = new C2Module_Core(loglevel, this)
 		this.c2Module_Test = new C2Module_Test(loglevel, this)
 		this.c2Module_Map = new C2Module_Map(loglevel, this)

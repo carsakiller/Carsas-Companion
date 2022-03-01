@@ -931,6 +931,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				mixins: [componentMixin_logging]
 			})
 
+			// TODO remove this component
 			this.c2.registerComponent('module-enableable', {
 				props: {
 					name: {
@@ -940,7 +941,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				},
 				computed: {
 					isModuleEnabled (){
-						return true // TODO get this
+						return true
 					}
 				},
 				template: `<div class="module_enableable">

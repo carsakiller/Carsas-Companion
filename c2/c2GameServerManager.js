@@ -226,7 +226,7 @@ module.exports = class C2GameServerManager extends C2EventManagerAndLoggingUtili
 	*/
 	isGameServerRunning(callback){
 		/*
-			TODO: when we start the executable, we include the full path name, but others might not do that
+			when we start the executable, we include the full path name, but others might not do that
 
 			since the executable name is not exactly unique, it's bad to only use that name as an identifier
 

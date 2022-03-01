@@ -412,7 +412,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 	getNotificationsFor(steamId){
 		return new Promise( (resolve, reject)=>{
 
-			//TODO: a bit hacky to generate notification in here, but does the trick
+			// a bit hacky to generate notification in here, but does the trick
 
 			if(this.steamIdHasRole(steamId, 'Owner') || this.steamIdHasRole(steamId, 'Supervisor')){
 
