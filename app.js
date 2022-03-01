@@ -115,6 +115,14 @@ function dontCacheThisRoute(req, res, next){
 }
 
 
+app.get('/', (req, res, next)=>{
+  res.render('index', {title: 'Carsa\'s Companion'})
+})
+
+app.get('/documentation', (req, res, next)=>{
+  res.render('documentation', {title: 'Carsa\'s Companion - Documentation'})
+})
+
 
 let C2 = require('./c2/c2.js')
 

@@ -1,0 +1,339 @@
+<script type="text/javascript" src="/static/scripts/documentation.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/stylesheets/documentation.css">
+
+
+<div class="sidebar">
+	<div class="logo"></div>
+	<div class="inner"></div>
+</div>
+<div class="content">
+	<h1>Documentation</h1>
+	<div class="subtitle">for version 1.0.0</div>
+
+	<div class="division">
+		<h2>Intro</h2>
+		<p>Carsa's Companion is a website used to supplement and improve Carsa's Commands (a management addon for Stormworks: Build and Rescue). It allows an easier to use and visual way to use the functions offered by the management addon (which normally only works via chat messages). The Companion relies on the logic, data and permission system of the management addon which runs in the game.</p>
+
+		<h3>Features</h3>
+		<p>The companion allows access to all the management addon functionality in a visual and interactive way. On top of the already existing functionality, the companion offers additional functions:</p>
+		<ul>
+			<li>Allow access to all management addon functions without the need to run the game and be connected to the game server</li>
+			<li>Change game settings</li>
+			<li>Show a live map of players and vehicles on a 2D map that matches the ingame seed</li>
+			<li>Start / Stop a dedicated Stormworks server via the companion and see the console output of the executable</li>
+		</ul>
+
+		<h3>Customizable Settings</h3>
+		<c2-note>This is only the settings for the companion, of course a lot of stuff is customizable through the role system (that is part of the management addon already but can be accessed in the companion too)</c2-note>
+		<p>By default, the companion is only accessible on the local network (e.g. your LAN and WLAN network at home). With some simple clicks on the <c2-page>settings</c2-page> the owner can change:</p>
+		<ul>
+			<li>Who has access to the companion (only the same computer and computers in the same network, or everyone <i>(everyone will require port forwarding or a hosted server with its own public ip)</i> from the internet)</li>
+			<li>If users can see the live map (the owner can always see it)</li>
+			<li>The filepath to the dedicated server executable (required if you want to start / stop the Stormworks server via the companion)</li>
+		</ul>
+
+		<h3>Security</h3>
+		<p>The code for the executable that runs the companion is open source, you can check it for errors and build the executables yourself (see readme). The code uses a minimal amount of third party libraries, all served as a static copy within the git repository. The code was written to have minimal functionality outside of the Stormworks game (only read and write some log files and a settings file, only able to start and terminate an executable specified by the owner of the machine). Two seperate Webservers are used for the website and the connection to the game to further sandbox functionality. The creator of the code has followed best practices (e.g. OWASP) to keep risks as low as possible. If you find any problems, we are happy to contact us, create an issue or even a pull request with a fix.</p>
+		<p>In terms of permissions in the game, the companion relies 100% on the management addon (the only exception is a browser on the same machine who is allowed to change settings of only the companion). In order to identify players and their permissions, a player can obtain a unique token while writing into the chat in the game (only needs to be done once). Tokens are random enough to prevent being guessed, additionally, logins are rate-limited to prevent a brute force attack.</p>
+
+		<h3>How to report errors</h3>
+		<p>If you find any errors, please contact us or create an issue. Do not forget to include the logs:</p>
+		<ul>
+			<li>for the companion website, either an error popup includes the log message, or you go to the <c2-page>home</c2-page> go to the section <q>Help</q> and click <c2-button>Export Logs</c2-button></li>
+			<li>for the companion server itself, go to the folder where it is located and take the file <q>log.txt</q></li>
+		</ul>
+
+		<h3>How to debug or test</h3>
+		<p>If you are interested in debugging or testing yourself, go to the <c2-page>settings</c2-page> and activate the <q>enable-test-mode</q> setting. This will allow you to access the <c2-page>tests</c2-page>. The Developer Console of the browser will allow you to checkout all the logs of the browser code. For the webserver logs of the companion, you have to download the sourcecode and start the program with <c2-code>node app.js loglevel=X</c2-code> where <q>X</q> stands for a log level:</p>
+		<table>
+			<tr>
+				<td>1</td>
+				<td>show errors</td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td>+ show warnings</td>
+			</tr>
+			<tr>
+				<td>3</td>
+				<td>+ show infos</td>
+			</tr>
+			<tr>
+				<td>4</td>
+				<td>+ show logs</td>
+			</tr>
+			<tr>
+				<td>5</td>
+				<td>+ show debugs</td>
+			</tr>
+		</table>
+	</div>
+
+
+
+	<div class="division">
+		<h2>Permissions / Who can do what</h2>
+
+	</div>
+
+
+
+	<div class="division">
+		<h2>Pages</h2>
+
+	</div>
+
+
+
+	<div class="division">
+		<h2>Developer Guide</h2>
+		<p>This is meant for people who want to change the source code of this program. We would like to document this even better, but time is limited, especially for a hobby project.</p>
+
+		<h3>Favorable Skills</h3>
+		<p>These skills / knowledges are not 100% required, but definitely helpful and might sometimes be mandatory to understand what is going on.</p>
+		<ul>
+			<li>HTTP</li>
+			<li>HTML5</li>
+			<li>JavaScript ES6</li>
+			<li>CSS (SASS / Compass)</li>
+			<li>git</li>
+		</ul>
+
+		<h3>Tech Stack</h3>
+		<table>
+			<tr>
+				<td>Backend</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Node.js</td>
+				<td>JavaScript runtime (server)</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Express (Node.js)</td>
+				<td>Webserver framework (Basic Webserver)</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Handlebars</td>
+				<td>Templating Framework (Assemble page HTML)</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Compass</td>
+				<td>CSS Framework (Assemble CSS)</td>
+			</tr>
+
+			<tr>
+				<td>Frontend</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Vue.js</td>
+				<td>User Interface Framework (Single Page Application)</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Vuex</td>
+				<td>State Management Library for Vue.js (Central Datastorage)</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>jQuery</td>
+				<td>JavaScript Library (Utility)</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>WebSocket</td>
+				<td>Real-Time Communication (Two-Way Server-Client Communication)</td>
+			</tr>
+		</table>
+
+		<h3>Folder Structure</h3>
+		<table>
+			<tr>
+				<td>.githooks</td>
+				<td>contains code that creates the file "public_static/commit.txt" with the current git commit hash</td>
+			</tr>
+			<tr>
+				<td>build-tools</td>
+				<td>contains build tools and scripts</td>
+			</tr>
+			<tr>
+				<td>c2</td>
+				<td>contains source code for the Node.js webserver</td>
+			</tr>
+			<tr>
+				<td>compass</td>
+				<td>contains source code of sass/compass that will later be compiled into css files</td>
+			</tr>
+			<tr>
+				<td>dist</td>
+				<td>contains generated standalone executables</td>
+			</tr>
+			<tr>
+				<td>node-modules</td>
+				<td>contains all the npm dependencies (as source code)</td>
+			</tr>
+			<tr>
+				<td>public-static</td>
+				<td>contains files served by the webserver (as "/static/...") which are required for the website (including javascript files, compiled css, images, tile images, etc.</td>
+			</tr>
+			<tr>
+				<td>views</td>
+				<td>contains handlebar templates for all the html pages</td>
+			</tr>
+			<tr>
+				<td>app.js</td>
+				<td>the main server application file</td>
+			</tr>
+			<tr>
+				<td>setup_git_hooks.sh</td>
+				<td>Used to setup githooks that create the "public_static/commit.txt" file</td>
+			</tr>
+		</table>
+		<p>Other files not mentioned in this table are either explained later, in the readme or are self explanatory.</p>
+
+
+		<h3>Concepts</h3>
+		<div class="subdivision">
+			<h4>Message types</h4>
+			<p>For the messages that are being sent from the Frontend: message types starting with <q>command-</q> are always messages that are sent from the Frontend to the Game. All other messages that are being sent from the Frontend are only meant for the Backend and not forwarded to the Game.</p>
+			<p>For the messages that are being sent from the Game: message types starting with <q>sync-</q> are messages containing data of syncables. Those will be forwarded to all clients. For other message types, individual rules apply. Sometimes, the message is only forwared to clients with certain permissions, ...</p>
+
+			<h4>Syncables</h4>
+			<p>Syncables are special data, both defined on the management addon and in the frontend code. The management addon will send those data updates when the data changes (and whenever a client connects freshly to the server). In the frontend, components that trigger a command (of the management addon) will often wait until a certain sync (defined per component) arrives. In the meanwhile, they will lock themselves so the user cannot try to trigger that command again before he is being displayed the new current state.</p>
+		</div>
+
+
+		<h3>Message Flow</h3>
+		<div class="subdivision">
+			<p>These are several examples for different variants of message flows. They should help you to understand the message/event oriented flow. Both the connection Webclient <-> Backend and Backend <-> Game are full duplex. Both sides can send messages. Each message contains an id (counted individual for every side). Every message <b>requires</b> a response (a message with the same individual id). This response can either be sent immediately (e.g. when Game sends request to backend) or asynchronously after some time (e.g. when Webclient sends command to backend and backend sends to game and then back the whole chain once the game triggers another HTTP request containing the response).</p>
+			<p>The duplex HTTP connection between Game and Backend is different from the duplex WebSocket connection between Frontend and Backend: The game can only send requests to the backend, but the backend cannot send requests to the game. Instead the backend has to wait for the game to do another request and then include its own request inside the response of that HTTP request. This means a bit of delay. To minimize this delay, the heartbeat happens very often. Every hearbeat (and every other request) the GameHTTPHandler checks if there is a message (from Backend to Game) in the queue, if so, it will add this message to the response. If there is still more messages in the clue, a flag will be set, that indicates the management addon to immediately start another HTTP request to pickup the other messages in the queue.</p>
+
+			<h4>Game -> Backend</h4>
+			<p>Example: <q>Tokens</q></p>
+			<p>The management addon sends the current companion tokens of all players to the backend (initially and when a token changes or a new player joins). The ModuleCore registers a message handler for <c2-code>token-sync</c2-code> and receives the tokens as an object (because the game sent it away as a json object). The parsing happened inside the GameHttpHandler.</p>
+
+			<h4>Game -> Backend -> Frontend</h4>
+			<p>Example: <q>Heartbeat</q></p>
+			<p>The management addon sends a heartbeat (small message) that tells the backend the management addont is still running. The Backend will then forward this message to all webclients (currently only used for status bar blinking). The ModuleCore reigsters a message handler for <c2-code>heartbeat</c2-code> and receives an object or string, if it equals <c2-code>first</c2-code> that means the management addon has just started or the server has just started, if it is an object, it contains the current length of the message sending queue, which can be used to display a warning if this queue is filling up (normally due to a bug). After that, the message is sent to all webclients (ignoring if it actually reached them). On the webclient, the C2 code will receive that message, dispatch an event and the status-bar component will listen to it and flash the status indicator circle.</p>
+
+			<h4>Backend -> Frontend</h4>
+			<p>Example: <q>Initial game connection state</q></p>
+			<p>When a new WebSocket connection is being opened in WebInterface, it dispatches an event, C2 listens to that event and sends a message to all webclients with the current connection state of the management addon.</p>
+
+			<h4>Frontend -> Backend -> Frontend</h4>
+			<p>Example: <q>Server Settings</q></p>
+			<p>If a user changes a server setting on the <c2-page>settings</c2-page> he triggers the sending of a message of type <c2-code>set-server-setting</c2-code>, in ModuleCore, a handler for this type has been registered which now checks if the client has the permission to perform this action (either is localhost or logged in by token and has the Owner role). Depending on the result, the ModuleCore will then respond to the request. The WebSocketHandler will send a message to the webclient which is marked as being a response to a previous message and it contains either the error message or the success message (in this case the new current server settings). The Frontend can now either display the error message or a success message and update the server settings in the central storage.</p>
+
+			<h4>Frontend -> Backend -> Game -> Backend -> Frontend</h4>
+			<p>Example: <q>Kick Player</q></p>
+			<p>In the Frontend, the user clicks a button inside a component which triggers the <q>kickPlayer</q> command. This also locks the button. The Frontend sends a message of type <c2-code>command-kickPlayer</c2-code> to the Backend, the Backend relays this message to the Game. The Game will respond at some point (either accept, if the client has that permission and the target player id is valid, or deny and respond with an error message) and the Backend will relay the information back to the Frontend. The Frontend will now either display an error message or a success message. Because this command has changed the players data, the management addon will send a <c2-code>sync-players</c2-code> message including the new current player data. The Frontend will receive this data and update the central storage. This will emit an event and the component that triggered the <q>kickPlayer</q> command will listen to it and unlock itself.</p>
+		</div>
+
+
+		<h3>Backend Code Structure</h3>
+		<div class="subdivision">
+			<h4>app.js</h4>
+			<p>The main application file initializes the express webserver, sets up the routes and pages and loads the <q>C2</q> code.</p>
+
+			<h4>C2.js</h4>
+			<p>This class loads all the modules and provides some APIs for them. Each module can use those APIs to send messages to either game or webclients, can register callbacks/handlers for specific message types from either the game or the webclients.</p>
+
+			<h4>C2_Utility.js</h4>
+			<p>This class provides utility functions for logging and an event system.</p>
+
+			<h4>C2GameHttpHandler.js</h4>
+			<p>This class handles HTTP requests coming from the Stormworks game and request that other C2 code wants to send to the game. It is a seperate webserver that runs on a different port then the main webserver. This class handles new requests and responses to existing requests (full duplex system) but the basis is only HTTP requests coming from the Stormworks game (more precise: from the management addon). It is able to split huge messages into several parts and also merge back together those parts. If a the reponse to a request runs into a timeout, this class fails that request automatically. The class communicates with the management addon via JSON, the payload/data inside the JSON is always (this is different to the WebSocketHandler) a JSON string, which means JSOn will be parsed automatically. The payload/data will be forwarded to other parts of C2 code (e.g. as the response to an answer) as some kind of an object (Object, Array, string, boolean, whatever the JSON.parse() output is)!</p>
+
+			<h4>C2GameInterface.js</h4>
+			<p>This class is the streamlined connection between any C2 code and the GameHTTPHandler. It also detects wether the management addon is connected (using a heartbeat system).</p>
+
+			<h4>C2WebSocketHandler.js</h4>
+			<p>This class handles WebSocket connections and request coming from webclients as well as request that other C2 code wants to send to webclients. This class handles new requests and responses to existing requests (full duplex system). This class communicates with the webclients code via JSON, the payload/data inside the JSON is often a JSON string but does not have to. The payload/data will be forwarded to other parts of C2 code (e.g. as the response to an answer) as a string! The C2 code has to handle/parse the payload/data itself (if the payload/data is forwarded to the game, no parsing happens, since the parsing will happen in the game code).</p>
+
+			<h4>C2WebInterface.js</h4>
+			<p>This class is the streamlined connection between any C2 code and the WebSocketHTTPHandler.</p>
+
+			<h4>C2GameWebServer.js</h4>
+			<p>This class is responsible for the second webserver which is only responsible for accepting HTTP request from the Stormworks game (more precise: the management addon). </p>
+
+			<h4>C2Module_Core.js</h4>
+			<p>This class is responsible for setting up the core functionality:</p>
+			<ul>
+				<li>Backend permission management (filter data coming from game and sent to webclient, control access to webserver settings management)</li>
+				<li>Version Checks</li>
+				<li>Notifications for the user (not 100% implemented and only used for version checks)</li>
+				<li>Rate-limit logins (via token)</li>
+				<li>Relay commands between WebInterface <-> GameInterface</li>
+				<li>Webserver settings management</li>
+			</ul>
+
+			<h4>C2Module_Map.js</h4>
+			<p>This class is responsible for functionality around the <c2-page>map</c2-page> (forward map updates from GameInterface -> WebInterface).</p>
+
+			<h4>C2Module_Test.js</h4>
+			<p>This class is responsible for functionality around the <c2-page>tests</c2-page> (run connectivity and performance tests).</p>
+
+			<h4>C2Module_Gameserver.js</h4>
+			<p>This class is responsible for managing the dedicated game server executable (Stormworks). It relays information between the WebInterface and the GameServerManager.</p>
+
+			<h4>C2GameServerManager.js</h4>
+			<p>This class is responsible of starting and stoping the game server executable. It utilizes GameServerProcess which is spawned as a child process and relays console output from that child process back to the Module_Gameserver. It also handles state events of the child process (e.g. errors, exit, etc). It also constantly checks if a process that matches the game server executable is currently running and can kill that process.</p>
+
+			<h4>C2GameServerProcess.js</h4>
+			<p>This class is responsible of spawning a cmd process that executes the game server executable. This cmd process is then able to continue running on its own (even if the companion application stops). This class also relays console output from the executable back to the GameServerManager.</p>
+		</div>
+
+
+		<h3>Frontend Code Structure</h3>
+		<div class="subdivision">
+			<h4>C2.js</h4>
+			<p>This class initializes Vue.js and the Vuex store. It provides an API for modules to register message callbacks/handlers, storables, syncables, components and pages and an API for showing notifications. Displays error popup as a fallback for Vue.js internal error handling (of the components themselves).</p>
+
+			<h4>C2_Utility.js</h4>
+			<p>This class provides utility functions for logging and an event system. It also provides mixins components can use for logging, sending messages or commands. It also provides some basic components (e.g. lockables, extendables, buttons, icons, ...)</p>
+
+			<h4>C2WebClient.js</h4>
+			<p>This class is just a small wrapper for the WebSock. It takes care of converting data into lua format (undefined and null are converted into nil, an array is converted into a space seperated text (to represent an argument string)).</p>
+
+			<h4>C2WebSock.js</h4>
+			<p>This class provides functions to easily send messages and receive responses. It enhances the default WebSocket class by automatically trying to reconnect. It can also trigger the page reload, if the Backend requested a force reload (e.g. after server restart).</p>
+
+			<h4>C2Module_Core.js</h4>
+			<p>This class is responsible for setting up the core functionality</p>
+			<ul>
+				<li>Notifications</li>
+				<li>Status bar</li>
+				<li>Login and user state</li>
+				<li><c2-page>home</c2-page></li>
+				<li><c2-page>players</c2-page></li>
+				<li><c2-page>vehicles</c2-page></li>
+				<li><c2-page>roles</c2-page></li>
+				<li><c2-page>rules</c2-page></li>
+				<li><c2-page>preferences</c2-page></li>
+				<li><c2-page>gamesettings</c2-page></li>
+				<li><c2-page>logs</c2-page></li>
+				<li><c2-page>settings</c2-page></li>
+			</ul>
+
+			<h4>C2Module_Map.js</h4>
+			<p>This class is responsible for the <c2-page>map</c2-page> and receiving updates of the live players and vehicles.</p>
+
+			<h4>C2Module_Test.js</h4>
+			<p>This class is responsible for the <c2-page>tests</c2-page> and starting several connectivity and performance tests.</p>
+
+			<h4>C2Module_Gameserver.js</h4>
+			<p>This class is responsible for the <c2-page>gameserver</c2-page> and starting/stopping the dedicated game server.</p>
+
+			<h4>documentation.js</h4>
+			<p>Used for this page.</p>
+		</div>
+	</div>
+</div>
