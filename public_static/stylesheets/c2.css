@@ -2945,31 +2945,26 @@ table th:last-child, table td:last-child {
 }
 /* line 1, ../../compass/sass/_c2_module_map.scss */
 .map_view {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   padding: 1em;
 }
-/* line 6, ../../compass/sass/_c2_module_map.scss */
-.map_view > *:not(.map_2d) {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-/* line 13, ../../compass/sass/_c2_module_map.scss */
+/* line 8, ../../compass/sass/_c2_module_map.scss */
 .map_view .controls {
   display: flex;
   flex-direction: row;
   margin-bottom: 1em;
 }
-/* line 19, ../../compass/sass/_c2_module_map.scss */
+/* line 14, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d {
   width: 100%;
   display: flex;
   flex-flow: column;
   flex: 1 1 auto;
 }
-/* line 25, ../../compass/sass/_c2_module_map.scss */
+/* line 20, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .info {
   position: absolute;
   top: 0;
@@ -2979,11 +2974,11 @@ table th:last-child, table td:last-child {
   display: flex;
   flex-direction: column;
 }
-/* line 34, ../../compass/sass/_c2_module_map.scss */
+/* line 29, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .info span:not(:lasst-child) {
   margin-bottom: 0.3em;
 }
-/* line 39, ../../compass/sass/_c2_module_map.scss */
+/* line 34, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info {
   font-size: 0.8em;
   position: fixed;
@@ -2992,27 +2987,27 @@ table th:last-child, table td:last-child {
   background: #000c;
   color: #f3f3f3;
 }
-/* line 47, ../../compass/sass/_c2_module_map.scss */
+/* line 42, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info > * {
   display: flex;
   flex-direction: row;
   padding: 0.3em;
 }
-/* line 53, ../../compass/sass/_c2_module_map.scss */
+/* line 48, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info .title {
   justify-content: space-between;
   font-size: 1.2em;
   font-weight: 600;
   color: #929292;
 }
-/* line 59, ../../compass/sass/_c2_module_map.scss */
+/* line 54, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info .title .close {
   margin-left: 1em;
   cursor: pointer;
   color: #f3f3f3;
   transition: all 0.2s ease 0s;
 }
-/* line 65, ../../compass/sass/_c2_module_map.scss */
+/* line 60, ../../compass/sass/_c2_module_map.scss */
 .map_view .map_2d .map_view_info .title .close:hover {
   color: #07C5CB;
 }
