@@ -377,60 +377,20 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('players-management', {
 				data (){
 					return {
-						filters: {
-							all: (players)=>{
-								return players
-							},
-							online: (players)=>{
-								let filtered = {}
-
-								for(let steamId of Object.keys(players)){
-									let player = players[steamId]
-									if(player.peerID !== undefined){
-										filtered[steamId] = player
-									}
-								}
-
-								return filtered
-							},
-							offline: (players)=>{
-								let filtered = {}
-
-								for(let steamId of Object.keys(players)){
-									let player = players[steamId]
-									if(player.peerID === undefined){
-										filtered[steamId] = player
-									}
-								}
-
-								return filtered
-							},
-							banned: (players)=>{
-								let filtered = {}
-
-								for(let steamId of Object.keys(players)){
-									let player = players[steamId]
-									if(player.banned){
-										filtered[steamId] = player
-									}
-								}
-
-								return filtered
-							}
-						},
+						filters: ['all', 'online', 'offline', 'not banned', 'banned'], //must match defined filters in player components
 						currentFilter: 'all'
 					}
 				},
 				computed: {
 					players (){
-						return this.$store.state.players ? this.filters[this.currentFilter](this.$store.state.players) : undefined
+						return this.$store.state.players
 					}
 				},
 				template: `<div class="players_management">
 					<div class="filter_selection">
-						<div v-for="(_, filtername) in filters" @click="currentFilter = filtername" :class="['filter', {selected: currentFilter === filtername}]">{{filtername}}</div>
+						<div v-for="filtername of filters" @click="currentFilter = filtername" :class="['filter', {selected: currentFilter === filtername}]">{{filtername}}</div>
 					</div>
-					<player-list v-if="players" v-bind:players="players"/>
+					<player-list v-if="players" :players="players" :filter="currentFilter"/>
 					<span v-else>Not synced</span>
 				</div>`
 			})
@@ -440,10 +400,14 @@ class C2Module_Core extends C2LoggingUtility {
 					players: {
 						type: Object,
 						required: true
+					},
+					filter: {
+						type: String,
+						required: true
 					}
 				},
 				template: `<div class="list player_list">
-					<player v-for="(player, steamid) in players" :player="player" :steamid="steamid"/>
+					<player v-for="(player, steamid) in players" :player="player" :steamid="steamid" :filter="filter"/>
 				</div>`
 			})
 
@@ -454,6 +418,19 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				computed: {
+					isVisibleThroughFilter (){
+						switch(this.filter){
+							case 'all': return true;
+							case 'online': return this.player.peerID !== undefined;
+							case 'offline': return this.player.peerID === undefined;
+							case 'not banned': return this.player.banned === undefined;
+							case 'banned': return this.player.banned !== undefined;
+							default: {
+								this.error('invalid filter value', this.filter)
+								return true
+							}
+						}
+					},
 					isBanned (){
 						return this.player.banned !== undefined
 					},
@@ -483,6 +460,10 @@ class C2Module_Core extends C2LoggingUtility {
 					steamid: {
 						type: String,
 						required: true
+					},
+					filter: {
+						type: String,
+						required: true
 					}
 				},
 				provide: function (){
@@ -491,7 +472,7 @@ class C2Module_Core extends C2LoggingUtility {
 						steamid: this.steamid
 					}
 				},
-				template: `<extendable v-slot="extendableProps" class="player" :class="[{is_banned: isBanned}]">
+				template: `<extendable v-if="isVisibleThroughFilter" v-slot="extendableProps" class="player" :class="[{is_banned: isBanned}]">
 
 					<lockable-by-parent/>
 
