@@ -81,7 +81,7 @@ app.engine('handlebars', handlebars({defaultLayout: 'default', helpers: require(
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
-app.use(morgan('dev', {
+app.use(morgan(':remote-addr :method :url :status', {
   skip: function(req, res){
     if(req.originalUrl.startsWith('/static/')){// hide http request to static assets because the are just spamming!
       return true
@@ -106,7 +106,7 @@ app.get('/documentation', (req, res, next)=>{
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (app.get('env') === 'production' ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
+c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (IS_IN_PRODUCTION ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
 
 app.get('/c2', (req, res, next)=>{
 
