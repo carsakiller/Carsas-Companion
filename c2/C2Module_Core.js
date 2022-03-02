@@ -12,7 +12,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2 = c2
 
-		this.SETTINGS_FILE_PATH = path.join(__dirname, '..', 'settings.json')
+		this.SETTINGS_FILE_PATH = path.join(process.cwd(), 'settings.json')
 
 		this.settingsCache = undefined
 

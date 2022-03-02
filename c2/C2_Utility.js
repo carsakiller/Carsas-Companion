@@ -4,7 +4,7 @@ const path = require('path')
 class ConsoleLogger {
 
 	constructor(){
-		this.LOG_FILE_PATH = path.join(__dirname, '..', 'log.txt')
+		this.LOG_FILE_PATH = path.join(process.cwd(), 'log.txt')
 
 
 		try {
