@@ -1,4 +1,4 @@
-**A detailed can be accessed when running the program and visiting http://localhost:3001/documentation**
+**A detailed documentation (for users and coders) can be found in [documentation.html](https://htmlpreview.github.io/?https://github.com/carsakiller/Carsas-Companion/blob/master/documentation.html) or at [http://localhost:3001/documentation](http://localhost:3001/documentation) when the program is running**
 
 
 # How to code
@@ -57,9 +57,3 @@ After you did build the playlist.xml (see Readme of Carsas-CommandsV2) then you 
 `node build-tools/make-playlist-with-zones.js`
 The above command will read `%appdata%/Roaming/Stormworks/data/missions/Carsa's Commands/playlist.xml` inject the env_mods/locations and write the ouput to `%appdata%/Roaming/Stormworks/data/missions/Carsa's Commands/playlist_with_zones.xml`
 Now you have to replace the original `playlist.xml` with the `playlist_with_zones.xml`.
-
-# Documentation (haha)
-
-## Workflow for data sync from browser to game:
-Component defines methods (e.g. a button that triggers revoking a rule from a player) which will be called on button press.
-The method then sends that command to the game, if game responds with success, wait until game syncs new player data (game triggers that by itself ^^ or do we do that from the website?)), if fails, do nothing and show error message.
