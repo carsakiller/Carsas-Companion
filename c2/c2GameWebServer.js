@@ -3,7 +3,7 @@ const app = express()
 const PORT = 3000
 
 app.listen(PORT, () => {
-  console.log(`C2GameService listening at http://localhost:${PORT}`)
+  console.log(`  listening at port :${PORT} (C2GameService)`)
 })
 
 const morgan = require('morgan')

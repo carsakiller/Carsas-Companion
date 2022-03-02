@@ -61,6 +61,7 @@ module.exports = class C2 extends C2LoggingUtility {
 			this.c2WebInterface.sendMessageTo('all', 'game-connection', false)
 		})
 
+
 		//do something when app is closing
 		process.on('exit', this.handleExit.bind(this));
 
@@ -73,6 +74,10 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		//catches uncaught exceptions
 		process.on('uncaughtException', this.handleExit.bind(this));
+	}
+
+	onAppServerListening(port){
+		console.log(`\nopen http://localhost:${port}/ in your browser\n`)
 	}
 
 	handleExit() {

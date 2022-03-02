@@ -5,7 +5,8 @@ const PORT = 3001
 var expressWs = require('express-ws')(app)
 
 app.listen(PORT, () => {
-  console.log(`C2WebService listening at http://localhost:${PORT}`)
+  console.log(`  listening at port :${PORT} (C2WebService)`)
+  c2.onAppServerListening(PORT)
 })
 
 const path = require('path')
@@ -28,6 +29,15 @@ for(let i=2; i < process.argv.length; i++){
   args[argSplit[0]] = isNaN(asInt) ? argSplit[1] : asInt
 }
 
+if(typeof args.loglevel === 'number'){
+  process.env.NODE_ENV = 'development';
+} else {
+  process.env.NODE_ENV = 'production';
+}
+app.set('env', process.env.NODE_ENV)
+
+console.log('starting in', app.get('env'), 'mode')
+
 /* security */
 app.disable('x-powered-by');//dont tell client that i use express
 //http://expressjs.com/de/advanced/best-practice-security.html#helmet-verwenden
@@ -44,6 +54,13 @@ const frameguard = require('frameguard')
 // Only let me be framed by people of the same origin:
 app.use(frameguard({ action: 'sameorigin' }))
 
+const cors = require('cors')
+app.use(
+  cors({
+    origin: '*',//must be * because we use localhost
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+)
 
 const csp = require('helmet-csp')
 
@@ -111,7 +128,7 @@ app.get('/documentation', (req, res, next)=>{
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : 2 /* default loglevel "warn" */, app)
+c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (app.get('env') === 'production' ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
 
 app.get('/c2', (req, res, next)=>{
 
