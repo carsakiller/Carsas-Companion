@@ -1,3 +1,6 @@
+**A detailed can be accessed when running the program and visiting http://localhost:3001/documentation**
+
+
 # How to code
 
 ## Setup build tools
@@ -23,6 +26,10 @@ Just edit the file `public_static/version.txt`
 Visit https://unpkg.com/browse/vue@3.2.29/dist/ and select the most recent version. Download the vue.global.js (for testing) or vue.global.prod.js (for production). Replace `/public_static/scripts/lib/vue.js` with whatever you downloaded.
 
 Procedure is similar for vuex (https://unpkg.com/browse/vuex@4.0.2/dist/).
+
+## Updating documentation
+Simply edit documentation.html directly.
+If you make any changes to the styling (inside compass/sass/documentation.scss) you must recompile the stylesheets, take the output from public_static/stylesheets/documentation.css and replace the &lt;style&gt; tag inside the documentation.html file.
 
 ## Creating executables
 ### install pkg

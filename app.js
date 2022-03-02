@@ -69,7 +69,7 @@ app.use(
 
 
 app.use((req, res, next)=>{
-  res.setHeader('Content-Security-Policy', `default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-src 'self';frame-ancestors 'self';`)//`default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-ancestors 'self';`
+  res.setHeader('Content-Security-Policy', `default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline' https://cdn.iconmonstr.com/;font-src 'self' https://cdn.iconmonstr.com/;connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-src 'self';frame-ancestors 'self';`)//`default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-ancestors 'self';`
   next()
 })
 
@@ -100,7 +100,7 @@ app.get('/', (req, res, next)=>{
 })
 
 app.get('/documentation', (req, res, next)=>{
-  res.render('documentation', {title: 'Carsa\'s Companion - Documentation'})
+  res.sendFile(path.join(__dirname, 'documentation.html'))
 })
 
 
