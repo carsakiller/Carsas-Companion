@@ -76,7 +76,11 @@ module.exports = class C2 extends C2LoggingUtility {
 	}
 
 	handleExit() {
-	    this.c2Module_Gameserver.forceExit()
+		try {
+	    	this.c2Module_Gameserver.forceExit()
+	    } catch (_){}
+
+	    process.exit()
 	}
 
 	sendMessageToGame(...args){

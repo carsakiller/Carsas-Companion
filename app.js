@@ -14,6 +14,20 @@ const morgan = require('morgan')
 const serveStatic = require('serve-static')
 
 
+let args = {}
+for(let i=2; i < process.argv.length; i++){
+  let arg = process.argv[i]
+
+  if(arg.indexOf('=') < 0){
+    continue
+  }
+
+  let argSplit = arg.split('=')
+
+  let asInt = parseInt(argSplit[1])
+  args[argSplit[0]] = isNaN(asInt) ? argSplit[1] : asInt
+}
+
 /* security */
 app.disable('x-powered-by');//dont tell client that i use express
 //http://expressjs.com/de/advanced/best-practice-security.html#helmet-verwenden
@@ -97,7 +111,7 @@ app.get('/documentation', (req, res, next)=>{
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2( 2 /* loglevel "warn" */, app)
+c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : 2 /* default loglevel "warn" */, app)
 
 app.get('/c2', (req, res, next)=>{
 
