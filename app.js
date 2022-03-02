@@ -68,21 +68,10 @@ app.use(
 )
 
 
-if(IS_IN_PRODUCTION /* app.get('env') === 'production' */){
-  // set production only settings
-
-  //app.set('trust proxy', 1) // trust first proxy (if we have a nginx between)
-
-  app.use((req, res, next)=>{
-    res.setHeader('Content-Security-Policy', `default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-src 'self';frame-ancestors 'self';`)//`default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-ancestors 'self';`
-    next()
-  })
-} else {//we need to completely disable csp in order for the vue.js devtools to work
-  app.use((req, res, next)=>{
-    res.removeHeader('Content-Security-Policy')
-    next()
-  })
-}
+app.use((req, res, next)=>{
+  res.setHeader('Content-Security-Policy', `default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-src 'self';frame-ancestors 'self';`)//`default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-ancestors 'self';`
+  next()
+})
 
 
 // Register '.handlebars' extension with Handlebars
