@@ -28,7 +28,6 @@
     "express-ws": "^5.0.2",
     "frameguard": "^4.0.0",
     "helmet": "^4.6.0",
-    "helmet-csp": "^3.4.0",
     "ienoopen": "^1.1.1",
     "ip": "^1.1.5",
     "morgan": "^1.10.0",

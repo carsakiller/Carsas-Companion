@@ -29,14 +29,18 @@ for(let i=2; i < process.argv.length; i++){
   args[argSplit[0]] = isNaN(asInt) ? argSplit[1] : asInt
 }
 
+/* because of a problem with probably express-ws we cannot use the global production mode (because this fucks up chromes security policies somehow) */
+let IS_IN_PRODUCTION = false
 if(typeof args.loglevel === 'number'){
-  process.env.NODE_ENV = 'development';
+  IS_IN_PRODUCTION = false
+  //process.env.NODE_ENV = 'development';
 } else {
-  process.env.NODE_ENV = 'production';
+  IS_IN_PRODUCTION = true
+  //process.env.NODE_ENV = 'production';
 }
-app.set('env', process.env.NODE_ENV)
+//app.set('env', process.env.NODE_ENV)
 
-console.log('starting in', app.get('env'), 'mode')
+console.log('starting in', IS_IN_PRODUCTION ? 'production' : 'development' /* app.get('env')*/ , 'mode')
 
 /* security */
 app.disable('x-powered-by');//dont tell client that i use express
@@ -54,6 +58,7 @@ const frameguard = require('frameguard')
 // Only let me be framed by people of the same origin:
 app.use(frameguard({ action: 'sameorigin' }))
 
+
 const cors = require('cors')
 app.use(
   cors({
@@ -62,32 +67,16 @@ app.use(
   })
 )
 
-const csp = require('helmet-csp')
 
-if (app.get('env') === 'production') {
+if(IS_IN_PRODUCTION /* app.get('env') === 'production' */){
   // set production only settings
 
   //app.set('trust proxy', 1) // trust first proxy (if we have a nginx between)
 
-  app.use(csp({
-    useDefaults: true,
-    directives: {
-      'default-src': ["'self'"],
-      'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],//unsafe-eval required for vue.js only
-      'style-src': ["'self'", "'unsafe-inline'"],//unsafe-inline required only for anticlickjack right now
-      'font-src': ["'self'"],
-      'img-src': ["'self'", 'data:'],
-      'sandbox': ['allow-forms', 'allow-scripts'],
-      'object-src': ["'none'"],
-      'frame-ancestors': ["'self'"],
-      upgradeInsecureRequests: []
-    },
-
-    // Set to true if you only want browsers to rePORT errors, not block them.
-    // You may also set this to a function(req, res) in order to decide dynamically
-    // whether to use rePORTOnly mode, e.g., to allow for a dynamic kill switch.
-    rePORTOnly: false
-  }))
+  app.use((req, res, next)=>{
+    res.setHeader('Content-Security-Policy', `default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-src 'self';frame-ancestors 'self';`)//`default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline';font-src 'self';connect-src 'self' ws://*;img-src 'self' data:;sandbox allow-forms allow-scripts allow-same-origin;object-src 'none';frame-ancestors 'self';`
+    next()
+  })
 } else {//we need to completely disable csp in order for the vue.js devtools to work
   app.use((req, res, next)=>{
     res.removeHeader('Content-Security-Policy')
