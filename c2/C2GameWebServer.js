@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const PORT = 3000
+const PORT = 3367
 
 app.listen(PORT, () => {
   console.log(`  listening at port :${PORT} (C2GameService)`)
@@ -20,7 +20,7 @@ app.finishSetup = ()=>{
 
   app.use(function(req, res, next) {
     res.status(404);
-    res.send('Error: Not Found (you probably want to visit if you are not the stormworks game! <a href="http://localhost:3001/c2">localhost:3001/c2</a>');
+    res.send(`Error: Not Found (you probably want to visit the website, since you are not in the stormworks game!) <a href="http://${req.host}:${PORT}/c2">http://${req.host}:${PORT}/c2</a>`);
   });
 
   // error handler

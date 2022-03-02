@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const PORT = 3001
+const PORT = 3366
 
 var expressWs = require('express-ws')(app)
 
