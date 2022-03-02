@@ -208,6 +208,11 @@ body {
 			&[depth="2"] {
 				margin-left: 1.6em;
 			}
+
+			&.selected {
+				color: $secondary !important;
+				font-weight: bold;
+			}
 		}
 	}
 }
