@@ -9,6 +9,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerStorable('notifications', {})
 			this.c2.registerStorable('status')
 			this.c2.registerStorable('userSteamId')
+			this.c2.registerStorable('userName')
 			this.c2.registerStorable('profile')
 			this.c2.registerStorable('logs', [])
 			this.c2.registerStorable('settings')
@@ -200,6 +201,9 @@ class C2Module_Core extends C2LoggingUtility {
 					},
 					profileImageStyle (){
 						return 'background-image: url("' + ( this.profile && this.profile.profileImageUrl ? this.profile.profileImageUrl : 'static/images/profile_image_placeholder.png') + '")'
+					},
+					userName (){
+						return this.$store.state.userName
 					}
 				},
 				template: `<div class="login_popup" v-if="isVisible">
@@ -208,6 +212,7 @@ class C2Module_Core extends C2LoggingUtility {
 						<span class="title">{{isLoggedIn ? 'You are logged in as' : 'Login'}}</span>
 
 						<div v-if="isLoggedIn" class="profile_image" :style="profileImageStyle"></div>
+						<span v-if="isLoggedIn" class="user_name">{{userName}}</span>
 						<label v-else>Token: <input type="text" name="token" v-model="token" :disabled="isCurrentlyLoggingIn" @keydown="onKeyDown"/></label>
 
 						<p v-if="message" :class="['message', 'type_' + messageType]">{{message}}</p>
@@ -242,6 +247,7 @@ class C2Module_Core extends C2LoggingUtility {
 								this.setMessage(undefined, undefined)
 
 								this.$store.state.userSteamId = parsed.steamId
+								this.$store.state.userName = parsed.name
 							}, 1000)
 
 						}).catch(err => {

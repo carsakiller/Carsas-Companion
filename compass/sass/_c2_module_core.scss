@@ -507,7 +507,7 @@
 
 		.title {
 			font-size: 1.7em;
-			margin-bottom: 1em;
+			margin-bottom: 2em;
 		}
 
 		.profile_image {
@@ -520,9 +520,13 @@
 			border: 0.2em solid $highlight;
 		}
 
+		.user_name {
+			margin-top: 1em;
+		}
+
 		.message {
 			color: $text-color;
-			margin: 1em 0;
+			margin: 2em 0;
 			padding: 1em 1.5em;
 			border: 0.1em solid $text-color;
 			border-radius: 0.3em;
@@ -538,7 +542,7 @@
 
 		button {
 			font-size: inherit;
-			margin-top: 1em;
+			margin-top: 3em;
 		}
 	}
 }
