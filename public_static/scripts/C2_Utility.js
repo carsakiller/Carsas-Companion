@@ -472,7 +472,11 @@ let componentMixin_gameCommand = {
 					this.log('executing command', command,'failed')
 					this.debug('args', args, 'error', err)
 					this.unlockComponent()
-					this.showNotificationFailed(command, err)
+					if(err === '#websocket-not-open'){
+						this.showNotificationFailed(command, 'Lost connection to the webserver')
+					} else {
+						this.showNotificationFailed(command, err)
+					}
 					//reject(err) dont reject, since we show the error message
 				})
 			})
