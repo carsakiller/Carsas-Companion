@@ -29,14 +29,14 @@
    <script type="text/javascript" src="/static/scripts/lib/jquery.js"></script>
 
 	<style id="antiClickjack">body{display:none !important;}</style>
-    <script type="text/javascript">
+   <script type="text/javascript">
          if (self === top) {
             var antiClickjack = document.getElementById("antiClickjack");
             antiClickjack.parentNode.removeChild(antiClickjack);
          } else {
             top.location = self.location;
          }
-    </script>
+   </script>
 
 </head>
 <body>
