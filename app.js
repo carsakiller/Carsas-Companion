@@ -101,40 +101,8 @@ app.use(morgan(':remote-addr :method :url :status', {
   }
 }))
 
-app.use('/static', serveStatic(path.join(__dirname, 'public_static'), {
-  maxAge: '6h'
-}))
-
-app.get('/', (req, res, next)=>{
-  res.render('index', {title: 'Carsa\'s Companion'})
-})
-
-app.get('/manual', (req, res, next)=>{
-  res.sendFile(path.join(__dirname, 'manual.html'))
-})
-
-
-let C2 = require('./c2/c2.js')
-
-c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (IS_IN_PRODUCTION ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
-
-app.get('/c2', (req, res, next)=>{
-
-  if(c2.isAccessAllowedForIp(req.ip)){
-    res.render('c2', {title: 'Carsa\'s Companion'});
-  } else {
-    let err = new Error('Forbidden: The games owner has not allowed external access.');
-    err.status = 403;
-
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    res.status(403)
-    res.render('error')
-  }
-});
-
-app.get('/ws', (req, res, next)=>{
+// 403 check if is allowed to access
+app.get('*', (req, res, next)=>{
   if(c2.isAccessAllowedForIp(req.ip)){
     next()
   } else {
@@ -143,11 +111,26 @@ app.get('/ws', (req, res, next)=>{
 
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-    res.locals.title = 'Error'
 
     res.status(403)
     res.render('error')
   }
+})
+
+app.use('/static', serveStatic(path.join(__dirname, 'public_static'), {
+  maxAge: '6h'
+}))
+
+app.get('/manual', (req, res, next)=>{
+  res.sendFile(path.join(__dirname, 'manual.html'))
+})
+
+let C2 = require('./c2/c2.js')
+
+c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (IS_IN_PRODUCTION ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
+
+app.get('/', (req, res, next)=>{
+  res.render('index', {title: 'Carsa\'s Companion'});
 })
 
 
@@ -162,7 +145,7 @@ app.use(function(req, res, next) {
 
   res.status(404);
   res.render('error');
-});
+})
 
 // error handler
 app.use(function(err, req, res, next) {

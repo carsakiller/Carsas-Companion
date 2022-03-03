@@ -20,7 +20,7 @@ app.finishSetup = ()=>{
 
   app.use(function(req, res, next) {
     res.status(404);
-    res.send(`Error: Not Found (you probably want to visit the website, since you are not in the stormworks game!) <a href="http://${req.host}:${PORT}/c2">http://${req.host}:${PORT}/c2</a>`);
+    res.send(`Error: Not Found (you probably want to visit the website, since you are not in the stormworks game!) <a href="http://${req.host}:3366/">http://${req.host}:3366/</a>`);
   });
 
   // error handler

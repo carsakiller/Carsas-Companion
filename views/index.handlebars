@@ -1,1 +1,47 @@
-TODO
+{{{{vue-js}}}}
+
+<div id="app" style="width: 100vw; height: 100vh">
+</div>
+
+<label for="no-magic-reload" style="display: none; position: fixed; z-index: 99; top: 5px; right: 5px;">Prevent Reload<input id="no-magic-reload" autocomplete="off" type="checkbox" onchange="window.NO_MAGIC_PAGE_RELOAD = !window.NO_MAGIC_PAGE_RELOAD"></label>
+
+<div id="error-popup" style="display: none;">
+	<div class="inner">
+		<span class="title"></span>
+		<textarea class="message" cols="100" rows="10" readonly="true" wrap="hard"></textarea>
+		<button onclick="document.location.reload()">Reload Page</button>
+	</div>
+</div>
+
+{{{{/vue-js}}}}
+
+
+
+<link rel="stylesheet" type="text/css" href="/static/stylesheets/c2.css">
+
+<script type="text/javascript" src="/static/scripts/lib/vue.js"></script>
+<script type="text/javascript" src="/static/scripts/lib/vuex.js"></script>
+
+<script type="text/javascript" src="/static/scripts/C2_Utility.js"></script>
+<script type="text/javascript" src="/static/scripts/C2.js"></script>
+<script type="text/javascript" src="/static/scripts/C2WebClient.js"></script>
+<script type="text/javascript" src="/static/scripts/C2WebSock.js"></script>
+<script type="text/javascript" src="/static/scripts/C2Module_Core.js"></script>
+<script type="text/javascript" src="/static/scripts/C2Module_Gameserver.js"></script>
+<script type="text/javascript" src="/static/scripts/C2Module_Map.js"></script>
+<script type="text/javascript" src="/static/scripts/C2Module_Test.js"></script>
+
+<script type="text/javascript">
+	let c2 = new C2('#app')
+
+	/*
+	$(window).on('load', ()=>{
+		let indicator = $('<span style="position: fixed; top: 5px; left: 3em; z-index: 99">')
+		indicator.appendTo( $('body') )
+
+		setInterval(()=>{
+			indicator.text(window.innerWidth + 'x' + window.innerHeight)
+		}, 500)
+	})*/
+</script>
+
