@@ -81,6 +81,51 @@ body {
 		border-radius: 0.1em;
 	}
 
+	c2-permission {
+
+		.permission_visualization {
+			font-size: 1.2em;
+
+			.im {
+
+				&[permission-type="yes"] {
+					color: $enabled;
+				}
+
+				&[permission-type="no"] {
+					color: $disabled;
+				}
+
+				&[permission-type="maybe"] {
+					color: #f1b632;
+				}
+
+				&:not(:last-child) {
+					margin-right: 0.5em;
+				}
+			}
+
+			&.if_enabled_via_settings {
+				color: #8c8c8c;
+
+				&:before {
+					content: '(';
+					font-size: 1.5em;
+					font-weight: bold;
+					margin-right: 0.2em;
+				}
+
+				&:after {
+					content: ') *';
+					font-size: 1.5em;
+					font-weight: bold;
+					margin-left: 0.2em;
+				}
+			}
+		}
+
+	}
+
 	q {
 		font-style: italic;
 
@@ -97,10 +142,21 @@ body {
 		border-collapse: collapse;
 		margin: 0.5em;
 
-		td {
+		td, th {
 			border: 0.1em solid #aaa;
 			padding: 0.2em 0.5em;
 			text-align: center;
+		}
+
+		td:first-child {
+			max-width: 8em;
+		}
+
+		&.permission_table {
+			th {
+				max-width: 5em;
+  				word-break: break-word;
+			}
 		}
 	}
 }
