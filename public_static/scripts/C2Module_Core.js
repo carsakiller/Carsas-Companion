@@ -1433,7 +1433,7 @@ class C2Module_Core extends C2LoggingUtility {
 					}
 				},
 				template: `<div class="log_list">
-					<log-entry v-for="(entry, entry_index) of logs" :entry="entry""></log-entry>
+					<log-entry v-for="(entry, entry_index) of logs" :entry="entry"></log-entry>
 				</div>`
 			})
 
