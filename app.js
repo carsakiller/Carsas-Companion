@@ -9,6 +9,7 @@ app.listen(PORT, () => {
   c2.onAppServerListening(PORT)
 })
 
+const fsPromises = require('fs/promises')
 const path = require('path')
 const handlebars = require('express-handlebars')
 const morgan = require('morgan')
@@ -114,12 +115,7 @@ app.get('*', (req, res, next)=>{
   } else {
     let err = new Error('Forbidden: The games owner has not allowed external access.');
     err.status = 403;
-
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    res.status(403)
-    res.render('error')
+    handleError(err, req, res)
   }
 })
 
@@ -128,7 +124,23 @@ app.use('/static', serveStatic(path.join(__dirname, 'public_static'), {
 }))
 
 app.get('/manual', (req, res, next)=>{
-  res.sendFile(path.join(__dirname, 'manual.html'))
+  fsPromises.readFile(path.join(__dirname, 'manual.html'), {encoding: 'utf8'}).then((html)=>{
+
+    res.locals.title = `Carsa's Companion - Manual`
+
+    res.type('html')
+    res.send(html.replace('<!-- META_PLACEHOLDER -->', `
+    <meta property="og:title" content="${res.locals.title}">
+    <meta property="og:site_name" content="${res.locals.title}">
+    <meta property="og:url" content="${res.locals.baseurl}">
+    <meta property="og:description" content="Companion webapp for Carsa's Commands, an addon for Stormworks.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="${res.locals.baseurl}static/images/c2_banner.jpg">
+    <meta property="theme-color" content="#07c5cb">
+    `))
+  }).catch(err => {
+    handleError(err, req, res)
+  })
 })
 
 let C2 = require('./c2/c2.js')
@@ -141,27 +153,33 @@ app.get('/', (req, res, next)=>{
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  let err = new Error('Not Found');
-  err.status = 404;
-
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.locals.title = 'Error'
-
-  res.status(404);
-  res.render('error');
+app.use(function(req, res) {
+  let err = new Error('Not Found')
+  err.status = 404
+  handleError(err, req, res, false)
 })
 
-// error handler
+// finally threat it as an error
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  handleError(err, req, res)
+});
 
-  console.error('C2WebService', err)
+function handleError(err, req, res, doNotLog){
+  // set locals, only providing error in development
+  if(!IS_IN_PRODUCTION){
+    res.locals.message = err.message
+    res.locals.error = err
+  }
+
+  let status = err.status || 500
+
+  res.locals.title = 'Error: ' + status
+
+  if(doNotLog !== true){
+    console.error('C2WebServer/app.js [Error]', err)
+  }
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+  res.status(status)
+  res.render('error')
+}
