@@ -427,6 +427,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 		<p>This is meant for people who want to change the source code of this program. We would like to document this even better, but time is limited, especially for a hobby project.</p>
 
+
 		<h3>Favorable Skills</h3>
 		<p>These skills / knowledges are not 100% required, but definitely helpful and might sometimes be mandatory to understand what is going on.</p>
 		<ul>
@@ -436,6 +437,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 			<li>CSS (SASS / Compass)</li>
 			<li>git</li>
 		</ul>
+
 
 		<h3>Tech Stack</h3>
 		<table>
@@ -491,6 +493,54 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 				<td>Real-Time Communication (Two-Way Server-Client Communication)</td>
 			</tr>
 		</table>
+
+
+		<h3>Setup build tools</h3>
+		<div class="subdivision">
+			<ul>
+				<li>if you are on windows you will need a command line tool, i suggest the official one from git: <a href="https://gitforwindows.org/" target="_blank" rel="noopener noreferrer">gitforwindows.org/</a></li>
+				<li>install node (e.g. v16) <a href="https://nodejs.org/en/" target="_blank" rel="noopener noreferrer">nodejs.org</a></li>
+				<li>install compass (use git bash for this): <c2-code>$ gem install compass</c2-code></li>
+				<li>install nodemon (use git bash for this): <c2-code>$ npm install -g nodemon</c2-code></li>
+			</ul>
+			<p>Nodemon is optional, but it will automatically restart the server when any source file loaded and make your life easier.</p>
+
+			<h4>git hooks for versioning</h4>
+			<p>After you cloned this repository, run <c2-code>$ sh setup_git_hooks.sh</c2-code>. This will install the git hooks, so it sets the content of <q>commit.txt</q> to be the current commit hash. You can also trigger it manually by doing a checkout on the current select branch (e.g. <c2-code>$ git checkout master</c2-code>)</p>
+
+		</div>
+
+
+		<h3>Coding</h3>
+		<div class="subdivision">
+			<ul>
+				<li>command line tool 1 (e.g. git bash): <c2-code>$ cd compass & compass watch</c2-code></li>
+				<li>command line tool 2 (e.g. git bash): <c2-code>$ nodemon</c2-code> or for debugging <c2-code>$ nodemon -- loglevel=3</c2-code> (3 = info, 4 = log, 5= debug)</li>
+			</ul>
+
+			<h4>Upgrading the version</h4>
+			<p>Just edit the file <q>public_static/version.txt</q></p>
+
+			<h4>Upgrading vue.js and vuex library</h4>
+			<p>Visit <a href="https://unpkg.com/browse/vue@3.2.29/dist/" target="_blank" rel="noopener noreferrer">https://unpkg.com/browse/vue@3.2.29/dist/</a> and select the most recent version. Download the <q>vue.global.js</q> (for testing) or <q>vue.global.prod.js</q> (for production). Replace <q>/public_static/scripts/lib/vue.js</q> with whatever you downloaded.</p>
+			<p>Procedure is similar for vuex (<a href="https://unpkg.com/browse/vuex@4.0.2/dist/" target="_blank" rel="noopener noreferrer">https://unpkg.com/browse/vuex@4.0.2/dist/</a>).</p>
+
+			<h4>Updating manual</h4>
+			<p>Simply edit <q>manual.html</q> directly. All scripts, styles, images are included in this single file.</p>
+			<p>If you make any changes to the styling (inside <q>compass/sass/manual.scss</q>) you must recompile the stylesheets (via compass), take the output from <q>public_static/stylesheets/manual.css</q> and replace the <c2-code>&lt;style&gt;</c2-code> tag inside the manual.html file.</p>
+
+			<h4>Creating executable</h4>
+			<p>Install pkg: <c2-code>$ npm i pkg -g</c2-code></p>
+			<p>run <c2-code>$ pkg .</c2-code></p>
+			<p>The executables can be found in <q>/dist</q></p>
+
+			<h5>Update playlist.xml (locations) for the management addon (Carsa's companion)</h5>
+			<p>For every map tile, we define a zone, which is required to show the tiles in the webclient live map at the right position. The ingame script finds all those zones and their positions. In case new tiles are added (game update), you need to update the playlist.xml (automated with a script of course).</p>
+			<p>After you did build the playlist.xml (see Readme of Carsas-CommandsV2) then you can run <c2-code>$ node build-tools/make-playlist-with-zones.js</c2-code></p>
+			<p>The above command will read <q>%appdata%/Roaming/Stormworks/data/missions/Carsa's Commands/playlist.xml</q> inject the env_mods/locations and write the ouput to <q>%appdata%/Roaming/Stormworks/data/missions/Carsa's Commands/playlist_with_zones.xml</q></p>
+			<p>Now you have to replace the original <q>playlist.xml</q> file with the <q>playlist_with_zones.xml</q> file.</p>
+		</div>
+
 
 		<h3>Folder Structure</h3>
 		<table>

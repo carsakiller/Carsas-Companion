@@ -131,6 +131,9 @@ app.use('/static', serveStatic(path.join(__dirname, 'public_static'), {
 }))
 
 app.get('/manual', (req, res, next)=>{
+
+  res.removeHeader('Content-Security-Policy')
+
   fsPromises.readFile(path.join(__dirname, 'manual.html'), {encoding: 'utf8'}).then((html)=>{
 
     res.locals.title = `Carsa's Companion - Manual`
@@ -148,6 +151,10 @@ app.get('/manual', (req, res, next)=>{
   }).catch(err => {
     handleError(err, req, res)
   })
+})
+
+app.get('/favicon.ico', (req, res)=>{
+  res.sendFile(path.join(__dirname, 'public_static/favicon/favicon.ico'))
 })
 
 let C2 = require('./c2/c2.js')
