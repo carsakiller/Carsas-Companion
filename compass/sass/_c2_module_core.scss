@@ -367,6 +367,10 @@
 				word-break: break-all;
 				word-wrap: break-word;
 			}
+
+			button + button {
+				margin-left: 1em;
+			}
 		}
 	}
 }
