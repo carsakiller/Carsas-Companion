@@ -101,6 +101,12 @@ app.use(morgan(':remote-addr :method :url :status', {
   }
 }))
 
+app.get('*', (req, res, next)=>{
+  res.locals.title = `Carsa's Companion`
+  res.locals.baseurl = `${req.protocol}://${req.hostname}:${PORT}/`
+  next()
+})
+
 // 403 check if is allowed to access
 app.get('*', (req, res, next)=>{
   if(c2.isAccessAllowedForIp(req.ip)){
@@ -130,7 +136,7 @@ let C2 = require('./c2/c2.js')
 c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (IS_IN_PRODUCTION ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
 
 app.get('/', (req, res, next)=>{
-  res.render('index', {title: 'Carsa\'s Companion'});
+  res.render('index');
 })
 
 
