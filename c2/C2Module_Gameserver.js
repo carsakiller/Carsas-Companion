@@ -11,7 +11,11 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 		this.c2GameServerManager = new C2GameServerManager(loglevel, c2)
 
 		this.c2GameServerManager.on('stdout', (data)=>{
-			this.c2.sendMessageToWebClient('all', 'gameserver-stdout', data)
+			for(let client of this.c2.c2WebInterface.c2WebSocketHandler.clients){
+				if(this.c2.c2Module_Core.clientIsOwnerOrLocalhost(client)){
+					this.c2.sendMessageToWebClient(client, 'gameserver-stdout', data)
+				}
+			}
 		})
 
 		this.c2GameServerManager.on('gameserver-state', (state)=>{
@@ -20,7 +24,7 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('gameserver-start', (client, data)=>{
 			return new Promise((resolve, reject)=>{
-				if(!this.clientHasPermission(client)){
+				if(!this.c2.c2Module_Core.clientIsOwnerOrLocalhost(client)){
 					return reject('You are not allowed to do this')
 				}
 
@@ -34,7 +38,7 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('gameserver-stop', (client, data)=>{
 			return new Promise((resolve, reject)=>{
-				if(!this.clientHasPermission(client)){
+				if(!this.c2.c2Module_Core.clientIsOwnerOrLocalhost(client)){
 					return reject('You are not allowed to do this')
 				}
 
@@ -45,10 +49,6 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 				})
 			})
 		})
-	}
-
-	clientHasPermission(client){
-		return this.c2.c2Module_Core.clientIsOwner(client)
 	}
 
 	//force kills child processes

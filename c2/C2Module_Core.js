@@ -58,6 +58,22 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-gamesettings': true,
 				'page-live-map': ()=>{return this.getCurrentServerSetting('allow-live-map') === true}
 			},
+
+			localhost: {
+				'page-home': true,
+				'page-players': true,
+				'page-vehicles': true,
+				'page-roles': true,
+				'page-rules': true,
+				'page-preferences': true,
+				'page-gamesettings': true,
+
+				'page-live-map': true,
+				'page-logs': true,
+				'page-gameserver-management': true,
+				'page-settings': true
+			},
+
 			Owner: {
 				'page-home': true,
 				'page-players': true,
@@ -66,12 +82,13 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-rules': true,
 				'page-preferences': true,
 				'page-gamesettings': true,
-				'page-live-map': true,
 
+				'page-live-map': true,
 				'page-logs': true,
 				'page-gameserver-management': true,
+				'page-settings': true,
+
 				'page-tests': ()=>{return this.getCurrentServerSetting('enable-test-mode') === true},
-				'page-settings': true
 			}
 		}
 
@@ -165,6 +182,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			return new Promise((resolve, reject)=>{
 				if(this.clientIsOwner(client)){
 					return resolve(this.inflatePermissions(this.PERMISSIONS.Owner))
+				} else if (this.clientIsOwnerOrLocalhost(client)){
+					return resolve(this.inflatePermissions(this.PERMISSIONS.localhost))
 				} else {
 					return resolve(this.inflatePermissions(this.PERMISSIONS.Default))
 				}
@@ -172,7 +191,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('server-settings', (client)=>{
-			if(this.clientIsOwner(client)){
+			if(this.clientIsOwnerOrLocalhost(client)){
 				return this.getServerSettings()
 			} else {
 				return {}
@@ -180,7 +199,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('set-server-setting', (client, data)=>{
-			if(this.clientIsOwner(client)){
+			if(this.clientIsOwnerOrLocalhost(client)){
 				try {
 					let parsed = JSON.parse(data)
 					return this.setServerSetting(parsed.key, parsed.value)
@@ -232,7 +251,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerGameMessageHandler('stream-log', (data, messageType)=>{
 			for(let client of this.c2.c2WebInterface.c2WebSocketHandler.clients){
-				if(this.tokenHasRole(client.token, 'Owner')){
+				if(this.clientIsOwnerOrLocalhost(client)){
 					this.c2.sendMessageToWebClient(client, messageType, data)
 				}
 			}
@@ -285,6 +304,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 	}
 
 	clientIsOwner(client){
+		return this.tokenHasRole(client.token, 'Owner')
+	}
+
+	clientIsOwnerOrLocalhost(client){
 		return this.tokenHasRole(client.token, 'Owner') || client.ip === 'localhost' || client.ip === '127.0.0.1' || client.ip === '::1' || client.ip === '::ffff:127.0.0.1'
 	}
 
