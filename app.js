@@ -2,7 +2,14 @@ const express = require('express')
 const app = express()
 const PORT = 3366
 
-var expressWs = require('express-ws')(app)
+
+
+const axios = require('axios')
+axios.get('https://c2.flaffipony.rocks/c2-my-ip').then((res)=>{
+  console.log(`MY IP: ${res.data}`)
+}).catch(err => {
+  console.error('unable to detect my ip', err)
+})
 
 app.listen(PORT, () => {
   console.log(`  listening at port :${PORT} (C2WebService)`)
@@ -14,6 +21,7 @@ const path = require('path')
 const handlebars = require('express-handlebars')
 const morgan = require('morgan')
 const serveStatic = require('serve-static')
+const expressWs = require('express-ws')(app)
 
 
 let args = {}
@@ -154,7 +162,7 @@ app.get('/', (req, res, next)=>{
 
 // catch 404 and forward to error handler
 app.use(function(req, res) {
-  let err = new Error('Not Found')
+  let err = new Error(`Not Found: "${req.path}"`)
   err.status = 404
   handleError(err, req, res, false)
 })
