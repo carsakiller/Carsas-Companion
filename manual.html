@@ -363,7 +363,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 		<c2-note>This is only the settings for the companion, of course a lot of stuff is customizable through the role system (that is part of the management addon already but can be accessed in the companion too)</c2-note>
 		<p>By default, the companion is only accessible on the local network (e.g. your LAN and WLAN network at home). With some simple clicks on the <c2-page>settings</c2-page> the owner can change:</p>
 		<ul>
-			<li>Who has access to the companion (only the same computer and computers in the same network, or everyone <i>(everyone will require port forwarding or a hosted server with its own public ip)</i> from the internet)</li>
+			<li>Who has access to the companion (only the same computer and computers in the same network, or everyone from the internet). For everyone read more <a href="#allowing-external-access-to-companion">here</a>.</li>
 			<li>If users can see the live map (the owner can always see it)</li>
 			<li>The filepath to the dedicated server executable (required if you want to start / stop the Stormworks server via the companion)</li>
 		</ul>
@@ -401,6 +401,21 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 			<tr>
 				<td>5</td>
 				<td>+ show debugs</td>
+			</tr>
+		</table>
+
+		<h3>Allowing external access to companion</h3>
+		<c2-note>This requires you to set the setting <q>allow-external-access</q> on <c2-page>settings</c2-page> to enabled.</c2-note>
+		<p>If you run the companion on your PC (e.g. behind a router in your home network) you need to enable port forwarding in your routers settings if you want others on the internet to access the companion website.</p>
+		<p>You must forward the following ports (if you use a different incoming port then some links might not work):</p>
+		<table>
+			<tr>
+				<td>3366</td>
+				<td>TCP</td>
+			</tr>
+			<tr>
+				<td>3367</td>
+				<td>TCP</td>
 			</tr>
 		</table>
 	</div>
