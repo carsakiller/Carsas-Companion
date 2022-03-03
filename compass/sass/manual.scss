@@ -88,16 +88,20 @@ body {
 
 			.im {
 
-				&[permission-type="yes"] {
-					color: $enabled;
+				&[permission-type="view"] {
+					color: #222222;
+				}
+
+				&[permission-type="modify"] {
+					color: #246d33;
+				}
+
+				&[permission-type="modify-rule-depending"] {
+					color: #f1b632;
 				}
 
 				&[permission-type="no"] {
 					color: $disabled;
-				}
-
-				&[permission-type="maybe"] {
-					color: #f1b632;
 				}
 
 				&:not(:last-child) {
