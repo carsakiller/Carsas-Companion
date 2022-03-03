@@ -462,6 +462,9 @@ class C2Module_Core extends C2LoggingUtility {
 					steamid (){
 						return this.player.steamID
 					},
+					isOnline (){
+						return this.player.peerID !== undefined
+					},
 					isBanned (){
 						return this.player.banned !== undefined
 					},
@@ -513,7 +516,7 @@ class C2Module_Core extends C2LoggingUtility {
 						<div class="gap"/>
 
 						<div class="buttons">
-							<confirm-button v-if="!isBanned" @click.stop="kick">Kick</confirm-button>
+							<confirm-button v-if="!isBanned && isOnline" @click.stop="kick">Kick</confirm-button>
 							<confirm-button v-if="!isBanned" @click.stop="ban" :time="2">Ban</confirm-button>
 							<confirm-button v-else @click.stop="unban">Unban</confirm-button>
 						</div>
