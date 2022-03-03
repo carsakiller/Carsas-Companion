@@ -661,7 +661,7 @@ class C2Module_Core extends C2LoggingUtility {
 				template: `<div class="vehicle">
 					<span class="id">{{vehicleId}}</span>
 					<span class="name">{{vehicle.name}}</span>
-					<span class="owner">{{ownerName}}</span>
+					<div class="owner_container"><span class="by">Owner:</span><span class="owner">{{ownerName}}</span></div>
 
 					<div class="gap"/>
 
