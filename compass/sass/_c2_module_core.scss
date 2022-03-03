@@ -211,8 +211,10 @@
 }
 
 .roles_management {
+	padding: 1em;
 
 	.new_role_container {
+		margin: 0 0 1em 0;
 
 		input {
 			width: 10em;
@@ -221,6 +223,7 @@
 	}
 
 	.role_list {
+		margin: 0;
 
 		.role {
 			background: $tertiary;
@@ -331,8 +334,10 @@
 }
 
 .rules_management {
+	padding: 1em;
 
 	.new_rule_container {
+		margin: 0 0 1em 0;
 
 		textarea {
 			width: 100%;
@@ -344,6 +349,7 @@
 	}
 
 	.rule_list {
+		margin: 0;
 
 		.rule {
 			display: flex;

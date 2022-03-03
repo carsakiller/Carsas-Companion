@@ -71,6 +71,11 @@ button {
 	}
 }
 
+.empty_list_hint {
+	display: inline-block;
+	margin: 1em;
+}
+
 textarea, input {
 	position: relative;
 	padding: 0.3em 0.5em;

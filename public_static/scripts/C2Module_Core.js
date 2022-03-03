@@ -708,7 +708,7 @@ class C2Module_Core extends C2LoggingUtility {
 							<lockable-button @click="addNewRole">Add new Role</lockable-button>
 						</division>
 						<role-list v-if="roles" :roles="roles"/>
-						<span v-else>Not synced</span>
+						<span v-else style="margin-top: 1em;">Not synced</span>
 					</lockable-by-childs>
 				</div>`,
 				methods: {
@@ -1006,7 +1006,7 @@ class C2Module_Core extends C2LoggingUtility {
 							<lockable-button @click="addNewRule" :set-disabled="newRuleText.length === 0">Add new Rule (at the end)</lockable-button>
 						</division>
 						<rule-list v-if="rules" :rules="rules" @addNewRuleBefore="addNewRule"/>
-						<span v-else>No rules</span>
+						<span v-else class="empty_list_hint">No rules</span>
 					</lockable-by-childs>
 				</div>`,
 				methods: {
@@ -1421,6 +1421,7 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				template: `<div class="logs_management">
 					<log-list :logs="logs"></log-list>
+					<span v-if="!logs || logs.length === 0" class="empty_list_hint">No logs</span>
 				</div>`
 			})
 
