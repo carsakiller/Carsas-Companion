@@ -99,8 +99,8 @@ app.get('/', (req, res, next)=>{
   res.render('index', {title: 'Carsa\'s Companion'})
 })
 
-app.get('/documentation', (req, res, next)=>{
-  res.sendFile(path.join(__dirname, 'documentation.html'))
+app.get('/manual', (req, res, next)=>{
+  res.sendFile(path.join(__dirname, 'manual.html'))
 })
 
 

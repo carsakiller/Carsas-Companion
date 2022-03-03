@@ -1,4 +1,4 @@
-**A detailed documentation (for users and coders) can be found in [documentation.html](https://htmlpreview.github.io/?https://github.com/carsakiller/Carsas-Companion/blob/master/documentation.html) or at [http://localhost:3366/documentation](http://localhost:3366/documentation) when the program is running**
+**A detailed manual (for users and coders) can be found in [manual.html](https://htmlpreview.github.io/?https://github.com/carsakiller/Carsas-Companion/blob/master/manual.html) or at [http://localhost:3366/manual](http://localhost:3366/manual) when the program is running**
 
 
 # How to code
@@ -28,9 +28,9 @@ Visit https://unpkg.com/browse/vue@3.2.31/dist/ and select the most recent versi
 
 Procedure is similar for vuex (https://unpkg.com/browse/vuex@4.0.2/dist/).
 
-## Updating documentation
-Simply edit documentation.html directly.
-If you make any changes to the styling (inside compass/sass/documentation.scss) you must recompile the stylesheets, take the output from public_static/stylesheets/documentation.css and replace the &lt;style&gt; tag inside the documentation.html file.
+## Updating manual
+Simply edit manual.html directly.
+If you make any changes to the styling (inside compass/sass/manual.scss) you must recompile the stylesheets, take the output from public_static/stylesheets/manual.css and replace the &lt;style&gt; tag inside the manual.html file.
 
 ## Creating executables
 ### install pkg
