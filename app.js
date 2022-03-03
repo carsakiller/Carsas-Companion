@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 3366
 
-
+const expressWs = require('express-ws')(app)
 
 const axios = require('axios')
 axios.get('https://c2.flaffipony.rocks/c2-my-ip').then((res)=>{
@@ -21,7 +21,6 @@ const path = require('path')
 const handlebars = require('express-handlebars')
 const morgan = require('morgan')
 const serveStatic = require('serve-static')
-const expressWs = require('express-ws')(app)
 
 
 let args = {}
