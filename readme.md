@@ -24,7 +24,7 @@ You can also trigger it manually by doing a checkout on the current select branc
 Just edit the file `public_static/version.txt`
 
 ### Upgrading vue.js library
-Visit https://unpkg.com/browse/vue@3.2.31/dist/ and select the most recent version. Download the vue.global.js (for testing) or vue.global.prod.js (for production). Replace `/public_static/scripts/lib/vue.js` with whatever you downloaded.
+Visit https://unpkg.com/browse/vue@3.2.29/dist/ and select the most recent version. Download the vue.global.js (for testing) or vue.global.prod.js (for production). Replace `/public_static/scripts/lib/vue.js` with whatever you downloaded.
 
 Procedure is similar for vuex (https://unpkg.com/browse/vuex@4.0.2/dist/).
 
