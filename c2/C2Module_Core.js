@@ -27,6 +27,11 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				value: false,
 				description: 'Shows page with live map of players and vehicles for everyone'
 			},
+			'allow-web-chat': {
+				type: 'boolean',
+				value: false,
+				description: 'Shows page with all chat messages and allows to send chat messages (both only for logged in users).'
+			},
 			'enable-test-mode': {
 				type: 'boolean',
 				value: false,
@@ -57,7 +62,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-preferences': true,
 				'page-gamesettings': true,
 				'page-live-map': ()=>{ return this.getCurrentServerSetting('allow-live-map') === true },
-				'page-chat': (client)=>{ return this.clientIsLoggedIn(client) }
+				'page-chat': (client)=>{ return this.getCurrentServerSetting('allow-web-chat') && this.clientIsLoggedIn(client) }
 			},
 
 			localhost: {
@@ -230,7 +235,13 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.registerWebClientMessageHandler('chat-write', (client, message, messageType)=>{
-			return this.c2.sendMessageToGame(client.token, messageType, message)
+			if(this.getCurrentServerSetting('allow-web-chat') === true){
+				return this.c2.sendMessageToGame(client.token, messageType, message)
+			} else {
+				return new Promise((resolve, reject)=>{
+					reject('not enabled')
+				})
+			}
 		})
 
 		this.c2.registerGameMessageHandler('check-notifications', (steamId)=>{
