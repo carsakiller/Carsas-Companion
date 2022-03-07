@@ -1430,6 +1430,7 @@ class C2Module_Core extends C2LoggingUtility {
 								this.newChatMessageText = ''
 							}).catch((err)=>{
 								this.showNotificationFailed('chat-write', err)
+								this.unlockComponent()
 							})
 						}
 					}
