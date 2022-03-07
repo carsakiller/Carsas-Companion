@@ -333,7 +333,7 @@ class C2Module_Core extends C2LoggingUtility {
 						</p>
 					</division>
 					<division :name="'Help'" :startExtended="false">
-						You can find a manual <a-link :url="'#'" :text="'here (TODO)'"/>
+						You can find a manual <a-link :url="'/manual'" :text="'here'"/>
 						<spacer-horizontal/>
 						<button @click="exportLogs">Export Logs</button>
 					</division>
