@@ -39,9 +39,17 @@ body {
 			right: 0.1em;
 		}
 
-		span {
-			font-family: Arial, sans-serif;
-			font-style: italic;
+		font-family: Arial, sans-serif;
+		font-style: italic;
+	}
+
+	c2-page-vertical {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		.im {
+			margin-bottom: 0.3em;
 		}
 	}
 
