@@ -165,8 +165,9 @@ app.get('/', (req, res, next)=>{
 // catch 404 and forward to error handler
 app.use(function(req, res) {
   let err = new Error(`Not Found: "${req.path}"`)
+  res.locals.message = 'Not found'
   err.status = 404
-  handleError(err, req, res, false)
+  handleError(err, req, res, true)
 })
 
 // finally threat it as an error
