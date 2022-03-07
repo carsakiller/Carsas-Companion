@@ -31,6 +31,7 @@ $(window).on('load', ()=>{
 	    	rules: 'task-o',
 	    	preferences: 'control-panel',
 	    	'gamesettings': 'wrench',
+	    	chat: 'speech-bubble-comments',
 	    	logs: 'note-o',
 	    	settings: 'gear',
 	    	map: 'map-o',
@@ -244,6 +245,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 					<th><c2-page>preferences</c2-page></th>
 					<th><c2-page>gamesettings</c2-page></th>
 
+					<th><c2-page>chat</c2-page></th>
 					<th><c2-page>logs</c2-page></th>
 					<th><c2-page>settings</c2-page></th>
 					<th><c2-page>map</c2-page></th>
@@ -262,6 +264,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 						<td><c2-permission>-</c2-permission></td>
 						<td><c2-permission>-</c2-permission></td>
+						<td><c2-permission>-</c2-permission></td>
 						<td><c2-permission>(r)</c2-permission></td>
 						<td><c2-permission>-</c2-permission></td>
 						<td><c2-permission>-</c2-permission></td>
@@ -275,6 +278,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 						<td><c2-permission>r+</c2-permission></td>
 						<td><c2-permission>r+</c2-permission></td>
 
+						<td><c2-permission>rw</c2-permission></td>
 						<td><c2-permission>-</c2-permission></td>
 						<td><c2-permission>-</c2-permission></td>
 						<td><c2-permission>(r+)</c2-permission></td>
@@ -295,6 +299,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 						<td><c2-permission>rw</c2-permission></td>
 						<td><c2-permission>rw</c2-permission></td>
 						<td><c2-permission>rw</c2-permission></td>
+						<td><c2-permission>rw</c2-permission></td>
 					</tr>
 					<tr>
 						<td>localhost</td>
@@ -305,6 +310,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 						<td><c2-permission>r</c2-permission></td>
 						<td><c2-permission>r</c2-permission></td>
 
+						<td><c2-permission>rw</c2-permission></td>
 						<td><c2-permission>rw</c2-permission></td>
 						<td><c2-permission>rw</c2-permission></td>
 						<td><c2-permission>r</c2-permission></td>
@@ -338,6 +344,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 			<h4>Game Settings</h4>
 			<p>Change game settings (from custom menu in the game).</p>
+
+			<h4>Chat</h4>
+			<p>Shows the chat from the server and allows to send chat messages (both only when logged in).</p>
 
 			<h4>Logs</h4>
 			<p>Shows Carsa's Commands logs from the server (only the ones generated while the companion website is visited).</p>
