@@ -1,3 +1,5 @@
+require('./C2_ConsoleLogger.js')
+
 const C2GameInterface = require('./C2GameInterface.js')
 const C2WebInterface = require('./C2WebInterface.js')
 const C2Module_Core = require('./C2Module_Core.js')
@@ -11,6 +13,9 @@ const gameApp = require('./C2GameWebServer.js')
 
 const os = require('os')
 const ipLib = require('ip')
+
+const axios = require('axios')
+
 
 module.exports = class C2 extends C2LoggingUtility {
 
@@ -27,6 +32,11 @@ module.exports = class C2 extends C2LoggingUtility {
 		this.c2Module_Test = new C2Module_Test(loglevel, this)
 		this.c2Module_Map = new C2Module_Map(loglevel, this)
 		this.c2Module_Gameserver = new C2Module_Gameserver(loglevel, this)
+
+
+		this.appWebServerPort = '?'
+		this.gameWebServerPort = '?'
+		this.myPublicIp = '?'
 
 		// catch any unhandledRejection
 		process.on('unhandledRejection', (err) => {
@@ -61,6 +71,16 @@ module.exports = class C2 extends C2LoggingUtility {
 			this.c2WebInterface.sendMessageTo('all', 'game-connection', false)
 		})
 
+		axios.get('https://c2.flaffipony.rocks/c2-my-ip').then((res)=>{
+			this.myPublicIp = res.data
+
+			let companionAddress = this.getCompanionUrl()
+
+			console.logAlways(`\ncompanion website: ${companionAddress}  or  http://localhost:${this.appWebServerPort}\n`)
+		}).catch(err => {
+			this.warn('unable to detect my ip', err)
+		})
+
 
 		//do something when app is closing
 		process.on('exit', this.handleExit.bind(this));
@@ -76,8 +96,14 @@ module.exports = class C2 extends C2LoggingUtility {
 		process.on('uncaughtException', this.handleExit.bind(this));
 	}
 
-	onAppServerListening(port){
-		console.log(`\nopen http://localhost:${port}/ in your browser\n`)
+	onAppWebServerListening(port){
+		this.appWebServerPort = port
+  		console.logAlways(`  listening at port :${port} (App Web Server)`)
+	}
+
+	onGameWebServerListening(port){
+		this.gameWebServerPort = port
+  		console.logAlways(`  listening at port :${port} (Game Web Server)`)
 	}
 
 	handleExit() {
@@ -245,5 +271,24 @@ module.exports = class C2 extends C2LoggingUtility {
 		}
 
 		return false
+	}
+
+
+	getCompanionUrl(){
+		let myIp = '?'
+
+		if(this.c2Module_Core.getCurrentServerSetting('allow-external-access') === true){
+			myIp = this.myPublicIp
+		} else {
+			let myInterfaces = this.getMyIpv4Interfaces()
+
+			if(myInterfaces[0]){
+				myIp = myInterfaces[0].ip
+			} else {
+				this.warn('no IPv4 interface available (cannot make CompanionAddress)')
+			}
+		}
+
+		return `http://${myIp}:${this.appWebServerPort}`
 	}
 }

@@ -4,16 +4,8 @@ const PORT = 3366
 
 const expressWs = require('express-ws')(app)
 
-const axios = require('axios')
-axios.get('https://c2.flaffipony.rocks/c2-my-ip').then((res)=>{
-  console.log(`MY IP: ${res.data}`)
-}).catch(err => {
-  console.error('unable to detect my ip', err)
-})
-
 app.listen(PORT, () => {
-  console.log(`  listening at port :${PORT} (C2WebService)`)
-  c2.onAppServerListening(PORT)
+  c2.onAppWebServerListening(PORT)
 })
 
 const fsPromises = require('fs/promises')
@@ -159,7 +151,11 @@ app.get('/favicon.ico', (req, res)=>{
 
 let C2 = require('./c2/c2.js')
 
-c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (IS_IN_PRODUCTION ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
+try {
+  c2 = new C2( typeof args.loglevel === 'number' ? args.loglevel : (IS_IN_PRODUCTION ? 2 : 3) /* production default loglevel "warn", dev default loglevel "info" */, app)
+} catch (err) {
+  console.error('Error when initializing C2', err)
+}
 
 app.get('/', (req, res, next)=>{
   res.render('index');

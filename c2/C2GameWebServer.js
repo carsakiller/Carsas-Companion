@@ -3,7 +3,7 @@ const app = express()
 const PORT = 3367
 
 app.listen(PORT, () => {
-  console.log(`  listening at port :${PORT} (C2GameService)`)
+  c2.onGameWebServerListening(PORT)
 })
 
 const morgan = require('morgan')

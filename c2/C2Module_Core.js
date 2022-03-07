@@ -235,6 +235,11 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			this.companionTokens = data
 		})
 
+		this.c2.registerGameMessageHandler('get-companion-url', ()=>{
+			this.warn('ping')
+			return this.c2.getCompanionUrl()
+		})
+
 		this.c2.registerGameMessageHandler('heartbeat', (data, messageType)=>{
 			if(data === 'first'){
 				//script has just reloaded
