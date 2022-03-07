@@ -74,9 +74,9 @@ app.use((req, res, next)=>{
     script-src 'self' 'unsafe-inline' 'unsafe-eval';
     style-src 'self' 'unsafe-inline' https://cdn.iconmonstr.com/;
     font-src 'self' https://cdn.iconmonstr.com/;
-    connect-src 'self' ws://*;
+    connect-src 'self';
     img-src 'self' data: https://avatars.cloudflare.steamstatic.com/ https://cdn.cloudflare.steamstatic.com/;
-    sandbox allow-forms allow-scripts allow-same-origin;
+    sandbox allow-forms allow-scripts allow-same-origin allow-popups;
     object-src 'none';
     frame-src 'self';
     frame-ancestors 'self';`.replaceAll('\n', ''))

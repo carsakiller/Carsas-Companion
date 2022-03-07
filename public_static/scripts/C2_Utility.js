@@ -818,8 +818,14 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					}
 				},
 				template: `
-					<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid"><icon :icon="'external-link'" class="icon"/>{{steamid}}</a>
-					<span v-else class="steamid">"Invalid SteamId"</span>`
+					<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid" @click="click"><icon :icon="'external-link'" class="icon"/>{{steamid}}</a>
+					<span v-else class="steamid">"Invalid SteamId"</span>`,
+				methods: {
+					click (evt){
+						evt.stopImmediatePropagation()
+						window.open('https://steamcommunity.com/profiles/' + this.steamid, '', 'noopener,noreferrer')
+					}
+				}
 			})
 
 			/* you must change the prop 'value' when onValueChange() is called */
