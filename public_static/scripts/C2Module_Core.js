@@ -12,6 +12,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerStorable('userName')
 			this.c2.registerStorable('profile')
 			this.c2.registerStorable('logs', [])
+			this.c2.registerStorable('chatMessages', [])
 			this.c2.registerStorable('settings')
 		})
 
@@ -26,21 +27,6 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerSyncable('commands')
 		})
 
-
-		this.c2.on('can-register-messagehandler', ()=>{
-			this.c2.registerMessageHandler('stream-log', (newLogs)=>{
-				if(!newLogs){
-					return
-				}
-
-				for(let log of newLogs){
-					this.c2.store.state.logs.push({
-						message: log,
-						time: Date.now()
-					})
-				}
-			})
-		})
 
 		this.c2.on('can-register-component', ()=>{
 
@@ -1409,6 +1395,90 @@ class C2Module_Core extends C2LoggingUtility {
 
 			/*
 
+				PAGE CHAT MANAGEMENT
+
+			*/
+
+			this.c2.registerComponent('chat-management', {
+				data (){
+					return {
+						newChatMessageText: '',
+						syncables: []
+					}
+				},
+				computed: {
+					chatMessages (){
+						return this.$store.state.chatMessages
+					},
+					hasChatMessages (){
+						return this.chatMessages && this.chatMessages.length > 0
+					}
+				},
+				template: `<div class="chat_management">
+					<chat-message-list v-if="hasChatMessages" :chatMessages="chatMessages"></chat-message-list>
+					<span v-else class="empty_list_hint">No chat messages</span>
+
+					<division class="new_chat_message_container" :startExtended="true">
+						<textarea v-model="newChatMessageText" placeholder="Your chat message" cols="50" rows="3"/>
+						<lockable-button @click="sendNewChatMessage" :set-disabled="newChatMessageText.length === 0">Send</lockable-button>
+					</division>
+				</div>`,
+				methods: {
+					sendNewChatMessage (){
+						if(this.newChatMessageText && this.newChatMessageText.length > 0){
+							this.sendServerMessage('chat-write', [this.newChatMessageText]).then(()=>{
+								this.newChatMessageText = ''
+							}).catch((err)=>{
+								this.showNotificationFailed('chat-write', err)
+							})
+						}
+					}
+				},
+				mixins: [componentMixin_serverMessage]
+			})
+
+			this.c2.registerComponent('chat-message-list', {
+				props: {
+					chatMessages: {
+						type: Array,
+						required: true
+					}
+				},
+				template: `<div class="list chat_message_list">
+					<chat-message v-for="(chatMessage, index) of chatMessages" :chatMessage="chatMessage" :index="index"></chat-messagery>
+				</div>`
+			})
+
+			this.c2.registerComponent('chat-message', {
+				props: {
+					chatMessage: {
+						type: Object,
+						required: true
+					},
+					index: {
+						type: Number,
+						required: true
+					}
+				},
+				computed: {
+					hasSameAuthorAsLastMessage (){
+						return this.$store.state.chatMessages[this.index - 1] && this.$store.state.chatMessages[this.index - 1].author === this.chatMessage.author
+					},
+					authorSteamId (){
+						return this.chatMessage.author
+					},
+					authorName (){
+						return this.$store.state.players && this.$store.state.players[this.chatMessage.author] ? this.$store.state.players[this.chatMessage.author].name : undefined
+					}
+				},
+				template: `<div class="chat_message">
+					<div class="player">{{!hasSameAuthorAsLastMessage ? authorName : ''}} <steamid v-if="!hasSameAuthorAsLastMessage" :steamid="authorSteamId"/></div>
+					<div class="message">{{chatMessage.message}}</div>
+				</div>`
+			})
+
+			/*
+
 				PAGE LOGS MANAGEMENT
 
 			*/
@@ -1417,11 +1487,14 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					logs (){
 						return this.$store.state.logs
+					},
+					hasLogs (){
+						return this.logs && this.logs.length > 0
 					}
 				},
 				template: `<div class="logs_management">
-					<log-list :logs="logs"></log-list>
-					<span v-if="!logs || logs.length === 0" class="empty_list_hint">No logs</span>
+					<log-list v-if="hasLogs" :logs="logs"></log-list>
+					<span v-else class="empty_list_hint">No logs</span>
 				</div>`
 			})
 
@@ -1432,7 +1505,7 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
-				template: `<div class="log_list">
+				template: `<div class="list log_list">
 					<log-entry v-for="(entry, entry_index) of logs" :entry="entry"></log-entry>
 				</div>`
 			})
@@ -1590,6 +1663,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerPage('rules', 'Rules', 'task-o', 'rules-management')
 			this.c2.registerPage('preferences', 'Preferences', 'control-panel', 'preferences-management')
 			this.c2.registerPage('gamesettings', 'Game Settings', 'wrench', 'gamesettings-management')
+			this.c2.registerPage('chat', 'Chat', 'speech-bubble-comments', 'chat-management')
 			this.c2.registerPage('logs', 'Logs', 'note-o', 'logs-management')
 			this.c2.registerPage('settings', 'Settings', 'gear', 'settings-management')
 		})
@@ -1607,6 +1681,29 @@ class C2Module_Core extends C2LoggingUtility {
 					this.syncAllData()
 				} else {
 					this.setStatus('game', false)
+				}
+			})
+
+			this.c2.registerMessageHandler('stream-log', (newLogs)=>{
+				if(!newLogs){
+					return
+				}
+
+				for(let log of newLogs){
+					this.c2.store.state.logs.push({
+						message: log,
+						time: Date.now()
+					})
+				}
+			})
+
+			this.c2.registerMessageHandler('stream-chat', (newChatMessages)=>{
+				if(!newChatMessages){
+					return
+				}
+
+				for(let chatMessage of newChatMessages){
+					this.c2.store.state.chatMessages.push(chatMessage)
 				}
 			})
 		})

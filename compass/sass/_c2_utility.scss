@@ -205,6 +205,7 @@
 	.division_body {
 		padding: 1em;
 		background: shade($secondary, 10%);
+		width: 100%;;
 	}
 }
 
@@ -216,6 +217,14 @@
 
 	&:hover {
 		color: #ddd;
+	}
+
+	&:visited {
+		color: #aaa;
+
+		&:hover {
+			color: #ddd;
+		}
 	}
 
 	.icon {

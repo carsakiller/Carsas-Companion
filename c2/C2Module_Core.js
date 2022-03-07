@@ -56,7 +56,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-rules': true,
 				'page-preferences': true,
 				'page-gamesettings': true,
-				'page-live-map': ()=>{return this.getCurrentServerSetting('allow-live-map') === true}
+				'page-live-map': ()=>{ return this.getCurrentServerSetting('allow-live-map') === true },
+				'page-chat': (client)=>{ return this.clientIsLoggedIn(client) }
 			},
 
 			localhost: {
@@ -69,6 +70,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-gamesettings': true,
 
 				'page-live-map': true,
+				'page-chat': true,
 				'page-logs': true,
 				'page-gameserver-management': true,
 				'page-settings': true
@@ -84,6 +86,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				'page-gamesettings': true,
 
 				'page-live-map': true,
+				'page-chat': true,
 				'page-logs': true,
 				'page-gameserver-management': true,
 				'page-settings': true,
@@ -181,11 +184,11 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		this.c2.registerWebClientMessageHandler('user-permissions', (client)=>{
 			return new Promise((resolve, reject)=>{
 				if(this.clientIsOwner(client)){
-					return resolve(this.inflatePermissions(this.PERMISSIONS.Owner))
+					return resolve(this.inflatePermissions(this.PERMISSIONS.Owner, client))
 				} else if (this.clientIsOwnerOrLocalhost(client)){
-					return resolve(this.inflatePermissions(this.PERMISSIONS.localhost))
+					return resolve(this.inflatePermissions(this.PERMISSIONS.localhost, client))
 				} else {
-					return resolve(this.inflatePermissions(this.PERMISSIONS.Default))
+					return resolve(this.inflatePermissions(this.PERMISSIONS.Default, client))
 				}
 			})
 		})
@@ -226,6 +229,10 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			return this.getNotificationsFor(steamId)
 		})
 
+		this.c2.registerWebClientMessageHandler('chat-write', (client, message, messageType)=>{
+			return this.c2.sendMessageToGame(client.token, messageType, message)
+		})
+
 		this.c2.registerGameMessageHandler('check-notifications', (steamId)=>{
 			return this.getNotificationsFor(steamId)
 		})
@@ -257,6 +264,14 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		this.c2.registerGameMessageHandler('stream-log', (data, messageType)=>{
 			for(let client of this.c2.c2WebInterface.c2WebSocketHandler.clients){
 				if(this.clientIsOwnerOrLocalhost(client)){
+					this.c2.sendMessageToWebClient(client, messageType, data)
+				}
+			}
+		})
+
+		this.c2.registerGameMessageHandler('stream-chat', (data, messageType)=>{
+			for(let client of this.c2.c2WebInterface.c2WebSocketHandler.clients){
+				if(this.clientIsLoggedIn(client)){
 					this.c2.sendMessageToWebClient(client, messageType, data)
 				}
 			}
@@ -294,18 +309,22 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		this.getServerSettings().then(settingsObject => this.setServerSettingsTo(settingsObject))
 	}
 
-	inflatePermissions(permissions){
+	inflatePermissions(permissions, client){
 		let ret = {}
 
 		for(let key of Object.keys(permissions)){
 			if(typeof permissions[key] === 'function'){
-				ret[key] = permissions[key]()
+				ret[key] = permissions[key](client)
 			} else {
 				ret[key] = permissions[key]
 			}
 		}
 
 		return ret
+	}
+
+	clientIsLoggedIn(client){
+		return client.token !== undefined
 	}
 
 	clientIsOwner(client){
