@@ -674,8 +674,16 @@
 		box-shadow: 5px 5px 15px 5px #000;
 		color: $text-color;
 
+		&[type="info"] {
+			background: $secondary;
+		}
+
 		&[type="success"] {
 			background: $enabled;
+		}
+
+		&[type="warning"] {
+			background: $warn;
 		}
 
 		&[type="error"] {

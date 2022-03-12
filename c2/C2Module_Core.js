@@ -44,6 +44,8 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			}
 		}
 
+		this.serverSettingsHaveBeenReset = false
+
 		this.companionTokens = {}
 		this.roles = {}
 
@@ -225,10 +227,27 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 
 		this.c2.registerWebClientMessageHandler('check-notifications', (client, steamId)=>{
 
+			if(steamId === undefined || steamId === ''){
+
+				if(this.clientIsOwnerOrLocalhost(client) && this.serverSettingsHaveBeenReset){
+					return [{
+						type: 'warning',
+						title: 'Some settings have been reset',
+						text: 'Due to a problem, the webserver settings (see page "Settings") have been reset back to default settings. Please check them now!'
+					}]
+				}
+
+				return undefined
+			}
+
 			if(this.companionTokens[steamId] !== client.token){
 				return new Promise((resolve, reject)=>{
 					reject('steamId and token mismatch')
 				})
+			}
+
+			if(this.clientIsOwnerOrLocalhost(client) && this.serverSettingsHaveBeenReset){
+				this.addNotificationFor(steamId, 'warning', 'Some settings have been reset', 'Due to a problem, the webserver settings (see page "Settings") have been reset back to default settings. Please check them now!')
 			}
 
 			return this.getNotificationsFor(steamId)
@@ -446,6 +465,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 	}
 
 	resetServerSettings(){
+		this.serverSettingsHaveBeenReset = true
 		return this.setServerSettingsTo(this.DEFAULT_SETTINGS)
 	}
 
@@ -456,12 +476,14 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		return this.settingsCache ? this.settingsCache[key].value : undefined
 	}
 
-	addNotificationFor(steamId, title, text){
+	/* types: info, warning, error */
+	addNotificationFor(steamId, type, title, text){
 		if(!this.notificationsForSteamId[steamId]){
 			this.notificationsForSteamId[steamId] = []
 		}
 
 		this.notificationsForSteamId[steamId].push({
+			type: type,
 			title: title,
 			text: text
 		})
@@ -477,13 +499,13 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 				this.getLatestCompanionVersion().then(latestCompanionVersion => {
 					let currentCompanionVersion = this.getCurrentCompanionVersion()
 					if(latestCompanionVersion !== undefined && currentCompanionVersion !== undefined && latestCompanionVersion !== currentCompanionVersion){
-						this.addNotificationFor(steamId, 'Update available', 'New Carsa\'s Companion version available: ' + latestCompanionVersion)
+						this.addNotificationFor(steamId, 'info', 'Update available', 'New Carsa\'s Companion version available: ' + latestCompanionVersion)
 					}
 
 					this.getLatestScriptVersion().then(latestScriptVersion => {
 						let currentScriptVersion = this.getCurrentScriptVersion()
 						if(latestScriptVersion !== undefined && currentScriptVersion !== undefined && latestScriptVersion !== currentScriptVersion){
-							this.addNotificationFor(steamId, 'Update available', 'New Carsa\'s Commands version available: ' + latestScriptVersion)
+							this.addNotificationFor(steamId, 'info', 'Update available', 'New Carsa\'s Commands version available: ' + latestScriptVersion)
 						}
 
 						resolve(this.popNotifications(steamId))

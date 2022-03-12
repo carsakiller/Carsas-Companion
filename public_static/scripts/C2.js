@@ -69,7 +69,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 				if(notifications){
 					for(let n of notifications){
-						this.showNotification(n.title, n.text)
+						this.showNotification(n.title, n.text, n.type)
 					}
 				}
 			}).catch(err=>this.error)
