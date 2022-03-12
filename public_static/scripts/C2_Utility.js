@@ -390,12 +390,16 @@ let componentMixin_serverMessage = {
 			}
 
 			c2.lastNotificationId = c2.showNotification(title, message, type)
-			/*setTimeout(()=>{
-				c2.hideNotification(this.lastNotificationId)
-			}, 1000 * 5)*/
+			return c2.lastNotificationId
 		},
 		showNotificationSuccess (type, message){
-			this.showNotification('Success: ' + type, message, 'success')
+			const myId = this.showNotification('Success: ' + type, message, 'success')
+
+			setTimeout(()=>{
+				if(myId === c2.lastNotificationId){
+					c2.hideNotification(myId)
+				}
+			}, 1000 * 3)
 
 		},
 		showNotificationFailed (type, message){
