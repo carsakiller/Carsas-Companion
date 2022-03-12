@@ -405,7 +405,7 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 					this.log('Current Settings: ', parsed)
 					resolve(parsed)
 				} catch (err){
-					this.warn('unable to read server settings, using default settings', err)
+					this.error('unable to read server settings, using default settings', err)
 					this.resetServerSettings().then(settingsObject => {
 
 						this.settingsCache = JSON.parse(JSON.stringify(settingsObject))
