@@ -114,7 +114,7 @@ app.get('*', (req, res, next)=>{
   } else {
     let err = new Error('Forbidden: The games owner has not allowed external access.');
     err.status = 403;
-    handleError(err, req, res)
+    handleError(err, req, res, true)
   }
 })
 
