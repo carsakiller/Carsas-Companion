@@ -476,6 +476,26 @@ class C2Module_Core extends C2LoggingUtility {
 						}
 
 						return myRoles
+					},
+					orderedPlayerRoleArray (){
+						let roleArray = []
+
+						let roles = this.playerRoles
+
+						if(!roles){
+							return undefined
+						}
+
+						for(let k of Object.keys(roles)){
+							roleArray.push({
+								name: k,
+								hasRole: roles[k]
+							})
+						}
+
+						return roleArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				props: {
@@ -522,7 +542,7 @@ class C2Module_Core extends C2LoggingUtility {
 						<tabs>
 							<tab :title="'Roles'">
 								<lockable-by-childs>
-									<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :steamid="steamid"/>
+									<player-role v-for="r in orderedPlayerRoleArray" :hasRole="r.hasRole" :roleName="r.name" :steamid="steamid"/>
 								</lockable-by-childs>
 							</tab>
 						</tabs>
@@ -685,6 +705,26 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					roles (){
 						return this.$store.state.roles
+					},
+					orderedRoleArray (){
+						let roleArray = []
+
+						let roles = this.roles
+
+						if(!roles){
+							return undefined
+						}
+
+						for(let k of Object.keys(roles)){
+							roleArray.push({
+								name: k,
+								role: roles[k]
+							})
+						}
+
+						return roleArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="roles_management">
@@ -693,7 +733,7 @@ class C2Module_Core extends C2LoggingUtility {
 							<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
 							<lockable-button @click="addNewRole">Add new Role</lockable-button>
 						</division>
-						<role-list v-if="roles" :roles="roles"/>
+						<role-list v-if="roles" :roles="orderedRoleArray"/>
 						<span v-else style="margin-top: 1em;">Not synced</span>
 					</lockable-by-childs>
 				</div>`,
@@ -712,12 +752,12 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('role-list', {
 				props: {
 					roles: {
-						type: Object,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list role_list">
-					<role v-for="(role, roleName) of roles" :role="role" :roleName="roleName"/>
+					<role v-for="r of roles" :role="r.role" :roleName="r.name"/>
 				</div>`
 			})
 
@@ -760,6 +800,26 @@ class C2Module_Core extends C2LoggingUtility {
 						}
 
 						return ret
+					},
+					orderedCommandArray (){
+						let commandArray = []
+
+						let commands = this.allCommands
+
+						if(!commands){
+							return undefined
+						}
+
+						for(let k of Object.keys(commands)){
+							commandArray.push({
+								name: k,
+								isCommand: commands[k]
+							})
+						}
+
+						return commandArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<extendable class="role">
@@ -784,7 +844,7 @@ class C2Module_Core extends C2LoggingUtility {
 								<member-list :members="role.members"/>
 							</tab>
 							<tab :title="'Commands'">
-								<command-list :commands="allCommands"/>
+								<command-list :commands="orderedCommandArray"/>
 							</tab>
 							<tab :title="'Permissions'">
 								<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
@@ -883,13 +943,13 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('command-list', {
 				props: {
 					commands: {
-						type: Object,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list command_list">
 					<lockable-by-childs>
-						<command v-for="(isCommand, commandName) of commands" :commands="commands" :isCommand="isCommand" :commandName="commandName"/>
+						<command v-for="c of commands" :commands="commands" :isCommand="c.isCommand" :commandName="c.name"/>
 					</lockable-by-childs>
 				</div>`
 			})
@@ -1076,10 +1136,30 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					preferences (){
 						return this.$store.state.preferences
+					},
+					orderedPreferenceArray (){
+						let preferenceArray = []
+
+						let preferences = this.preferences
+
+						if(!preferences){
+							return undefined
+						}
+
+						for(let k of Object.keys(preferences)){
+							preferenceArray.push({
+								name: k,
+								preference: preferences[k]
+							})
+						}
+
+						return preferenceArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="preferences_management">
-					<preference-list v-if="preferences" :preferences="preferences"/>
+					<preference-list v-if="preferences" :preferences="orderedPreferenceArray"/>
 					<span v-else>Not synced</span>
 				</div>`
 			})
@@ -1092,13 +1172,13 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				props: {
 					preferences: {
-						type: Object,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list preference_list">
 					<lockable-by-childs>
-						<preference v-if="preferences" v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
+						<preference v-if="preferences" v-for="p in preferences" :preference="p.preference" :preferenceName="p.name"/>
 					</lockable-by-childs>
 				</div>`,
 				mixins: [componentMixin_lockable]
