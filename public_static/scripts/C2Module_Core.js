@@ -1620,21 +1620,42 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					settings (){
 						return this.$store.state.settings
+					},
+					orderedSettingArray (){
+						let settingArray = []
+
+						let settings = this.settings
+
+						if(!settings){
+							return undefined
+						}
+
+						for(let k of Object.keys(settings)){
+							settingArray.push({
+								name: k,
+								setting: settings[k]
+							})
+						}
+
+						return settingArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="settings_management">
-					<setting-list :settings="settings"></setting-list>
+					<setting-list :settings="orderedSettingArray"></setting-list>
 				</div>`
 			})
 
 			this.c2.registerComponent('setting-list', {
 				props: {
 					settings: {
-						type: Object
+						type: Array,
+						required: true
 					}
 				},
 				template: `<div class="setting_list">
-					<setting v-if="settings" v-for="(setting, settingName) of settings" :setting="setting" :settingName="settingName"></setting>
+					<setting v-if="settings" v-for="s of settings" :setting="s.setting" :settingName="s.name"></setting>
 				</div>`
 			})
 
