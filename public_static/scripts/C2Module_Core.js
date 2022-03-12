@@ -912,12 +912,18 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['roleName'],
 				template: `<div class="command">
-					<toggleable-element :value-object="commands" :value-object-key="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+					<toggleable-element :value-object="commands" :value-object-key="commandName" :on-value-change="onCommandChange" ref="toggleable">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
 					onCommandChange (_, value){
 						this.commands[this.commandName] = value
+
 						this.callGameCommandAndWaitForSync('roleAccess', [this.roleName, this.commandName, value])
+					}
+				},
+				watch: {
+					commands (){
+						this.$refs.toggleable.refreshValue()
 					}
 				},
 				mixins: [componentMixin_gameCommand]

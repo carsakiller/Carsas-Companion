@@ -844,6 +844,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 			this.c2.registerComponent('toggleable-element', {
 				data: function (){
 					return {
+						val: false,
 						uiid: C2.uuid()
 					}
 				},
@@ -874,7 +875,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					<div class="front">
 						<label :for="uiid">
 							<disabled-when-any-parent-locked v-slot="disabledProps">
-								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="value" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
+								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="val" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
 							</disabled-when-any-parent-locked>
 							<span class="checkbox_slider"/>
 						</label>
@@ -892,7 +893,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						this.log('checkbox changing to', !this.value)
 
 						this.onValueChange(this.valueObjectKey, !this.value)
+					},
+					refreshValue (){
+						this.val = this.valueObject[this.valueObjectKey]
 					}
+				},
+				watch: {
+					value (){
+						this.val = this.value
+					}
+				},
+				created (){
+					this.val = this.value
 				},
 				mixins: [componentMixin_logging]
 			})
