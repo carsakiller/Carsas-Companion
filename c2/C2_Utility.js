@@ -48,68 +48,53 @@ let mixin_LoggingUtility = Base => class extends Base {
 	}
 
 	error(...args){
-		if(this.loglevel < 1){
-			return
-		}
-		console.error.apply(null, [
+		ConsoleLogger.log('error', [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
 			+ this.colorizeConsole('Error', 'FgRed')
-		].concat(args))
+		].concat(args), this.loglevel >= 1)
 	}
 
 	warn(...args){
-		if(this.loglevel < 2){
-			return
-		}
-		console.warn.apply(null, [
+		ConsoleLogger.log('warn', [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
 			+ this.colorizeConsole('Warning', 'FgYellow')
-		].concat(args))
+		].concat(args), this.loglevel >= 2)
 	}
 
 	info(...args){
-		if(this.loglevel < 3){
-			return
-		}
-		console.info.apply(null, [
+		ConsoleLogger.log('info', [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
 			+ this.colorizeConsole('Info', 'FgMagenta')
-		].concat(args))
+		].concat(args), this.loglevel >= 3)
 	}
 
 	log(...args){
-		if(this.loglevel < 4){
-			return
-		}
-		console.log.apply(null, [
+		ConsoleLogger.log('log', [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
 			+ this.colorizeConsole('Log', 'FgWhite')
-		].concat(args))
+		].concat(args), this.loglevel >= 4)
 	}
 
 	debug(...args){
-		if(this.loglevel < 5){
-			return
-		}
-		console.debug.apply(null, [
+		ConsoleLogger.log('debug', [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
 			+ this.colorizeConsole('}-', 'FgBlue')
 			+ ' '
 			+ this.colorizeConsole('Debug', 'FgWhite')
-		].concat(args))
+		].concat(args), this.loglevel >= 5)
 	}
 }
 

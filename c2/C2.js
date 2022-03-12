@@ -1,4 +1,5 @@
-require('./C2_ConsoleLogger.js')
+const Logger = require('./C2_ConsoleLogger.js')
+global.ConsoleLogger = new Logger()
 
 const C2GameInterface = require('./C2GameInterface.js')
 const C2WebInterface = require('./C2WebInterface.js')
