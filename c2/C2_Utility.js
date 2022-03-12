@@ -88,6 +88,10 @@ let mixin_LoggingUtility = Base => class extends Base {
 	}
 
 	debug(...args){
+		if(this.loglevel < 5){
+			return
+		}
+
 		ConsoleLogger.log('debug', [
 			this.colorizeConsole('-{', 'FgBlue')
 			+ this.constructor.name
