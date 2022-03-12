@@ -194,7 +194,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 	<div class="inner"></div>
 </div>
 <div class="content">
-	<h1>Documentation</h1>
+	<h1>Manual</h1>
 	<div class="subtitle">for version 1.0.0</div>
 
 
@@ -653,6 +653,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 			<h4>C2.js</h4>
 			<p>This class loads all the modules and provides some APIs for them. Each module can use those APIs to send messages to either game or webclients, can register callbacks/handlers for specific message types from either the game or the webclients.</p>
 
+			<h4>C2_ConsoleLogger.js</h4>
+			<p>This class intercepts logs and writes them to the logfile.</p>
+
 			<h4>C2_Utility.js</h4>
 			<p>This class provides utility functions for logging and an event system.</p>
 
@@ -704,6 +707,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 			<h4>C2.js</h4>
 			<p>This class initializes Vue.js and the Vuex store. It provides an API for modules to register message callbacks/handlers, storables, syncables, components and pages and an API for showing notifications. Displays error popup as a fallback for Vue.js internal error handling (of the components themselves).</p>
 
+			<h4>C2_ConsoleLogger.js</h4>
+			<p>This class is responsible to intercept logs, cache them and later provide them for error messages displayed to the user.</p>
+
 			<h4>C2_Utility.js</h4>
 			<p>This class provides utility functions for logging and an event system. It also provides mixins components can use for logging, sending messages or commands. It also provides some basic components (e.g. lockables, extendables, buttons, icons, ...)</p>
 
@@ -727,6 +733,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 				<li><c2-page>preferences</c2-page></li>
 				<li><c2-page>gamesettings</c2-page></li>
 				<li><c2-page>logs</c2-page></li>
+				<li><c2-page>chat</c2-page></li>
 				<li><c2-page>settings</c2-page></li>
 			</ul>
 
@@ -738,9 +745,6 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 			<h4>C2Module_Gameserver.js</h4>
 			<p>This class is responsible for the <c2-page>gameserver</c2-page> and starting/stopping the dedicated game server.</p>
-
-			<h4>documentation.js</h4>
-			<p>Used for this page.</p>
 		</div>
 	</div>
 
