@@ -1353,10 +1353,30 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					gamesettings (){
 						return this.$store.state.gamesettings
+					},
+					orderedGamesettingArray (){
+						let gamesettingArray = []
+
+						let gamesettings = this.gamesettings
+
+						if(!gamesettings){
+							return undefined
+						}
+
+						for(let k of Object.keys(gamesettings)){
+							gamesettingArray.push({
+								name: k,
+								gamesetting: gamesettings[k]
+							})
+						}
+
+						return gamesettingArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="gamesettings_management">
-					<gamesetting-list v-if="gamesettings" :gamesettings="gamesettings"/>
+					<gamesetting-list v-if="gamesettings && orderedGamesettingArray" :gamesettings="gamesettings" :ordered-gamesettings="orderedGamesettingArray"/>
 					<span v-else>Not synced</span>
 				</div>`
 			})
@@ -1371,11 +1391,15 @@ class C2Module_Core extends C2LoggingUtility {
 					gamesettings: {
 						type: Object,
 						required: true
+					},
+					orderedGamesettings: {
+						type: Array,
+						required: true
 					}
 				},
 				template: `<div class="list gamesetting_list">
 					<lockable-by-childs>
-						<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesettings="gamesettings" :gamesettingName="gamesettingName"/>
+						<gamesetting v-for="g in orderedGamesettings" :gamesettings="gamesettings" :gamesettingName="g.name"/>
 					</lockable-by-childs>
 				</div>`,
 				mixins: [componentMixin_lockable]
