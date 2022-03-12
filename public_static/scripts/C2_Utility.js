@@ -332,14 +332,18 @@ let componentMixin_lockable = {
 
 		searchForLockableByChildsParentRecursively(this, this.$parent)
 
-		function searchForLockableByChildsParentRecursively(me, node){
+		function searchForLockableByChildsParentRecursively(me, node, count){
+			if(count === undefined){
+				count = 0
+			}
+
 			if(node && ('isLockableByChilds' in node)){
 				me.lockableParents.push(node)
 				me.debug('found a lockable by childs parent', node)
 			}
 
-			if(node) {
-				searchForLockableByChildsParentRecursively(me, node.$parent)
+			if(node && count < 50) {
+				searchForLockableByChildsParentRecursively(me, node.$parent, count + 1)
 			}
 		}
 	},
@@ -588,13 +592,17 @@ let componentMixin_disabledWhenAnyParentLocked = {
 		checkIfAnyParentIsLocked (){
 			return searchForLockedParentRecursively(this, this.$parent)
 
-			function searchForLockedParentRecursively(me, node){
-				if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
+			function searchForLockedParentRecursively(me, node, count){
+				if(count === undefined){
+				count = 0
+			}
+
+			if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
 					return true
 				}
 
-				if (node) {
-					return searchForLockedParentRecursively(me, node.$parent)
+				if (node && count < 50) {
+					return searchForLockedParentRecursively(me, node.$parent, count + 1)
 				}
 				return false
 			}
@@ -1119,14 +1127,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				mounted: function (){
 					searchForExtendableParentRecursively(this, this.$parent)
 
-					function searchForExtendableParentRecursively(me, node){
+					function searchForExtendableParentRecursively(me, node, count){
+						if(count === undefined){
+							count = 0
+						}
+
 						if(node && node.isAnExtendableComponent === true){
 							me.extendable = node
 							me.debug('found an extendable', node)
 						}
 
-						if (node) {
-							searchForExtendableParentRecursively(me, node.$parent)
+						if (node && count < 50) {
+							searchForExtendableParentRecursively(me, node.$parent, count + 1)
 						}
 					}
 				},
@@ -1158,14 +1170,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				mounted: function (){
 					searchForExtendableParentRecursively(this, this.$parent)
 
-					function searchForExtendableParentRecursively(me, node){
+					function searchForExtendableParentRecursively(me, node, count){
+						if(count === undefined){
+							count = 0
+						}
+
 						if(node && node.isAnExtendableComponent === true){
 							me.extendable = node
 							me.debug('found an extendable', node)
 						}
 
-						if (node) {
-							searchForExtendableParentRecursively(me, node.$parent)
+						if (node && count < 50) {
+							searchForExtendableParentRecursively(me, node.$parent, count + 1)
 						}
 					}
 				},
