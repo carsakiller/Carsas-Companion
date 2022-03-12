@@ -28,9 +28,13 @@ module.exports = class ConsoleLogger {
 		for(let stream of ['error', 'warn', 'info', 'log', 'debug']){
 			this.originalFunctions[stream] = console[stream]
 			console[stream] = function(...args){
-				that.appendLog(stream, this.cleanupArgs(args))
+				try {
+					that.appendLog(stream, that.cleanupArgs(args))
 
-				that.originalFunctions[stream].apply(undefined, args)
+					that.originalFunctions[stream].apply(undefined, args)
+				} catch (err){
+					that.originalFunctions['error']('Error when handling log', err)
+				}
 			}
 		}
 
@@ -39,6 +43,11 @@ module.exports = class ConsoleLogger {
 
 	cleanupArgs(args){
 		let cleanArgs = []
+
+		if(args instanceof Array === false){
+			this.originalFunctions['error']('cleanupArgs excepted an array, but got', typeof args)
+			return undefined
+		}
 
 		for(let arg of args){
 			if(typeof arg === 'string'){
