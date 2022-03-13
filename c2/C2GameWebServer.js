@@ -2,9 +2,22 @@ const express = require('express')
 const app = express()
 const PORT = 3367
 
-app.listen(PORT, () => {
+
+const http = require('http')
+const server = http.createServer(app)
+
+server.on('error', (err)=>{
+  if(err.code === 'EADDRINUSE'){
+    console.error(`\n--- ERROR: Port ${PORT} already in use! ---\n`)
+  } else {
+    console.error(err)
+  }
+})
+
+server.listen(PORT, () => {
   c2.onGameWebServerListening(PORT)
 })
+
 
 const morgan = require('morgan')
 

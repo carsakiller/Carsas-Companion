@@ -4,9 +4,21 @@ const PORT = 3366
 
 const expressWs = require('express-ws')(app)
 
-app.listen(PORT, () => {
+const http = require('http')
+const server = http.createServer(app)
+
+server.on('error', (err)=>{
+  if(err.code === 'EADDRINUSE'){
+    console.error(`\n--- ERROR: Port ${PORT} already in use! ---\n`)
+  } else {
+    console.error(err)
+  }
+})
+
+server.listen(PORT, () => {
   c2.onAppWebServerListening(PORT)
 })
+
 
 const fsPromises = require('fs/promises')
 const path = require('path')
