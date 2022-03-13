@@ -10,7 +10,6 @@ body {
 	margin: 0;
 	display: flex;
 	flex-direction: row;
-	color: #222;
 	font-family: Arial, sans-serif;
 
 	.im {
@@ -21,6 +20,11 @@ body {
 	* {
 		box-sizing: border-box;
 		scrollbar-width: thin;
+	}
+
+	::-webkit-scrollbar {
+		width: 0.5em;
+		background: #7b7c7f;
 	}
 
 
@@ -75,8 +79,8 @@ body {
 		display: inline-block;
 		margin: 0 0.5em;
 		padding: 0.1em 0.5em;
-		background: #222;
-		color: #eee;
+		background: #191919;
+		color: #fbfbfe;
 		border-radius: 0.1em;
 		font-family: 'courier new', monospace;
 		font-size: 0.8em;
@@ -99,7 +103,7 @@ body {
 			.im {
 
 				&[permission-type="view"] {
-					color: #222222;
+					color: #9c9c9c;
 				}
 
 				&[permission-type="modify"] {
@@ -173,11 +177,25 @@ body {
 			}
 		}
 	}
+
+	a {
+		color: #0066CC;
+
+		&:visited {
+			color: #4e32d6;
+		}
+
+		&:hover {
+			color: #66a3e0 !important;
+		}
+	}
 }
 
 .content {
 	width: calc(100vw - #{$navigation-sidebar-width});
 	padding: 1em;
+	background: #24262b;
+	color: #fbfbfe;
 
 	h1 {
 		font-size: 3em;
@@ -251,7 +269,8 @@ body {
 	min-height: 100vh;
 	max-height: 100vh;
 	padding: 0.5em;
-	background: #ddd;
+	background: #2e3036;
+	color: #fbfbfe;
 
 	.logo {
 		width: 60%;
@@ -269,11 +288,15 @@ body {
 		overflow-y: auto;
 
 		a {
-			color: #222 !important;
+			color: #fbfbfe !important;
 			text-decoration: none;
 
+			&:visited {
+				color: #fbfbfe !important;
+			}
+
 			&:hover {
-				color: #888 !important;
+				color: #c8c8cb !important;
 			}
 
 			& + a {
@@ -293,7 +316,7 @@ body {
 			}
 
 			&.selected {
-				color: $secondary !important;
+				color: #4c7c98 !important;
 				font-weight: bold;
 			}
 		}
