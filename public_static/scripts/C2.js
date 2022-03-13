@@ -69,7 +69,7 @@ class C2 extends C2EventManagerAndLoggingUtility {
 
 				if(notifications){
 					for(let n of notifications){
-						this.showNotification(n.title, n.text)
+						this.showNotification(n.title, n.text, n.type)
 					}
 				}
 			}).catch(err=>this.error)
@@ -370,8 +370,14 @@ class C2 extends C2EventManagerAndLoggingUtility {
 		this.dispatch('sync-arrived', 'vehicles')
 	}
 
-	__generateFakeVehicles(){
-
+	__generateFakeChatMessages(){
+		let players = this.store.state.players
+		for(let i=0; i<30; i++){
+			this.store.state.chatMessages.push({
+				author: Object.keys(players)[Math.floor(Math.random() * Object.keys(players).length)],
+				message: '#' + i
+			})
+		}
 	}
 }
 

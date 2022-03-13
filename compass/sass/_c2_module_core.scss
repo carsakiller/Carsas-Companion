@@ -413,20 +413,75 @@
 	}
 }
 
+.chat_management {
+	display: flex;
+	flex-direction: column;
+	max-height: calc(100vh - 5em);
+	min-height: calc(100vh - 5em);
+	justify-content: space-between;
+
+	.new_chat_message_container {
+
+		.division_body {
+			display: flex;
+			flex-direction: row;
+		}
+
+		textarea {
+			width: 100%;
+			min-height: 2em;
+			margin-right: 1em;
+		}
+	}
+
+
+	.chat_message_list {
+		display: grid;
+		overflow-y: auto;
+		grid-template-columns: auto 1fr;
+		grid-column-gap: 1em;
+		grid-row-gap: 0.2em;
+
+		.chat_message {
+			display: contents;
+
+			&:not(:last-child) {
+				margin-bottom: 0.2em;
+			}
+
+			.player {
+				grid-column: 1;
+				display: flex;
+				flex-direction: column;
+				font-family: $font-secondary;
+				min-width: 5em;
+
+				.steamid {
+					font-size: 0.7em;
+				}
+			}
+
+			.message {
+				grid-column: 2;
+				margin-left: 1em;
+				white-space: break-spaces;
+			}
+		}
+	}
+}
+
 .logs_management {
 
 	.log_list {
 		display: flex;
 		flex-direction: column;
-		padding: 1em;
 
 		.log_entry {
 			display: flex;
 			flex-direction: row;
-			padding: 0.2em 0.4em;
 
 			&:not(:last-child) {
-				margin-bottom: 0.1em;
+				margin-bottom: 0.3em;
 			}
 
 			.time {
@@ -619,8 +674,16 @@
 		box-shadow: 5px 5px 15px 5px #000;
 		color: $text-color;
 
+		&[type="info"] {
+			background: $secondary;
+		}
+
 		&[type="success"] {
 			background: $enabled;
+		}
+
+		&[type="warning"] {
+			background: $warn;
 		}
 
 		&[type="error"] {

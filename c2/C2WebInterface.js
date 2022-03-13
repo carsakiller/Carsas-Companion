@@ -37,7 +37,7 @@ module.exports = class C2WebInterface extends C2Interface {
 	}
 
 	/*
-		@clientOrClients: 'all' or a clientToken 'XYZ' or an array of clientTokens ['XYZ', 'abc']
+		@clientOrClients: 'all' or a clientToken 'XYZ' or an array of clientTokens ['XYZ', 'abc'], if sent to multiple clients, the promise will never be rejected!
 	*/
 	sendMessageTo(clientOrClients, messageType, data){
 		if(!clientOrClients){
@@ -59,7 +59,9 @@ module.exports = class C2WebInterface extends C2Interface {
 				this.info(' ->', 'sending data to all', messageType)
 			}
 
-			return this.c2WebSocketHandler.sendToAllClients(dataToSend)
+			return new Promise((resolve, reject)=>{
+				this.c2WebSocketHandler.sendToAllClients(dataToSend).finally(resolve)
+			})
 		} else if(clientOrClients instanceof Array){
 			if(messageType === 'heartbeat' || messageType === 'stream-map'){
 				this.debug(' ->', 'sending data to', clientOrClients, messageType)

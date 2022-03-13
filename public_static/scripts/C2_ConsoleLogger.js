@@ -21,7 +21,7 @@ let ConsoleLogger = (()=>{
 					}
 				} else {
 					try {
-						cleanArgs.push('' + arg)
+						cleanArgs.push(JSON.stringify(arg, null, 2))
 					} catch (thrown){
 						cleanArgs.push('[object]')
 					}

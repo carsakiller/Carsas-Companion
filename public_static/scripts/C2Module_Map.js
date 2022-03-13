@@ -268,12 +268,15 @@ class C2Module_Map extends C2LoggingUtility {
 					theVehicle (){
 						return this.$store.state.vehicles ? this.$store.state.vehicles[this.dataId] : undefined
 					},
+					vehicleName (){
+						return this.theVehicle ? this.theVehicle.name : undefined
+					},
 					ownerName (){
 						return this.theVehicle && this.$store.state.players && this.$store.state.players[this.theVehicle.owner] ? this.$store.state.players[this.theVehicle.owner].name : ( this.theVehicle ? '<steamid:' + this.theVehicle.owner + '>' : '')
 					}
 				},
 				template: `<map-view-info class="vehicle" :title="'Vehicle'" @close="$emit('close')">
-					<div>Name: {{data.name}}</div>
+					<div>Name: {{vehicleName}}</div>
 					<div>GPS: X {{Math.floor(data.x)}}, Y {{Math.floor(data.y)}}</div>
 					<div>Altitude: {{Math.floor(data.alt)}}</div>
 					<div>Owner: {{ownerName}}</div>

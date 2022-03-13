@@ -332,14 +332,18 @@ let componentMixin_lockable = {
 
 		searchForLockableByChildsParentRecursively(this, this.$parent)
 
-		function searchForLockableByChildsParentRecursively(me, node){
+		function searchForLockableByChildsParentRecursively(me, node, count){
+			if(count === undefined){
+				count = 0
+			}
+
 			if(node && ('isLockableByChilds' in node)){
 				me.lockableParents.push(node)
 				me.debug('found a lockable by childs parent', node)
 			}
 
-			if(node) {
-				searchForLockableByChildsParentRecursively(me, node.$parent)
+			if(node && count < 50) {
+				searchForLockableByChildsParentRecursively(me, node.$parent, count + 1)
 			}
 		}
 	},
@@ -386,12 +390,16 @@ let componentMixin_serverMessage = {
 			}
 
 			c2.lastNotificationId = c2.showNotification(title, message, type)
-			/*setTimeout(()=>{
-				c2.hideNotification(this.lastNotificationId)
-			}, 1000 * 5)*/
+			return c2.lastNotificationId
 		},
 		showNotificationSuccess (type, message){
-			this.showNotification('Success: ' + type, message, 'success')
+			const myId = this.showNotification('Success: ' + type, message, 'success')
+
+			setTimeout(()=>{
+				if(myId === c2.lastNotificationId){
+					c2.hideNotification(myId)
+				}
+			}, 1000 * 3)
 
 		},
 		showNotificationFailed (type, message){
@@ -588,13 +596,17 @@ let componentMixin_disabledWhenAnyParentLocked = {
 		checkIfAnyParentIsLocked (){
 			return searchForLockedParentRecursively(this, this.$parent)
 
-			function searchForLockedParentRecursively(me, node){
-				if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
+			function searchForLockedParentRecursively(me, node, count){
+				if(count === undefined){
+				count = 0
+			}
+
+			if(node && ('isComponentLocked' in node) && node.isComponentLocked === true){
 					return true
 				}
 
-				if (node) {
-					return searchForLockedParentRecursively(me, node.$parent)
+				if (node && count < 50) {
+					return searchForLockedParentRecursively(me, node.$parent, count + 1)
 				}
 				return false
 			}
@@ -818,14 +830,21 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					}
 				},
 				template: `
-					<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid"><icon :icon="'external-link'" class="icon"/>{{steamid}}</a>
-					<span v-else class="steamid">"Invalid SteamId"</span>`
+					<a class="steamid" target="_blank" rel="noopener noreferrer" v-if="steamid.length > 0" :href="'https://steamcommunity.com/profiles/' + this.steamid" @click="click"><icon :icon="'external-link'" class="icon"/>{{steamid}}</a>
+					<span v-else class="steamid">"Invalid SteamId"</span>`,
+				methods: {
+					click (evt){
+						evt.stopImmediatePropagation()
+						window.open('https://steamcommunity.com/profiles/' + this.steamid, '', 'noopener,noreferrer')
+					}
+				}
 			})
 
 			/* you must change the prop 'value' when onValueChange() is called */
 			this.c2.registerComponent('toggleable-element', {
 				data: function (){
 					return {
+						val: false,
 						uiid: C2.uuid()
 					}
 				},
@@ -856,7 +875,7 @@ let componentMixin_disabledWhenAnyParentLocked = {
 					<div class="front">
 						<label :for="uiid">
 							<disabled-when-any-parent-locked v-slot="disabledProps">
-								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="value" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
+								<input type="checkbox" :id="uiid" @input="inputChanged" v-model="val" ref="checkbox" :disabled="disabledProps.isDisabled || isDisabled">
 							</disabled-when-any-parent-locked>
 							<span class="checkbox_slider"/>
 						</label>
@@ -874,7 +893,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 						this.log('checkbox changing to', !this.value)
 
 						this.onValueChange(this.valueObjectKey, !this.value)
+					},
+					refreshValue (){
+						this.val = this.valueObject[this.valueObjectKey]
 					}
+				},
+				watch: {
+					value (){
+						this.val = this.value
+					}
+				},
+				created (){
+					this.val = this.value
 				},
 				mixins: [componentMixin_logging]
 			})
@@ -1113,14 +1143,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				mounted: function (){
 					searchForExtendableParentRecursively(this, this.$parent)
 
-					function searchForExtendableParentRecursively(me, node){
+					function searchForExtendableParentRecursively(me, node, count){
+						if(count === undefined){
+							count = 0
+						}
+
 						if(node && node.isAnExtendableComponent === true){
 							me.extendable = node
 							me.debug('found an extendable', node)
 						}
 
-						if (node) {
-							searchForExtendableParentRecursively(me, node.$parent)
+						if (node && count < 50) {
+							searchForExtendableParentRecursively(me, node.$parent, count + 1)
 						}
 					}
 				},
@@ -1152,14 +1186,18 @@ let componentMixin_disabledWhenAnyParentLocked = {
 				mounted: function (){
 					searchForExtendableParentRecursively(this, this.$parent)
 
-					function searchForExtendableParentRecursively(me, node){
+					function searchForExtendableParentRecursively(me, node, count){
+						if(count === undefined){
+							count = 0
+						}
+
 						if(node && node.isAnExtendableComponent === true){
 							me.extendable = node
 							me.debug('found an extendable', node)
 						}
 
-						if (node) {
-							searchForExtendableParentRecursively(me, node.$parent)
+						if (node && count < 50) {
+							searchForExtendableParentRecursively(me, node.$parent, count + 1)
 						}
 					}
 				},

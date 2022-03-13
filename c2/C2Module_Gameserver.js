@@ -18,6 +18,10 @@ module.exports = class C2Module_Gameserver extends C2LoggingUtility {
 			}
 		})
 
+		this.c2.c2WebInterface.on('new-client', (client)=>{
+			this.c2.c2WebInterface.sendMessageTo(client, 'gameserver-state', this.c2GameServerManager.isRunning)
+		})
+
 		this.c2GameServerManager.on('gameserver-state', (state)=>{
 			this.c2.sendMessageToWebClient('all', 'gameserver-state', state)
 		})

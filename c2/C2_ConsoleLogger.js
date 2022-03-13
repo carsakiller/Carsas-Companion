@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-class ConsoleLogger {
+module.exports = class ConsoleLogger {
 
 	constructor(){
 		this.LOG_FILE_PATH = path.join(process.cwd(), 'log.txt')
@@ -28,36 +28,56 @@ class ConsoleLogger {
 		for(let stream of ['error', 'warn', 'info', 'log', 'debug']){
 			this.originalFunctions[stream] = console[stream]
 			console[stream] = function(...args){
-				let cleanArgs = []
+				try {
+					that.appendLog(stream, that.cleanupArgs(args))
 
-				for(let arg of args){
-					if(typeof arg === 'string'){
-						if(arg.match(/color:[\s]*[a-zA-Z0-9#]*/)){
-							//ignore coloring agruments
-						} else if(arg.indexOf('%c') >= 0) {
-							cleanArgs.push(arg.replaceAll('%c', ''))
-						} else if(arg.indexOf('\x1b') === 0) {
-							//skip
-						} else {
-							cleanArgs.push(arg)
-						}
-					} else {
-						try {
-							cleanArgs.push('' + arg)
-						} catch (thrown){
-							cleanArgs.push('[object]')
-						}
-					}
+					that.originalFunctions[stream].apply(undefined, args)
+				} catch (err){
+					that.originalFunctions['error']('Error when handling log', err)
 				}
-
-
-				that.appendLog(stream,cleanArgs)
-
-				that.originalFunctions[stream].apply(undefined, args)
 			}
 		}
 
 		console.logAlways = that.originalFunctions['log']
+	}
+
+	cleanupArgs(args){
+		let cleanArgs = []
+
+		if(args instanceof Array === false){
+			this.originalFunctions['error']('cleanupArgs excepted an array, but got', typeof args)
+			return undefined
+		}
+
+		for(let arg of args){
+			if(typeof arg === 'string'){
+				if(arg.match(/color:[\s]*[a-zA-Z0-9#]*/)){
+					//ignore coloring agruments
+				} else if(arg.indexOf('%c') >= 0) {
+					cleanArgs.push(arg.replaceAll('%c', ''))
+				} else if(arg.indexOf('\x1b') === 0) {
+					//skip
+				} else {
+					cleanArgs.push(arg)
+				}
+			} else {
+				try {
+					cleanArgs.push(JSON.stringify(arg, null, 2))
+				} catch (thrown){
+					cleanArgs.push('[object]')
+				}
+			}
+		}
+
+		return cleanArgs
+	}
+
+	log(type, args, displayInConsole){
+		if(displayInConsole === true){
+			this.originalFunctions[type].apply(undefined, args)
+		}
+
+		this.appendLog(type, this.cleanupArgs(args))
 	}
 
 	appendLog(type, args){
@@ -66,5 +86,3 @@ class ConsoleLogger {
 		)
 	}
 }
-
-new ConsoleLogger();

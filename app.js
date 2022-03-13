@@ -4,9 +4,21 @@ const PORT = 3366
 
 const expressWs = require('express-ws')(app)
 
-app.listen(PORT, () => {
+const http = require('http')
+const server = http.createServer(app)
+
+server.on('error', (err)=>{
+  if(err.code === 'EADDRINUSE'){
+    console.error(`\n--- ERROR: Port ${PORT} already in use! ---\n`)
+  } else {
+    console.error(err)
+  }
+})
+
+server.listen(PORT, () => {
   c2.onAppWebServerListening(PORT)
 })
+
 
 const fsPromises = require('fs/promises')
 const path = require('path')
@@ -74,9 +86,9 @@ app.use((req, res, next)=>{
     script-src 'self' 'unsafe-inline' 'unsafe-eval';
     style-src 'self' 'unsafe-inline' https://cdn.iconmonstr.com/;
     font-src 'self' https://cdn.iconmonstr.com/;
-    connect-src 'self' ws://*;
+    connect-src 'self';
     img-src 'self' data: https://avatars.cloudflare.steamstatic.com/ https://cdn.cloudflare.steamstatic.com/;
-    sandbox allow-forms allow-scripts allow-same-origin;
+    sandbox allow-forms allow-scripts allow-same-origin allow-popups;
     object-src 'none';
     frame-src 'self';
     frame-ancestors 'self';`.replaceAll('\n', ''))
@@ -114,7 +126,7 @@ app.get('*', (req, res, next)=>{
   } else {
     let err = new Error('Forbidden: The games owner has not allowed external access.');
     err.status = 403;
-    handleError(err, req, res)
+    handleError(err, req, res, true)
   }
 })
 
@@ -165,8 +177,9 @@ app.get('/', (req, res, next)=>{
 // catch 404 and forward to error handler
 app.use(function(req, res) {
   let err = new Error(`Not Found: "${req.path}"`)
+  res.locals.message = 'Not found'
   err.status = 404
-  handleError(err, req, res, false)
+  handleError(err, req, res, true)
 })
 
 // finally threat it as an error

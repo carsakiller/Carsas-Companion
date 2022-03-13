@@ -12,6 +12,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerStorable('userName')
 			this.c2.registerStorable('profile')
 			this.c2.registerStorable('logs', [])
+			this.c2.registerStorable('chatMessages', [])
 			this.c2.registerStorable('settings')
 		})
 
@@ -26,21 +27,6 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerSyncable('commands')
 		})
 
-
-		this.c2.on('can-register-messagehandler', ()=>{
-			this.c2.registerMessageHandler('stream-log', (newLogs)=>{
-				if(!newLogs){
-					return
-				}
-
-				for(let log of newLogs){
-					this.c2.store.state.logs.push({
-						message: log,
-						time: Date.now()
-					})
-				}
-			})
-		})
 
 		this.c2.on('can-register-component', ()=>{
 
@@ -347,7 +333,7 @@ class C2Module_Core extends C2LoggingUtility {
 						</p>
 					</division>
 					<division :name="'Help'" :startExtended="false">
-						You can find a manual <a-link :url="'#'" :text="'here (TODO)'"/>
+						You can find a manual <a-link :url="'/manual'" :text="'here'"/>
 						<spacer-horizontal/>
 						<button @click="exportLogs">Export Logs</button>
 					</division>
@@ -490,6 +476,26 @@ class C2Module_Core extends C2LoggingUtility {
 						}
 
 						return myRoles
+					},
+					orderedPlayerRoleArray (){
+						let roleArray = []
+
+						let roles = this.playerRoles
+
+						if(!roles){
+							return undefined
+						}
+
+						for(let k of Object.keys(roles)){
+							roleArray.push({
+								name: k,
+								hasRole: roles[k]
+							})
+						}
+
+						return roleArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				props: {
@@ -536,7 +542,7 @@ class C2Module_Core extends C2LoggingUtility {
 						<tabs>
 							<tab :title="'Roles'">
 								<lockable-by-childs>
-									<player-role v-for="(hasRole, roleName) in playerRoles" :hasRole="hasRole" :roleName="roleName" :steamid="steamid"/>
+									<player-role v-for="r in orderedPlayerRoleArray" :hasRole="r.hasRole" :roleName="r.name" :steamid="steamid"/>
 								</lockable-by-childs>
 							</tab>
 						</tabs>
@@ -699,6 +705,26 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					roles (){
 						return this.$store.state.roles
+					},
+					orderedRoleArray (){
+						let roleArray = []
+
+						let roles = this.roles
+
+						if(!roles){
+							return undefined
+						}
+
+						for(let k of Object.keys(roles)){
+							roleArray.push({
+								name: k,
+								role: roles[k]
+							})
+						}
+
+						return roleArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="roles_management">
@@ -707,7 +733,7 @@ class C2Module_Core extends C2LoggingUtility {
 							<input v-model="newRoleText" placeholder="New Role Name" :disabled="isComponentLocked"/>
 							<lockable-button @click="addNewRole">Add new Role</lockable-button>
 						</division>
-						<role-list v-if="roles" :roles="roles"/>
+						<role-list v-if="roles" :roles="orderedRoleArray"/>
 						<span v-else style="margin-top: 1em;">Not synced</span>
 					</lockable-by-childs>
 				</div>`,
@@ -726,12 +752,12 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('role-list', {
 				props: {
 					roles: {
-						type: Object,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list role_list">
-					<role v-for="(role, roleName) of roles" :role="role" :roleName="roleName"/>
+					<role v-for="r of roles" :role="r.role" :roleName="r.name"/>
 				</div>`
 			})
 
@@ -774,6 +800,26 @@ class C2Module_Core extends C2LoggingUtility {
 						}
 
 						return ret
+					},
+					orderedCommandArray (){
+						let commandArray = []
+
+						let commands = this.allCommands
+
+						if(!commands){
+							return undefined
+						}
+
+						for(let k of Object.keys(commands)){
+							commandArray.push({
+								name: k,
+								isCommand: commands[k]
+							})
+						}
+
+						return commandArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<extendable class="role">
@@ -798,7 +844,7 @@ class C2Module_Core extends C2LoggingUtility {
 								<member-list :members="role.members"/>
 							</tab>
 							<tab :title="'Commands'">
-								<command-list :commands="allCommands"/>
+								<command-list :commands="orderedCommandArray"/>
 							</tab>
 							<tab :title="'Permissions'">
 								<p>If a player has this role, we will give him the ingame "auth" and/or "admin" rights which are necessary to use certain features (e.g. workbench) and commands (e.g. "?reload_scripts").</p>
@@ -897,13 +943,13 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerComponent('command-list', {
 				props: {
 					commands: {
-						type: Object,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list command_list">
 					<lockable-by-childs>
-						<command v-for="(isCommand, commandName) of commands" :commands="commands" :isCommand="isCommand" :commandName="commandName"/>
+						<command v-for="c of commands" :commands="commands" :isCommand="c.isCommand" :commandName="c.name"/>
 					</lockable-by-childs>
 				</div>`
 			})
@@ -926,12 +972,18 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				inject: ['roleName'],
 				template: `<div class="command">
-					<toggleable-element :value-object="commands" :value-object-key="commandName" :on-value-change="onCommandChange">{{commandName}}</toggleable-element>
+					<toggleable-element :value-object="commands" :value-object-key="commandName" :on-value-change="onCommandChange" ref="toggleable">{{commandName}}</toggleable-element>
 				</div>`,
 				methods: {
 					onCommandChange (_, value){
 						this.commands[this.commandName] = value
+
 						this.callGameCommandAndWaitForSync('roleAccess', [this.roleName, this.commandName, value])
+					}
+				},
+				watch: {
+					commands (){
+						this.$refs.toggleable.refreshValue()
 					}
 				},
 				mixins: [componentMixin_gameCommand]
@@ -1084,10 +1136,30 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					preferences (){
 						return this.$store.state.preferences
+					},
+					orderedPreferenceArray (){
+						let preferenceArray = []
+
+						let preferences = this.preferences
+
+						if(!preferences){
+							return undefined
+						}
+
+						for(let k of Object.keys(preferences)){
+							preferenceArray.push({
+								name: k,
+								preference: preferences[k]
+							})
+						}
+
+						return preferenceArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="preferences_management">
-					<preference-list v-if="preferences" :preferences="preferences"/>
+					<preference-list v-if="preferences" :preferences="orderedPreferenceArray"/>
 					<span v-else>Not synced</span>
 				</div>`
 			})
@@ -1100,13 +1172,13 @@ class C2Module_Core extends C2LoggingUtility {
 				},
 				props: {
 					preferences: {
-						type: Object,
+						type: Array,
 						required: true
 					}
 				},
 				template: `<div class="list preference_list">
 					<lockable-by-childs>
-						<preference v-if="preferences" v-for="(preference, preferenceName) in preferences" :preference="preference" :preferenceName="preferenceName"/>
+						<preference v-if="preferences" v-for="p in preferences" :preference="p.preference" :preferenceName="p.name"/>
 					</lockable-by-childs>
 				</div>`,
 				mixins: [componentMixin_lockable]
@@ -1281,10 +1353,30 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					gamesettings (){
 						return this.$store.state.gamesettings
+					},
+					orderedGamesettingArray (){
+						let gamesettingArray = []
+
+						let gamesettings = this.gamesettings
+
+						if(!gamesettings){
+							return undefined
+						}
+
+						for(let k of Object.keys(gamesettings)){
+							gamesettingArray.push({
+								name: k,
+								gamesetting: gamesettings[k]
+							})
+						}
+
+						return gamesettingArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="gamesettings_management">
-					<gamesetting-list v-if="gamesettings" :gamesettings="gamesettings"/>
+					<gamesetting-list v-if="gamesettings && orderedGamesettingArray" :gamesettings="gamesettings" :ordered-gamesettings="orderedGamesettingArray"/>
 					<span v-else>Not synced</span>
 				</div>`
 			})
@@ -1299,11 +1391,15 @@ class C2Module_Core extends C2LoggingUtility {
 					gamesettings: {
 						type: Object,
 						required: true
+					},
+					orderedGamesettings: {
+						type: Array,
+						required: true
 					}
 				},
 				template: `<div class="list gamesetting_list">
 					<lockable-by-childs>
-						<gamesetting v-for="(gamesetting, gamesettingName) in gamesettings" :gamesettings="gamesettings" :gamesettingName="gamesettingName"/>
+						<gamesetting v-for="g in orderedGamesettings" :gamesettings="gamesettings" :gamesettingName="g.name"/>
 					</lockable-by-childs>
 				</div>`,
 				mixins: [componentMixin_lockable]
@@ -1409,6 +1505,91 @@ class C2Module_Core extends C2LoggingUtility {
 
 			/*
 
+				PAGE CHAT MANAGEMENT
+
+			*/
+
+			this.c2.registerComponent('chat-management', {
+				data (){
+					return {
+						newChatMessageText: '',
+						syncables: []
+					}
+				},
+				computed: {
+					chatMessages (){
+						return this.$store.state.chatMessages
+					},
+					hasChatMessages (){
+						return this.chatMessages && this.chatMessages.length > 0
+					}
+				},
+				template: `<div class="chat_management">
+					<chat-message-list v-if="hasChatMessages" :chatMessages="chatMessages"></chat-message-list>
+					<span v-else class="empty_list_hint">No chat messages</span>
+
+					<division class="new_chat_message_container" :startExtended="true">
+						<textarea v-model="newChatMessageText" placeholder="Your chat message" cols="50" rows="3"/>
+						<lockable-button @click="sendNewChatMessage" :set-disabled="newChatMessageText.length === 0">Send</lockable-button>
+					</division>
+				</div>`,
+				methods: {
+					sendNewChatMessage (){
+						if(this.newChatMessageText && this.newChatMessageText.length > 0){
+							this.sendServerMessage('chat-write', [this.newChatMessageText]).then(()=>{
+								this.newChatMessageText = ''
+							}).catch((err)=>{
+								this.showNotificationFailed('chat-write', err)
+								this.unlockComponent()
+							})
+						}
+					}
+				},
+				mixins: [componentMixin_serverMessage]
+			})
+
+			this.c2.registerComponent('chat-message-list', {
+				props: {
+					chatMessages: {
+						type: Array,
+						required: true
+					}
+				},
+				template: `<div class="list chat_message_list">
+					<chat-message v-for="(chatMessage, index) of chatMessages" :chatMessage="chatMessage" :index="index"></chat-messagery>
+				</div>`
+			})
+
+			this.c2.registerComponent('chat-message', {
+				props: {
+					chatMessage: {
+						type: Object,
+						required: true
+					},
+					index: {
+						type: Number,
+						required: true
+					}
+				},
+				computed: {
+					hasSameAuthorAsLastMessage (){
+						return this.$store.state.chatMessages[this.index - 1] && this.$store.state.chatMessages[this.index - 1].author === this.chatMessage.author
+					},
+					authorSteamId (){
+						return this.chatMessage.author
+					},
+					authorName (){
+						return this.$store.state.players && this.$store.state.players[this.chatMessage.author] ? this.$store.state.players[this.chatMessage.author].name : undefined
+					}
+				},
+				template: `<div class="chat_message">
+					<div class="player">{{!hasSameAuthorAsLastMessage ? authorName : ''}} <steamid v-if="!hasSameAuthorAsLastMessage" :steamid="authorSteamId"/></div>
+					<div class="message">{{chatMessage.message}}</div>
+				</div>`
+			})
+
+			/*
+
 				PAGE LOGS MANAGEMENT
 
 			*/
@@ -1417,11 +1598,14 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					logs (){
 						return this.$store.state.logs
+					},
+					hasLogs (){
+						return this.logs && this.logs.length > 0
 					}
 				},
 				template: `<div class="logs_management">
-					<log-list :logs="logs"></log-list>
-					<span v-if="!logs || logs.length === 0" class="empty_list_hint">No logs</span>
+					<log-list v-if="hasLogs" :logs="logs"></log-list>
+					<span v-else class="empty_list_hint">No logs</span>
 				</div>`
 			})
 
@@ -1432,7 +1616,7 @@ class C2Module_Core extends C2LoggingUtility {
 						required: true
 					}
 				},
-				template: `<div class="log_list">
+				template: `<div class="list log_list">
 					<log-entry v-for="(entry, entry_index) of logs" :entry="entry"></log-entry>
 				</div>`
 			})
@@ -1460,21 +1644,42 @@ class C2Module_Core extends C2LoggingUtility {
 				computed: {
 					settings (){
 						return this.$store.state.settings
+					},
+					orderedSettingArray (){
+						let settingArray = []
+
+						let settings = this.settings
+
+						if(!settings){
+							return undefined
+						}
+
+						for(let k of Object.keys(settings)){
+							settingArray.push({
+								name: k,
+								setting: settings[k]
+							})
+						}
+
+						return settingArray.sort((a, b)=>{
+							return ('' + a.name).localeCompare('' + b.name)
+						})
 					}
 				},
 				template: `<div class="settings_management">
-					<setting-list :settings="settings"></setting-list>
+					<setting-list :settings="orderedSettingArray"></setting-list>
 				</div>`
 			})
 
 			this.c2.registerComponent('setting-list', {
 				props: {
 					settings: {
-						type: Object
+						type: Array,
+						required: true
 					}
 				},
 				template: `<div class="setting_list">
-					<setting v-if="settings" v-for="(setting, settingName) of settings" :setting="setting" :settingName="settingName"></setting>
+					<setting v-if="settings" v-for="s of settings" :setting="s.setting" :settingName="s.name"></setting>
 				</div>`
 			})
 
@@ -1590,6 +1795,7 @@ class C2Module_Core extends C2LoggingUtility {
 			this.c2.registerPage('rules', 'Rules', 'task-o', 'rules-management')
 			this.c2.registerPage('preferences', 'Preferences', 'control-panel', 'preferences-management')
 			this.c2.registerPage('gamesettings', 'Game Settings', 'wrench', 'gamesettings-management')
+			this.c2.registerPage('chat', 'Chat', 'speech-bubble-comments', 'chat-management')
 			this.c2.registerPage('logs', 'Logs', 'note-o', 'logs-management')
 			this.c2.registerPage('settings', 'Settings', 'gear', 'settings-management')
 		})
@@ -1607,6 +1813,29 @@ class C2Module_Core extends C2LoggingUtility {
 					this.syncAllData()
 				} else {
 					this.setStatus('game', false)
+				}
+			})
+
+			this.c2.registerMessageHandler('stream-log', (newLogs)=>{
+				if(!newLogs){
+					return
+				}
+
+				for(let log of newLogs){
+					this.c2.store.state.logs.push({
+						message: log,
+						time: Date.now()
+					})
+				}
+			})
+
+			this.c2.registerMessageHandler('stream-chat', (newChatMessages)=>{
+				if(!newChatMessages){
+					return
+				}
+
+				for(let chatMessage of newChatMessages){
+					this.c2.store.state.chatMessages.push(chatMessage)
 				}
 			})
 		})
