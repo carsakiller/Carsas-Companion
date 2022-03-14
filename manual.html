@@ -253,6 +253,7 @@ $(window).on('load', ()=>{
 			<li>Place it in a folder you like (e.g. <c2-code>Desktop/C2-Companion</c2-code>)</li>
 			<li>Run executable (double click)</li>
 			<li>Open this URL in your browser: <a href="http://localhost:3366/" target="_blank">http://localhost:3366/</a></li>
+			<li>Read through the section <a href="#customizable-settings">Customizable setings</a>.</li>
 			<li>Go to <c2-page>settings</c2-page> and adjust the settings to your liking</li>
 		</ol>
 
@@ -411,6 +412,8 @@ $(window).on('load', ()=>{
 			<li>If users can see the live map (the owner can always see it)</li>
 			<li>The filepath to the dedicated server executable (required if you want to start / stop the Stormworks server via the companion)</li>
 		</ul>
+		<br/>
+		<p>If you want players to receive the companion welcome message (read more below) when the join the game, enable the preference <q>companionInfoOnJoin</q> on the <c2-page>preferences</c2-page>. This welcome message includes the website URL of the companion and the token required to login,</p>
 
 		<h3>Security</h3>
 		<p>The code for the executable that runs the companion is open source, you can check it for errors and build the executables yourself (see readme). The code uses a minimal amount of third party libraries, all served as a static copy within the git repository. The code was written to have minimal functionality outside of the Stormworks game (only read and write some log files and a settings file, only able to start and terminate an executable specified by the owner of the machine). Two seperate Webservers are used for the website and the connection to the game to further sandbox functionality. The creator of the code has followed best practices (e.g. OWASP) to keep risks as low as possible. If you find any problems, we are happy to contact us, create an issue or even a pull request with a fix.</p>
