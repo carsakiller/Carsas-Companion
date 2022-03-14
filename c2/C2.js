@@ -107,8 +107,16 @@ module.exports = class C2 extends C2LoggingUtility {
   		console.logAlways(`  listening at port :${port} (Game Web Server)`)
 	}
 
-	handleExit() {
+	handleExit(err) {
 		try {
+			if(err){
+				if(err.code === 'EADDRINUSE'){
+				    console.error(`\n--- ERROR: Ports already in use! ---\n`)
+				} else {
+				    console.error(err)
+				}
+			}
+
 	    	this.c2Module_Gameserver.forceExit()
 	    } catch (_){}
 
