@@ -1,1 +1,1 @@
-**A detailed manual (for users and coders) can be found in [manual.html](https://htmlpreview.github.io/?https://github.com/carsakiller/Carsas-Companion/blob/master/manual.html) or at [http://localhost:3366/manual](http://localhost:3366/manual) when the program is running**
+**A detailed manual (for users and coders) can be found in [manual.html](https://c2.carsakiller.com/Carsas-Companion/manual.html) or at [http://localhost:3366/manual](http://localhost:3366/manual) when the program is running**
