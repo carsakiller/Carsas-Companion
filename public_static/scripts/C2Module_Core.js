@@ -1297,7 +1297,7 @@ class C2Module_Core extends C2LoggingUtility {
 					<input type="number" v-model="val" :disabled="isComponentLocked"/>
 					<spacer-vertical/>
 					<lockable-button @click="update">Update</lockable-button>
-					<a-link v-if="preferenceName.toLowerCase().indexOf('equipment') >= 0" :url="'#'" :text="'Equipment IDs'" class="more_link"/>
+					<a-link v-if="preferenceName.toLowerCase().indexOf('equipment') >= 0" :url="'https://c2.carsakiller.com/cc-website/docs/commands.html#equipmentIDs'" :text="'Equipment IDs'" class="more_link"/>
 				</div>`,
 				created: function (){
 					this.val = this.preference.value
