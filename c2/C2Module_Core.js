@@ -172,6 +172,22 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 					let profileImageUrl = html.substring(start+1, end)
 
 					if(typeof profileImageUrl === 'string' && profileImageUrl.length > 0){
+
+
+
+						if(!profileImageUrl.endsWith('_full,jpg')){// in case someone has a border
+
+							let newStart = html.indexOf('"', html.indexOf('src', html.indexOf('img', start)))
+							let newEnd = html.indexOf('"', newStart+1)
+							let newProfileImageUrl = html.substring(newStart+1, newEnd)
+
+
+							if(typeof newProfileImageUrl === 'string' && newProfileImageUrl.length > 0 && newProfileImageUrl.endsWith('_full.jpg')){
+								profileImageUrl = newProfileImageUrl
+							}
+
+						}
+
 						let profile = {
 							profileImageUrl: profileImageUrl
 						}
