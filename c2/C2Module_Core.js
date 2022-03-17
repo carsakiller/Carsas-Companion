@@ -273,7 +273,6 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 		})
 
 		this.c2.registerGameMessageHandler('get-companion-url', ()=>{
-			this.warn('ping')
 			return this.c2.getCompanionUrl()
 		})
 
