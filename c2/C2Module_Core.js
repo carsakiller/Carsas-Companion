@@ -212,7 +212,19 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			if(this.clientIsOwnerOrLocalhost(client)){
 				try {
 					let parsed = JSON.parse(data)
-					return this.setServerSetting(parsed.key, parsed.value)
+
+					return new Promise((resolve, reject)=>{
+						 this.setServerSetting(parsed.key, parsed.value).then((res=>{
+
+						 	//tell script the new url
+						 	this.c2.sendMessageToGame(undefined, 'set-companion-url', this.c2.getCompanionUrl()).catch((err)=>{
+						 		this.warn('unable to update companion url for script', err)
+						 	})
+
+
+						 	resolve(res)
+						 })).catch(reject)
+					})
 				} catch (ex) {
 					return new Promise((resolve, reject)=>{
 						reject('invalid JSON for set-server-setting, please contact a dev')
