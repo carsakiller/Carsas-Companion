@@ -49,6 +49,9 @@ class C2Module_Map extends C2LoggingUtility {
 					getLiveVehicles (){
 						return this.$store.state.map ? this.$store.state.map.vehicles : undefined
 					},
+					getDeletedVehicles (){
+						return this.$store.state.map ? this.$store.state.map.deletedVehicles : undefined
+					},
 
 					refreshLivePlayers (){
 						let livePlayers = this.getLivePlayers()
@@ -71,16 +74,7 @@ class C2Module_Map extends C2LoggingUtility {
 							let player = livePlayers[playerId]
 							if(player.x && player.y){
 
-								let makeNewMarker = (function (){
-									//create new marker
-									let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF', 'players')
-									this.playerIdToMarkerIdMap[playerId] = marker.id
-
-									marker.on('click', (pos)=>{
-										this.log('clicked player marker', player)
-										this.clickPlayer(player, playerId, pos.x, pos.y)
-									})
-								}).bind(this)
+								let that = this
 
 								if(this.playerIdToMarkerIdMap[playerId]){
 									// update marker
@@ -96,6 +90,17 @@ class C2Module_Map extends C2LoggingUtility {
 								} else {
 									makeNewMarker()
 								}
+
+								function makeNewMarker(){
+									//create new marker
+									let marker = that.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF', 'players')
+									that.playerIdToMarkerIdMap[playerId] = marker.id
+
+									marker.on('click', (pos)=>{
+										that.log('clicked player marker', player)
+										that.clickPlayer(player, playerId, pos.x, pos.y)
+									})
+								}
 							}
 						}
 					},
@@ -108,11 +113,16 @@ class C2Module_Map extends C2LoggingUtility {
 							return
 						}
 
-						//delete markers of non existent players
-						for(let vehicleId of Object.keys(this.vehicleIdToMarkerIdMap)){
-							if(!liveVehicles[vehicleId]){
-								this.getMap().removeMarker(this.vehicleIdToMarkerIdMap[vehicleId])
-								delete this.vehicleIdToMarkerIdMap[vehicleId]
+						let deletedVehicles = this.getDeletedVehicles()
+
+						if(deletedVehicles){
+							//delete markers of vehicles marked for deletion
+							this.warn('actually deleting vehicles', deletedVehicles)
+							for(let vehicleId of deletedVehicles){
+								if(this.vehicleIdToMarkerIdMap[vehicleId]){
+									this.getMap().removeMarker(this.vehicleIdToMarkerIdMap[vehicleId])
+									delete this.vehicleIdToMarkerIdMap[vehicleId]
+								}
 							}
 						}
 
@@ -120,15 +130,7 @@ class C2Module_Map extends C2LoggingUtility {
 							let vehicle = liveVehicles[vehicleId]
 							if(vehicle.x && vehicle.y){
 
-								let makeNewMarker = (function (){
-									let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33', vehicle.static ? 'staticVehicles' : 'otherVehicles')
-									this.vehicleIdToMarkerIdMap[vehicleId] = marker.id
-
-									marker.on('click', (pos)=>{
-										this.log('clicked vehicle marker', vehicle)
-										this.clickVehicle(vehicle, vehicleId, pos.x, pos.y)
-									})
-								}).bind(this)
+								let that = this
 
 								if(this.vehicleIdToMarkerIdMap[vehicleId]){
 									// update marker
@@ -143,6 +145,16 @@ class C2Module_Map extends C2LoggingUtility {
 									}
 								} else {
 									makeNewMarker()
+								}
+
+								function makeNewMarker(){
+									let marker = that.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33', vehicle.static ? 'staticVehicles' : 'otherVehicles')
+									that.vehicleIdToMarkerIdMap[vehicleId] = marker.id
+
+									marker.on('click', (pos)=>{
+										that.log('clicked vehicle marker', vehicle)
+										that.clickVehicle(vehicle, vehicleId, pos.x, pos.y)
+									})
 								}
 							}
 						}
@@ -350,6 +362,10 @@ class C2Module_Map extends C2LoggingUtility {
 				if(data){
 					this.c2.store.state.map.players = data.playerPositions
 					this.c2.store.state.map.vehicles = data.vehiclePositions
+					this.c2.store.state.map.deletedVehicles = data.deletedVehicles
+					if(data.deletedVehicles){
+						this.info('vehicles marked for deletion', data.deletedVehicles)
+					}
 					this.c2.dispatch('map-update')
 				}
 			})
@@ -820,16 +836,14 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	removeMarker(markerId){
-		for(let id of Object.keys(this.markers)){
-			if(this.markers[id]){
-				this.markers[id].off('change')
+		if(this.markers[markerId]){
+			this.markers[markerId].off('change')
 
-				delete this.markers[id]
+			delete this.markers[markerId]
 
-				this.requestDraw()
+			this.requestDraw()
 
-				return
-			}
+			return
 		}
 	}
 
