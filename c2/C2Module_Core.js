@@ -334,12 +334,19 @@ module.exports = class C2Module_Core extends C2LoggingUtility {
 			}
 		})
 
+		this.cached_TILE_POSITIONS
+
 		this.c2.registerGameMessageHandler('*', (data, messageType)=>{
 			if(messageType.startsWith('sync-')){
 				return new Promise((resolve, reject)=>{
 					let syncname = messageType.substring('sync-'.length)
 					this.info('(%)', 'syncing', syncname)
 					this.log(data)
+
+					if(syncname === 'TILE_POSITIONS'){
+						this.cached_TILE_POSITIONS = data
+					}
+
 					this.c2.sendMessageToWebClient('all', messageType, data).then((res)=>{
 						this.log('sync', syncname, 'success:', res)
 						resolve()

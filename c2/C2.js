@@ -50,6 +50,7 @@ module.exports = class C2 extends C2LoggingUtility {
 
 		this.c2WebInterface.on('new-client', (client)=>{
 			this.c2WebInterface.sendMessageTo(client, 'game-connection', this.c2GameInterface.isGameAvailable)
+			this.c2WebInterface.sendMessageTo(client, 'sync-TILE_POSITIONS', this.c2Module_Core.cached_TILE_POSITIONS)
 		})
 
 		this.c2GameInterface.on('message', (...args)=>{
@@ -62,7 +63,7 @@ module.exports = class C2 extends C2LoggingUtility {
 			//request initial sync after some time
 			setTimeout(()=>{
 				this.info('triggering initial sync ...')
-				this.sendMessageToGame(undefined, 'command-sync-all').catch(err => {
+				this.sendMessageToGame(undefined, 'command-sync-all', 'FORCE_TILES!').catch(err => {
 					this.error('initial sync failed', err)
 				})
 			}, 1000 * 5)
