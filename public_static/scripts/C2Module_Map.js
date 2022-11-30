@@ -27,8 +27,8 @@ class C2Module_Map extends C2LoggingUtility {
 			this.c2.registerComponent('map-2d', {
 				data: function (){
 					return {
-						playerMarkerIds: [],
-						vehicleMarkerIds: [],
+						playerIdToMarkerIdMap: {},
+						vehicleIdToMarkerIdMap: {},
 
 						currentInfoComponent: undefined,
 						currentInfoData: undefined,
@@ -51,52 +51,81 @@ class C2Module_Map extends C2LoggingUtility {
 					},
 
 					refreshLivePlayers (){
-						this.log('refreshLivePlayers', this.getLivePlayers())
+						let livePlayers = this.getLivePlayers()
+						this.log('refreshLivePlayers', livePlayers, this.playerIdToMarkerIdMap)
+						this.log('markers', this.getMap().markers)
 
-						//TODO instead of deleting all markers, we should try to reuse them
-						for(let markerId of this.playerMarkerIds){
-							this.getMap().removeMarker(markerId)
+						if(!livePlayers){
+							livePlayers = []
 						}
 
-						if(!this.getLivePlayers()){
-							return
+						//delete markers of non existent players
+						for(let playerId of Object.keys(this.playerIdToMarkerIdMap)){
+							if(!livePlayers[playerId]){
+								this.getMap().removeMarker(this.playerIdToMarkerIdMap[playerId])
+								delete this.playerIdToMarkerIdMap[playerId]
+							}
 						}
 
-						for(let p of Object.keys(this.getLivePlayers())){
-							let player = this.getLivePlayers()[p]
+						for(let playerId of Object.keys(livePlayers)){
+							let player = livePlayers[playerId]
 							if(player.x && player.y){
-								let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
-								this.playerMarkerIds.push(marker.id)
 
-								marker.on('click', (pos)=>{
-									this.log('clicked player marker', player)
-									this.clickPlayer(player, p, pos.x, pos.y)
-								})
+								if(this.playerIdToMarkerIdMap[playerId]){
+									// update marker
+									let marker = this.getMap().markers[this.playerIdToMarkerIdMap[playerId]]
+									marker.dispatch('change')
+									marker.gpsX = player.x
+									marker.gpsY = player.y
+								} else {
+									//create new marker
+									let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
+									this.playerIdToMarkerIdMap[playerId] = marker.id
+
+									marker.on('click', (pos)=>{
+										this.log('clicked player marker', player)
+										this.clickPlayer(player, playerId, pos.x, pos.y)
+									})
+								}
 							}
 						}
 					},
 					refreshLiveVehicles (){
-						this.log('refreshLiveVehicles', this.getLiveVehicles())
+						let liveVehicles = this.getLiveVehicles()
+						this.log('refreshLiveVehicles', liveVehicles, this.vehicleIdToMarkerIdMap)
+						this.log('markers', this.getMap().markers)
 
-						//TODO instead of deleting all markers, we should try to reuse them
-						for(let markerId of this.vehicleMarkerIds){
-							this.getMap().removeMarker(markerId)
-						}
-
-						if(!this.getLiveVehicles()){
+						if(!liveVehicles){
 							return
 						}
 
-						for(let v of Object.keys(this.getLiveVehicles())){
-							let vehicle = this.getLiveVehicles()[v]
-							if(vehicle.x && vehicle.y){
-								let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
-								this.vehicleMarkerIds.push(marker.id)
+						//delete markers of non existent players
+						for(let vehicleId of Object.keys(this.vehicleIdToMarkerIdMap)){
+							if(!liveVehicles[vehicleId]){
+								this.getMap().removeMarker(this.vehicleIdToMarkerIdMap[vehicleId])
+								delete this.vehicleIdToMarkerIdMap[vehicleId]
+							}
+						}
 
-								marker.on('click', (pos)=>{
-									this.log('clicked vehicle marker', vehicle)
-									this.clickVehicle(vehicle, v, pos.x, pos.y)
-								})
+						for(let vehicleId of Object.keys(liveVehicles)){
+							let vehicle = liveVehicles[vehicleId]
+							if(vehicle.x && vehicle.y){
+
+								if(this.vehicleIdToMarkerIdMap[vehicleId]){
+									// update marker
+									let marker = this.getMap().markers[this.vehicleIdToMarkerIdMap[vehicleId]]
+									marker.dispatch('change')
+									marker.gpsX = vehicle.x
+									marker.gpsY = vehicle.y
+								} else {
+									let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
+									this.vehicleIdToMarkerIdMap[vehicleId] = marker.id
+
+									marker.on('click', (pos)=>{
+										this.log('clicked vehicle marker', vehicle)
+										this.clickVehicle(vehicle, vehicleId, pos.x, pos.y)
+									})
+								}
 							}
 						}
 					},
@@ -505,8 +534,8 @@ class C2CanvasMap extends C2LoggingUtility {
 				y: evt.offsetY
 			}
 
-			for(let m of Object.keys(this.markers).reverse()){
-				let marker = this.markers[m]
+			for(let id of Object.keys(this.markers)){
+				let marker = this.markers[id]
 				let markerPos = this.convertGpsPositonToCanvasPosition(marker.gpsX, marker.gpsY)
 				if(p.x >= markerPos.x - marker.iconWidth/2 && p.x <= markerPos.x + marker.iconWidth/2
 					&& p.y >= markerPos.y - marker.iconHeight/2 && p.y <= markerPos.y + marker.iconHeight/2){
@@ -536,7 +565,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.iconsDirectory = iconsDirectory
 
-		this.markers = []
+		this.markers = {}
 
 		/* Debug layer */
 		this.timesBetweenDraws = [0]
@@ -626,8 +655,8 @@ class C2CanvasMap extends C2LoggingUtility {
 		let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
 		this.information.html(`<span>X ${Math.floor(centerGpsPosition.x)}</span><span>Y ${Math.floor(centerGpsPosition.y)}</span>`)
 
-		for(let m of this.markers){
-			this.drawMarker(m)
+		for(let id of Object.keys(this.markers)){
+			this.drawMarker(this.markers[id])
 		}
 
 		this.queueDraw()
@@ -728,7 +757,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.log('createMarker', gpsX, gpsY, iconImageName, iconWidth, label, labelColor)
 
-		this.markers.push(marker)
+		this.markers[marker.id] = marker
 
 		this.requestDraw()
 
@@ -736,11 +765,11 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	removeMarker(markerId){
-		for(let i = 0; i < this.markers.length; i++){
-			if(this.markers[i].id === markerId){
-				this.markers[i].off('change')
+		for(let id of Object.keys(this.markers)){
+			if(this.markers[id]){
+				this.markers[id].off('change')
 
-				this.markers.splice(i, 1)
+				delete this.markers[id]
 
 				this.requestDraw()
 
@@ -1172,9 +1201,9 @@ class C2TileManager extends C2LoggingUtility {
 				for(let _x = 0; _x < group.length; _x++){
 					for(let _y = 0; _y < group[_x].length; _y++){
 						if(group[_x][_y] === tile){
-							if(_x !== x || _y !== y){
-								console.warn('fixed tile x/y in group after recursive change (from ', x, y, 'to', _y, _y)
-							}
+							/*if(_x !== x || _y !== y){
+								this.warn('fixed tile x/y in group after recursive change (from ', x, y, 'to', _y, _y)
+							}*/
 							x = _x
 							y = _y
 						}
