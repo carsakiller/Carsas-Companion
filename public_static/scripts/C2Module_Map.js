@@ -27,8 +27,8 @@ class C2Module_Map extends C2LoggingUtility {
 			this.c2.registerComponent('map-2d', {
 				data: function (){
 					return {
-						playerMarkerIds: [],
-						vehicleMarkerIds: [],
+						playerIdToMarkerIdMap: {},
+						vehicleIdToMarkerIdMap: {},
 
 						currentInfoComponent: undefined,
 						currentInfoData: undefined,
@@ -51,52 +51,99 @@ class C2Module_Map extends C2LoggingUtility {
 					},
 
 					refreshLivePlayers (){
-						this.log('refreshLivePlayers', this.getLivePlayers())
+						let livePlayers = this.getLivePlayers()
+						this.log('refreshLivePlayers', livePlayers, this.playerIdToMarkerIdMap)
+						this.log('markers', this.getMap().markers)
 
-						//TODO instead of deleting all markers, we should try to reuse them
-						for(let markerId of this.playerMarkerIds){
-							this.getMap().removeMarker(markerId)
+						if(!livePlayers){
+							livePlayers = []
 						}
 
-						if(!this.getLivePlayers()){
-							return
+						//delete markers of non existent players
+						for(let playerId of Object.keys(this.playerIdToMarkerIdMap)){
+							if(!livePlayers[playerId]){
+								this.getMap().removeMarker(this.playerIdToMarkerIdMap[playerId])
+								delete this.playerIdToMarkerIdMap[playerId]
+							}
 						}
 
-						for(let p of Object.keys(this.getLivePlayers())){
-							let player = this.getLivePlayers()[p]
+						for(let playerId of Object.keys(livePlayers)){
+							let player = livePlayers[playerId]
 							if(player.x && player.y){
-								let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
-								this.playerMarkerIds.push(marker.id)
 
-								marker.on('click', (pos)=>{
-									this.log('clicked player marker', player)
-									this.clickPlayer(player, p, pos.x, pos.y)
-								})
+								let makeNewMarker = (function (){
+									//create new marker
+									let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
+									this.playerIdToMarkerIdMap[playerId] = marker.id
+
+									marker.on('click', (pos)=>{
+										this.log('clicked player marker', player)
+										this.clickPlayer(player, playerId, pos.x, pos.y)
+									})
+								}).bind(this)
+
+								if(this.playerIdToMarkerIdMap[playerId]){
+									// update marker
+									let marker = this.getMap().markers[this.playerIdToMarkerIdMap[playerId]]
+
+									if(marker){ //TODO: investigate why sometimes this marker is undefined (already deleted)
+										marker.dispatch('change')
+										marker.gpsX = player.x
+										marker.gpsY = player.y
+									} else {
+										makeNewMarker()
+									}
+								} else {
+									makeNewMarker()
+								}
 							}
 						}
 					},
 					refreshLiveVehicles (){
-						this.log('refreshLiveVehicles', this.getLiveVehicles())
+						let liveVehicles = this.getLiveVehicles()
+						this.log('refreshLiveVehicles', liveVehicles, this.vehicleIdToMarkerIdMap)
+						this.log('markers', this.getMap().markers)
 
-						//TODO instead of deleting all markers, we should try to reuse them
-						for(let markerId of this.vehicleMarkerIds){
-							this.getMap().removeMarker(markerId)
-						}
-
-						if(!this.getLiveVehicles()){
+						if(!liveVehicles){
 							return
 						}
 
-						for(let v of Object.keys(this.getLiveVehicles())){
-							let vehicle = this.getLiveVehicles()[v]
-							if(vehicle.x && vehicle.y){
-								let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
-								this.vehicleMarkerIds.push(marker.id)
+						//delete markers of non existent players
+						for(let vehicleId of Object.keys(this.vehicleIdToMarkerIdMap)){
+							if(!liveVehicles[vehicleId]){
+								this.getMap().removeMarker(this.vehicleIdToMarkerIdMap[vehicleId])
+								delete this.vehicleIdToMarkerIdMap[vehicleId]
+							}
+						}
 
-								marker.on('click', (pos)=>{
-									this.log('clicked vehicle marker', vehicle)
-									this.clickVehicle(vehicle, v, pos.x, pos.y)
-								})
+						for(let vehicleId of Object.keys(liveVehicles)){
+							let vehicle = liveVehicles[vehicleId]
+							if(vehicle.x && vehicle.y){
+
+								let makeNewMarker = (function (){
+									let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
+									this.vehicleIdToMarkerIdMap[vehicleId] = marker.id
+
+									marker.on('click', (pos)=>{
+										this.log('clicked vehicle marker', vehicle)
+										this.clickVehicle(vehicle, vehicleId, pos.x, pos.y)
+									})
+								}).bind(this)
+
+								if(this.vehicleIdToMarkerIdMap[vehicleId]){
+									// update marker
+									let marker = this.getMap().markers[this.vehicleIdToMarkerIdMap[vehicleId]]
+
+									if(marker){ //TODO: investigate why sometimes this marker is undefined (already deleted)
+										marker.dispatch('change')
+										marker.gpsX = vehicle.x
+										marker.gpsY = vehicle.y
+									} else {
+										makeNewMarker()
+									}
+								} else {
+									makeNewMarker()
+								}
 							}
 						}
 					},
@@ -505,8 +552,8 @@ class C2CanvasMap extends C2LoggingUtility {
 				y: evt.offsetY
 			}
 
-			for(let m of Object.keys(this.markers).reverse()){
-				let marker = this.markers[m]
+			for(let id of Object.keys(this.markers)){
+				let marker = this.markers[id]
 				let markerPos = this.convertGpsPositonToCanvasPosition(marker.gpsX, marker.gpsY)
 				if(p.x >= markerPos.x - marker.iconWidth/2 && p.x <= markerPos.x + marker.iconWidth/2
 					&& p.y >= markerPos.y - marker.iconHeight/2 && p.y <= markerPos.y + marker.iconHeight/2){
@@ -536,7 +583,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.iconsDirectory = iconsDirectory
 
-		this.markers = []
+		this.markers = {}
 
 		/* Debug layer */
 		this.timesBetweenDraws = [0]
@@ -597,6 +644,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		if(!this.mustDraw){
 			this.queueDraw()
+			this.timesBetweenDraws = [0]
 			return
 		}
 
@@ -625,8 +673,8 @@ class C2CanvasMap extends C2LoggingUtility {
 		let centerGpsPosition = this.convertCanvasPercentagePositionToGpsPosition(0.5, 0.5)
 		this.information.html(`<span>X ${Math.floor(centerGpsPosition.x)}</span><span>Y ${Math.floor(centerGpsPosition.y)}</span>`)
 
-		for(let m of this.markers){
-			this.drawMarker(m)
+		for(let id of Object.keys(this.markers)){
+			this.drawMarker(this.markers[id])
 		}
 
 		this.queueDraw()
@@ -690,7 +738,12 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		let p = this.convertGpsPositonToCanvasPosition(marker.gpsX, marker.gpsY)
 
-		this.debug('drawMarker', p, marker)
+		if(p.x + marker.iconWidth/2 < 0 || p.x - marker.iconWidth/2 > this.canvas.width ||
+			p.y + marker.iconHeighth/2 < 0 || p.y - marker.iconHeighth/2 > this.canvas.height){
+			//not in visible area
+			return
+		}
+
 
 		if(marker.iconImage){
 			this.ctx.drawImage(marker.iconImage, p.x - marker.iconWidth / 2, p.y - marker.iconHeight/2, marker.iconWidth, marker.iconHeight)
@@ -710,7 +763,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 	drawMap(){
 		let canvasPosition = this.convertGpsPositonToCanvasPosition(0, 0)
-		this.tilemanager.redrawAllTiles(canvasPosition.x, canvasPosition.y, this.metersToPixelRatio)
+		this.tilemanager.redraw(canvasPosition.x, canvasPosition.y, this.metersToPixelRatio)
 	}
 
 	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
@@ -722,7 +775,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		this.log('createMarker', gpsX, gpsY, iconImageName, iconWidth, label, labelColor)
 
-		this.markers.push(marker)
+		this.markers[marker.id] = marker
 
 		this.requestDraw()
 
@@ -730,11 +783,11 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	removeMarker(markerId){
-		for(let i in this.markers){
-			if(this.markers[i].id === markerId){
-				this.markers[i].off('change')
+		for(let id of Object.keys(this.markers)){
+			if(this.markers[id]){
+				this.markers[id].off('change')
 
-				this.markers.splice(i, 1)
+				delete this.markers[id]
 
 				this.requestDraw()
 
@@ -878,6 +931,10 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		this.label = label || undefined
 		this.labelColor = labelColor || 'white'
 
+		if(!window.C2CanvasMapMarker_image_cache){
+			window.C2CanvasMapMarker_image_cache = {}
+		}
+
 		if(this.iconImageUrl){
 			this.loadImage(this.iconImageUrl)
 		}
@@ -886,20 +943,29 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 	}
 
 	loadImage(url){
-		let image = new Image()
-
-		image.onload = ()=>{
-			this.debug('loaded icon image', url)
-			this.iconImage = image
-
+		if(window.C2CanvasMapMarker_image_cache[url]){
+			this.debug('loaded icon image from cache', url)
+			this.iconImage = window.C2CanvasMapMarker_image_cache[url]
 			this.dispatch('change')
-		}
+		} else {
 
-		image.onerror = (err)=>{
-			this.error('unable to load icon image', url, err)
-		}
+			let image = new Image()
 
-		image.src = url
+			image.onload = ()=>{
+				this.debug('loaded icon image', url)
+				this.iconImage = image
+
+				C2CanvasMapMarker_image_cache[url] = image
+
+				this.dispatch('change')
+			}
+
+			image.onerror = (err)=>{
+				this.error('unable to load icon image', url, err)
+			}
+
+			image.src = url
+		}
 	}
 
 	setPosition(gpsX, gpsY){
@@ -932,12 +998,17 @@ class C2TileManager extends C2LoggingUtility {
 		this.tiles = []
 		this.allTilesLoaded = false
 
-		this.imageCacheContainer = $('<div style="display: none" image-cache-container>')
+		this.imageCacheContainer = $('<div style="display: none" class="image-cache-container">')
 		this.imageCacheContainer.appendTo(canvasMap.dom)
+
+		this.patchContainer = $('<div style="display: none" class="patch-container">')
+		this.patchContainer.appendTo(canvasMap.dom)
 
 		this.canvasMap = canvasMap
 		this.canvas = canvasMap.mapCanvas
 		this.ctx = this.canvas.getContext('2d')
+
+		this.patches = undefined
 	}
 
 	/* right now this can only be used once*/
@@ -953,9 +1024,13 @@ class C2TileManager extends C2LoggingUtility {
 
 		this.info('setTilesDefinition', tilesDefinition)
 
+		this.tilesDefinition = tilesDefinition // only required for debugging count in createPatches()
+
 		for(let t of tilesDefinition){
 			this.addTile(t.name, t.x - this.tileMeterSize/2, t.y + this.tileMeterSize/2)//convert center x,y to top left x,y
 		}
+
+		this.createPatches()
 
 		setInterval(()=>{
 			if(this.allTilesLoaded){
@@ -983,6 +1058,8 @@ class C2TileManager extends C2LoggingUtility {
 				this.info('\nall Tiles have been loaded! ', loadedTiles, 'success, ', loadedTilesAndErrorTiles - loadedTiles, 'errors', loadedTilesFromCache, 'from cache')
 				this.info('canvasOffset', this.canvasOffset)
 				this.canvasMap.requestDraw()
+
+				this.drawTilesOntoPatches()
 			} else {
 				this.setLoadingMessage(`${loadedTilesAndErrorTiles} / ${this.tiles.length} tiles loaded`)
 			}
@@ -1016,10 +1093,13 @@ class C2TileManager extends C2LoggingUtility {
 			x: gpsX * this.tileResolution,
 			y: gpsY * this.tileResolution,//game y and canvas y are inverted
 			url: name + '.png',
-			rotationInDeg: rotationInDeg
+			rotationInDeg: rotationInDeg,
+			neighbours: {}
 		}
 
 		this.tiles.push(tile)
+
+		this.findNeighboursForTile(tile)
 
 		this.allTilesLoaded = false
 
@@ -1063,74 +1143,379 @@ class C2TileManager extends C2LoggingUtility {
 		this.imageCacheContainer.append(image)
 	}
 
-	drawTile(tile, gps0XasCanvasX, gps0YasCanvasY, zoom){
+	findNeighboursForTile(tile){
+		for(let t of this.tiles){
+			let borders = {//relative to t
+				right: false,
+				left: false,
+				top: false,
+				bottom: false,
+			}
 
-		let invertedZoom = 1 / zoom
-
-		let width = this.invertedTileResolution() * invertedZoom * tile.width
-		let height = this.invertedTileResolution() * invertedZoom * tile.height
-		let left = gps0XasCanvasX + this.invertedTileResolution() * invertedZoom * tile.x
-		let top = gps0YasCanvasY - this.invertedTileResolution() * invertedZoom * tile.y //minus because canvas y axis is inverted
-
-
-		// check if tile is in visible area
-		if(left < this.canvas.width && left + width > 0 && top < this.canvas.height && top + height > 0){
-
-			this.debug('drawTile', tile.name, left, top)
-			try {
-				if(tile.rotationInDeg === undefined){
-					this.ctx.drawImage(tile.image, 0,0,tile.width,tile.height, left, top, width, height)
-				} else {
-					this.ctx.save()
-
-					this.ctx.translate(left + width/2, top + height/2)
-	    			this.ctx.rotate(tile.rotationInDeg * Math.PI / 180)
-
-	    			this.ctx.drawImage(tile.image, 0,0,tile.width,tile.height, -width/2,-height/2,width,height)
-
-					this.ctx.restore()
+			if(t.x + this.tilePixelSize === tile.x){
+				if(t.y === tile.y){
+					t.neighbours.right = tile
+					tile.neighbours.left = t
 				}
-
-				if(this.isDebugMode){
-					this.ctx.fillStyle = 'white'
-
-					let lines = [
-						tile.name,
-						Math.floor(tile.x) + ',' + Math.floor(tile.y),
-						'gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY),
-						tile.rotationInDeg !== undefined ? 'rot ' + Math.floor(tile.rotationInDeg) : '',
-					]
-					for(let i = 0; i < lines.length; i++){
-						this.ctx.fillText(lines[i], left, top + (i + 1) * 10)
-					}
-
-					this.ctx.strokeStyle = 'black'
-					this.ctx.strokeRect(left, top, width, height)
+			} else if(t.x - this.tilePixelSize === tile.x){
+				if(t.y === tile.y){
+					t.neighbours.left = tile
+					tile.neighbours.right = t
 				}
+			}
 
-			} catch (err){
-				this.info('error drawing tile', tile.name, err)
+			if(t.y + this.tilePixelSize === tile.y){
+				if(t.x === tile.x){
+					t.neighbours.bottom = tile
+					tile.neighbours.top = t
+				}
+			} else if(t.y - this.tilePixelSize === tile.y){
+				if(t.x === tile.x){
+					t.neighbours.top = tile
+					tile.neighbours.bottom = t
+				}
 			}
 		}
 	}
 
-	redrawAllTiles(gps0XasCanvasX, gps0YasCanvasY, zoom){
-		this.log('redrawAllTiles')
+	calculateTileId(tile){
+		return tile.gpsX + 'x' + tile.gpsY
+	}
+
+	createPatches(){
+		this.patches = []
+
+		this.patchContainer.html('')
+
+		const patchGroups = []
+
+		const groupedTiles = {}
+
+		let that = this
+
+		for(let t of this.tiles){
+
+			if(Object.keys(t.neighbours).length > 0){//has neighbours
+
+				if(groupedTiles[this.calculateTileId(t)] !== true){//skip tiles that are already part of a group
+					groupedTiles[this.calculateTileId(t)] = true
+
+					const myGroup = [[t]]
+
+					addNeighboursToGroupRecursive(myGroup, t, 0,0)
+
+					patchGroups.push(myGroup)
+				}
+			} else {// single tile patch
+				patchGroups.push([[t]])
+			}
+		}
+
+		// axis: x points to right, y points upwards (like canvas)
+		function addNeighboursToGroupRecursive(group, tile, x, y){
+			for(let dir of Object.keys(tile.neighbours)){
+
+				//because recursive function might have manipulated the group array, find the real x/y again
+				for(let _x = 0; _x < group.length; _x++){
+					for(let _y = 0; _y < group[_x].length; _y++){
+						if(group[_x][_y] === tile){
+							/*if(_x !== x || _y !== y){
+								this.warn('fixed tile x/y in group after recursive change (from ', x, y, 'to', _y, _y)
+							}*/
+							x = _x
+							y = _y
+						}
+					}
+				}
+
+				let neighbourTile = tile.neighbours[dir]
+
+				if(groupedTiles[that.calculateTileId(neighbourTile)] !== true){
+					groupedTiles[that.calculateTileId(neighbourTile)] = true
+
+					let xDiff = 0
+					let yDiff = 0
+
+					switch(dir){
+						case 'top': {
+							yDiff = 1
+						}; break;
+						case 'topRight': {
+							xDiff = 1
+							yDiff = 1
+						}; break;
+						case 'right': {
+							xDiff = 1
+						}; break;
+						case 'bottomRight': {
+							xDiff = 1
+							yDiff = -1
+						}; break;
+						case 'bottom': {
+							yDiff = -1
+						}; break;
+						case 'bottomLeft': {
+							xDiff = -1
+							yDiff = -1
+						}; break;
+						case 'left': {
+							xDiff = -1
+						}; break;
+						case 'topLeft': {
+							xDiff = -1
+							yDiff = 1
+						}; break;
+						default: {
+							that.error('unsupported dir type', dir)
+						}
+					}
+
+					let targetX = x + xDiff
+					let targetY = y + yDiff
+
+					while(targetX >= group.length){
+						// extend x+
+						group.push(new Array(group[0].length))
+					}
+
+					while(targetX < 0){
+						// extend x-
+						group.splice(0, 0, new Array(group[0].length))
+						targetX++
+					}
+
+					while(targetY >= group[0].length){
+						// extend y+
+						for(let xg of group){
+							xg.push(undefined)
+						}
+					}
+
+					while(targetY < 0){
+						// extend y-
+						for(let xg of group){
+							xg.splice(0, 0, undefined)
+						}
+						targetY++
+					}
+
+					if(group[targetX][targetY] !== undefined){
+						if(group[targetX][targetY].name !== neighbourTile.name){//TODO: can we ignore those? Or will they messup recursiveness?
+							that.warn('overwriting existing tile in patch', group, targetX, targetY, neighbourTile.name, 'overwrites', group[targetX][targetY].name, 'caused by being neighbour of', tile, 'which is at <' + dir + '>')
+						}
+					}
+
+					group[targetX][targetY] = neighbourTile
+					neighbourTile.placedFrom = {
+						tile: tile,
+						dir: dir
+					}
+
+					addNeighboursToGroupRecursive(group, neighbourTile, targetX, targetY)
+				}
+			}
+		}
+
+		let totalTilesInsidePatchGroups = 0
+		for(let group of patchGroups){
+			for(let x of group){
+				for(let y of x){
+					if(y !== undefined){
+						totalTilesInsidePatchGroups ++
+					}
+				}
+			}
+		}
+
+		console.info(`TileDefinitions: ${this.tilesDefinition.length}, tiles: ${this.tiles.length}, grouped tiles: ${Object.keys(groupedTiles).length}, patch groups: ${patchGroups.length}, total tiles inside patch groups: ${totalTilesInsidePatchGroups}`)
+
+		//make patches from patchGroups
+		this.log('patchGroups', patchGroups)
+
+		for(let group of patchGroups){
+			let patch = {
+				canvas: document.createElement('canvas'),
+				x : undefined,
+				y: undefined,
+				width: group.length * this.tilePixelSize,
+				height: group[0].length * this.tilePixelSize,
+				group: group
+			}
+			patch.canvas.width = patch.width
+			patch.canvas.height = patch.height
+			this.patchContainer.append(patch.canvas)
+
+			// find x/y of first tile inside patch
+			for(let x = 0; x < group.length; x++){
+				let firstTile = group[x][0]
+				if(firstTile){
+					let left = firstTile.x - x * this.tilePixelSize
+					let centerX = left + group.length * this.tilePixelSize + this.tilePixelSize * 0.5
+					patch.x = left
+
+					let gpsX = firstTile.gpsX - x * this.tileMeterSize
+					let centerGpsX = gpsX + group.length * this.tileMeterSize + this.tileMeterSize * 0.5
+					patch.gpsX = gpsX
+
+					let top = firstTile.y
+					let centerY = top - group[0].length * this.tilePixelSize + this.tilePixelSize * 0.5
+					patch.y = top
+
+					let gpsY = firstTile.gpsY
+					let centerGpsY = gpsY - group[0].length * this.tileMeterSize + this.tileMeterSize * 0.5
+					patch.gpsY = gpsY
+				}
+			}
+
+
+
+			if(patch.x === undefined){
+				this.warn('patch.x undefined', patch)
+				continue
+			}
+
+			if(patch.y === undefined){
+				this.warn('patch.y undefined', patch)
+				continue
+			}
+
+			$(patch.canvas).attr('x', patch.x).attr('y', patch.y)
+
+			this.patches.push(patch)
+		}
+	}
+
+	drawTilesOntoPatches(){
+		for(let patch of this.patches){
+			let ctx = patch.canvas.getContext('2d')
+
+			for(let x = 0; x < patch.group.length; x++){
+				for(let y = 0; y < patch.group[x].length; y++){
+					let tile = patch.group[x][y]
+
+					if(tile){
+
+						if(!tile.image){
+							this.error('tile image not loaded, cannot draw tile onto patch')
+							continue
+						}
+
+						let left = x*this.tilePixelSize
+						let top = y*this.tilePixelSize
+
+						if(tile.rotationInDeg === undefined){
+							ctx.drawImage(tile.image, 0,0,tile.width,tile.height, left,top,tile.width,tile.height)
+						} else {
+							ctx.save()
+
+							ctx.translate(left + tile.width/2, top + tile.height/2)
+			    			ctx.rotate(tile.rotationInDeg * Math.PI / 180)
+
+			    			ctx.drawImage(tile.image, 0,0,tile.width,tile.height, -tile.width/2,-tile.height/2,tile.width,tile.height)
+
+							ctx.restore()
+						}
+
+						if(this.isDebugMode){
+							ctx.fillStyle = 'white'
+
+							let lines = [
+								tile.name,
+								Math.floor(tile.x) + ',' + Math.floor(tile.y),
+								'gps ' + Math.floor(tile.gpsX) + ',' + Math.floor(tile.gpsY),
+								tile.rotationInDeg !== undefined ? 'rot ' + Math.floor(tile.rotationInDeg) : '',
+							]
+							for(let i = 0; i < lines.length; i++){
+								ctx.fillText(lines[i], left, top + (i + 1) * 10)
+							}
+
+							ctx.strokeStyle = 'black'
+							ctx.strokeRect(left, top, tile.width, tile.height)
+
+							if(tile.placedFrom){
+
+								ctx.strokeStyle = 'blue'
+								ctx.beginPath()
+								ctx.moveTo(left + tile.width/2, top + tile.height/2)
+
+								const LINE_LENGTH = this.tilePixelSize / 3
+
+								switch(tile.placedFrom.dir){
+									case 'top': {
+										ctx.lineTo(left + tile.width/2, top + tile.height/2 - LINE_LENGTH)
+									}; break;
+									case 'right': {
+										ctx.lineTo(left + tile.width/2 - LINE_LENGTH, top + tile.height/2)
+									}; break;
+									case 'bottom': {
+										ctx.lineTo(left + tile.width/2, top + tile.height/2 + LINE_LENGTH)
+									}; break;
+									case 'left': {
+										ctx.lineTo(left + tile.width/2 + LINE_LENGTH, top + tile.height/2)
+									}; break;
+								}
+
+								ctx.stroke()
+								ctx.fillStyle = 'blue'
+								ctx.fillText(tile.placedFrom.tile.name, left + tile.width/2, top + tile.height - 5)
+							}
+						}
+
+
+					}
+				}
+			}
+
+
+			if(this.isDebugMode){
+				ctx.fillStyle = 'red'
+
+				let lines = [
+					'patch',
+					Math.floor(patch.x) + ',' + Math.floor(patch.y),
+					'gps ' + Math.floor(patch.gpsX) + ',' + Math.floor(patch.gpsY),
+					'' + Math.floor(patch.width) + ' x ' + Math.floor(patch.height)
+				]
+				for(let i = 0; i < lines.length; i++){
+					ctx.fillText(lines[i], this.tilePixelSize*0.5, 0 + (i + 1) * 10)
+				}
+
+				ctx.strokeStyle = 'red'
+				ctx.strokeRect(0, 0, patch.width, patch.height)
+			}
+
+			//convert canvas into image
+			patch.image = new Image
+			patch.image.src = patch.canvas.toDataURL()
+		}
+	}
+
+	redraw(gps0XasCanvasX, gps0YasCanvasY, zoom){
+		this.log('redraw')
 
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
-		for(let tile of this.tiles){
-			if(tile.image && !tile.loadingError){
-				this.drawTile(tile, gps0XasCanvasX, gps0YasCanvasY, zoom)
-			}
-		}
-
 		if(!this.allTilesLoaded){
 			this.setLoadingMessage('waiting for tile positions from game ...')
-		}
-	}
+		} else {
 
-	invertedTileResolution(){
-		return 1 / this.tileResolution
+			let invertedZoom = 1 / zoom
+
+			for(let patch of this.patches){
+				let width = patch.width / zoom / this.tileResolution
+				let height = patch.height / zoom / this.tileResolution
+				let left = gps0XasCanvasX + patch.x / zoom / this.tileResolution
+				let top = gps0YasCanvasY - patch.y / zoom / this.tileResolution //minus because canvas y axis is inverted
+
+				// check if patch is in visible area
+				if(left < this.canvas.width && left + width > 0 && top < this.canvas.height && top + height > 0){
+					try {
+						this.ctx.drawImage(patch.image, 0,0,patch.width,patch.height, left, top, width, height)
+					} catch (err){
+						this.info('error drawing patch', patch, err)
+					}
+				}
+			}
+		}
 	}
 }
