@@ -369,7 +369,7 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.TILE_PIXEL_SIZE = 200
 		this.TILE_METER_SIZE = 1000
 
-		this.isDebugMode = true
+		this.isDebugMode = false
 
 		this.container = $(el)
 
@@ -988,7 +988,7 @@ class C2TileManager extends C2LoggingUtility {
 
 		this.MAX_CANVAS_SIZE = 268435456
 
-		this.isDebugMode = true
+		this.isDebugMode = false
 
 		this.tilesDirectory = tilesDirectory
 		this.tilePixelSize = tilePixelSize
