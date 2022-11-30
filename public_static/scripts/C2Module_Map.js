@@ -878,6 +878,10 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		this.label = label || undefined
 		this.labelColor = labelColor || 'white'
 
+		if(!C2CanvasMapMarker_image_cache){
+			C2CanvasMapMarker_image_cache = {}
+		}
+
 		if(this.iconImageUrl){
 			this.loadImage(this.iconImageUrl)
 		}
@@ -886,20 +890,29 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 	}
 
 	loadImage(url){
-		let image = new Image()
-
-		image.onload = ()=>{
-			this.debug('loaded icon image', url)
-			this.iconImage = image
-
+		if(C2CanvasMapMarker_image_cache[url]){
+			this.debug('loaded icon image from cache', url)
+			this.iconImage = C2CanvasMapMarker_image_cache[url]
 			this.dispatch('change')
-		}
+		} else {
 
-		image.onerror = (err)=>{
-			this.error('unable to load icon image', url, err)
-		}
+			let image = new Image()
 
-		image.src = url
+			image.onload = ()=>{
+				this.debug('loaded icon image', url)
+				this.iconImage = image
+
+				C2CanvasMapMarker_image_cache[url] = image
+
+				this.dispatch('change')
+			}
+
+			image.onerror = (err)=>{
+				this.error('unable to load icon image', url, err)
+			}
+
+			image.src = url
+		}
 	}
 
 	setPosition(gpsX, gpsY){
