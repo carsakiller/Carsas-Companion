@@ -17,6 +17,42 @@
 		flex-flow: column;
 		flex: 1 1 auto;
 
+		.map_filter {
+			position: absolute;
+			bottom: 5px;
+			left: 50%;
+			transform: translateX(-50%);
+			display: flex;
+			flex-direction: row;
+			z-index: 11;
+			background: #000a;
+			padding: 3px 10px;
+			border-radius: 10000px;
+
+			.filter_option {
+				margin-right: 20px;
+				font: $font-primary;
+				font-size: 12px;
+
+				&:last-child {
+					margin-right: 0;
+				}
+
+				input {
+					border: 3px solid #ccc;
+					border-radius: 3px;
+				}
+
+				&:hover {
+					color: $secondary;
+
+					input {
+						border-color: $secondary;
+					}
+				}
+			}
+		}
+
 		.info {
 			position: absolute;
 			top: 0;

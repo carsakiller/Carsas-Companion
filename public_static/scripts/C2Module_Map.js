@@ -73,7 +73,7 @@ class C2Module_Map extends C2LoggingUtility {
 
 								let makeNewMarker = (function (){
 									//create new marker
-									let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
+									let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF', 'players')
 									this.playerIdToMarkerIdMap[playerId] = marker.id
 
 									marker.on('click', (pos)=>{
@@ -121,7 +121,7 @@ class C2Module_Map extends C2LoggingUtility {
 							if(vehicle.x && vehicle.y){
 
 								let makeNewMarker = (function (){
-									let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
+									let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33', vehicle.static ? 'staticVehicles' : 'otherVehicles')
 									this.vehicleIdToMarkerIdMap[vehicleId] = marker.id
 
 									marker.on('click', (pos)=>{
@@ -386,6 +386,41 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.information = $('<div class="info">')
 		this.dom.append(this.information)
 
+		// marker filter
+
+		this.filterOptions = {
+			players: {
+				enabled: true,
+				label: 'Players'
+			},
+			staticVehicles: {
+				enabled: false,
+				label: 'Static Vehicles'
+			},
+			otherVehicles: {
+				enabled: true,
+				label: 'Other Vehicles'
+			}
+		}
+
+		this.filter = $('<div class="map_filter">')
+		this.dom.append(this.filter)
+
+		for(let key of Object.keys(this.filterOptions)){
+			let opt = this.filterOptions[key]
+			let dom = $(`<div class="filter_option"><label><input type="checkbox" ${opt.enabled?'checked':''}/>${opt.label}</label</div>`)
+			this.filter.append(dom)
+
+			dom.on('mousedown', (evt)=>{
+				opt.enabled = !dom.find('input').prop('checked')
+				dom.find('input').prop('checked', opt.enabled)
+				this.requestDraw()
+
+				evt.stopImmediatePropagation()
+				evt.preventDefault()
+			})
+		}
+
 		this.dom.append(
 			$('<div class="zoom_hint" style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; background: #fffa; color: #222; font-size: 2em;">Use <span style="font-weight: 800; margin: 0 1em;">ctrl + scroll</span> to zoom</div>').css({
 				display: 'flex'
@@ -533,16 +568,10 @@ class C2CanvasMap extends C2LoggingUtility {
 			evt.stopImmediatePropagation()
 
 			if(evt.originalEvent.altKey && evt.originalEvent.ctrlKey){
-				if(this.isDebugMode){
-					if(this.tilemanager.isDebugMode){
-						this.isDebugMode = false
-						this.tilemanager.isDebugMode = false
-					} else {
-						this.tilemanager.isDebugMode = true
-					}
-				} else {
-					this.isDebugMode = true
-				}
+				this.isDebugMode = !this.isDebugMode
+				this.tilemanager.isDebugMode = this.isDebugMode
+
+				this.tilemanager.drawTilesOntoPatches()
 
 				this.requestDraw()
 			}
@@ -732,6 +761,14 @@ class C2CanvasMap extends C2LoggingUtility {
 	}
 
 	drawMarker(marker){
+
+		//check filter options
+		if(marker.filterType){
+			if(this.filterOptions[marker.filterType] && this.filterOptions[marker.filterType].enabled !== true){
+				return
+			}
+		}
+
 		if(typeof marker.gpsX !== 'number' || typeof marker.gpsY !== 'number'){
 			return
 		}
@@ -766,14 +803,14 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.tilemanager.redraw(canvasPosition.x, canvasPosition.y, this.metersToPixelRatio)
 	}
 
-	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor){
-		let marker = new C2CanvasMapMarker(gpsX, gpsY, this.iconsDirectory + iconImageName, iconWidth, label, labelColor)
+	createMarker(gpsX, gpsY, iconImageName, /* optional */iconWidth, /* optional */label, /* optional */labelColor, filterType){
+		let marker = new C2CanvasMapMarker(gpsX, gpsY, this.iconsDirectory + iconImageName, iconWidth, label, labelColor, filterType)
 
 		marker.on('change', ()=>{
 			this.requestDraw()
 		})
 
-		this.log('createMarker', gpsX, gpsY, iconImageName, iconWidth, label, labelColor)
+		this.log('createMarker', gpsX, gpsY, iconImageName, iconWidth, label, labelColor, filterType)
 
 		this.markers[marker.id] = marker
 
@@ -920,7 +957,7 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 
 	*/
 
-	constructor(gpsX, gpsY, /* optional */ iconImageUrl, /* optional */ iconWidth, /* optional */ label, /* optional */ labelColor){
+	constructor(gpsX, gpsY, /* optional */ iconImageUrl, /* optional */ iconWidth, /* optional */ label, /* optional */ labelColor, /* optional */ filterType){
 		super()
 
 		this.gpsX = gpsX
@@ -930,6 +967,7 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		this.iconHeight = this.iconWidth
 		this.label = label || undefined
 		this.labelColor = labelColor || 'white'
+		this.filterType = filterType
 
 		if(!window.C2CanvasMapMarker_image_cache){
 			window.C2CanvasMapMarker_image_cache = {}
@@ -1057,9 +1095,10 @@ class C2TileManager extends C2LoggingUtility {
 				this.allTilesLoaded = true
 				this.info('\nall Tiles have been loaded! ', loadedTiles, 'success, ', loadedTilesAndErrorTiles - loadedTiles, 'errors', loadedTilesFromCache, 'from cache')
 				this.info('canvasOffset', this.canvasOffset)
-				this.canvasMap.requestDraw()
 
 				this.drawTilesOntoPatches()
+
+				this.canvasMap.requestDraw()
 			} else {
 				this.setLoadingMessage(`${loadedTilesAndErrorTiles} / ${this.tiles.length} tiles loaded`)
 			}
@@ -1386,8 +1425,13 @@ class C2TileManager extends C2LoggingUtility {
 	}
 
 	drawTilesOntoPatches(){
+		if(!this.allTilesLoaded){
+			return
+		}
+
 		for(let patch of this.patches){
 			let ctx = patch.canvas.getContext('2d')
+			ctx.clearRect(0, 0, patch.canvas.width, patch.canvas.height)
 
 			for(let x = 0; x < patch.group.length; x++){
 				for(let y = 0; y < patch.group[x].length; y++){
