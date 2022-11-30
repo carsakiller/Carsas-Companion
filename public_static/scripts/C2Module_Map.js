@@ -597,6 +597,7 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		if(!this.mustDraw){
 			this.queueDraw()
+			this.timesBetweenDraws = [0]
 			return
 		}
 
@@ -690,7 +691,12 @@ class C2CanvasMap extends C2LoggingUtility {
 
 		let p = this.convertGpsPositonToCanvasPosition(marker.gpsX, marker.gpsY)
 
-		this.debug('drawMarker', p, marker)
+		if(p.x + marker.iconWidth/2 < 0 || p.x - marker.iconWidth/2 > this.canvas.width ||
+			p.y + marker.iconHeighth/2 < 0 || p.y - marker.iconHeighth/2 > this.canvas.height){
+			//not in visible area
+			return
+		}
+
 
 		if(marker.iconImage){
 			this.ctx.drawImage(marker.iconImage, p.x - marker.iconWidth / 2, p.y - marker.iconHeight/2, marker.iconWidth, marker.iconHeight)
@@ -878,8 +884,8 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 		this.label = label || undefined
 		this.labelColor = labelColor || 'white'
 
-		if(!C2CanvasMapMarker_image_cache){
-			C2CanvasMapMarker_image_cache = {}
+		if(!window.C2CanvasMapMarker_image_cache){
+			window.C2CanvasMapMarker_image_cache = {}
 		}
 
 		if(this.iconImageUrl){
@@ -890,9 +896,9 @@ class C2CanvasMapMarker extends C2EventManagerAndLoggingUtility {
 	}
 
 	loadImage(url){
-		if(C2CanvasMapMarker_image_cache[url]){
+		if(window.C2CanvasMapMarker_image_cache[url]){
 			this.debug('loaded icon image from cache', url)
-			this.iconImage = C2CanvasMapMarker_image_cache[url]
+			this.iconImage = window.C2CanvasMapMarker_image_cache[url]
 			this.dispatch('change')
 		} else {
 
