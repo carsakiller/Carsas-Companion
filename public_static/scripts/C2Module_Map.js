@@ -322,7 +322,7 @@ class C2CanvasMap extends C2LoggingUtility {
 		this.TILE_PIXEL_SIZE = 200
 		this.TILE_METER_SIZE = 1000
 
-		this.isDebugMode = false
+		this.isDebugMode = true
 
 		this.container = $(el)
 
@@ -958,6 +958,8 @@ class C2TileManager extends C2LoggingUtility {
 
 		this.info('setTilesDefinition', tilesDefinition)
 
+		this.tilesDefinition = tilesDefinition // only required for debugging count in createPatches()
+
 		for(let t of tilesDefinition){
 			this.addTile(t.name, t.x - this.tileMeterSize/2, t.y + this.tileMeterSize/2)//convert center x,y to top left x,y
 		}
@@ -1138,6 +1140,8 @@ class C2TileManager extends C2LoggingUtility {
 
 					patchGroups.push(myGroup)
 				}
+			} else {// single tile patch
+				patchGroups.push([[t]])
 			}
 		}
 
@@ -1246,6 +1250,18 @@ class C2TileManager extends C2LoggingUtility {
 			}
 		}
 
+		let totalTilesInsidePatchGroups = 0
+		for(let group of patchGroups){
+			for(let x of group){
+				for(let y of x){
+					if(y !== undefined){
+						totalTilesInsidePatchGroups ++
+					}
+				}
+			}
+		}
+
+		console.info(`TileDefinitions: ${this.tilesDefinition.length}, tiles: ${this.tiles.length}, grouped tiles: ${Object.keys(groupedTiles).length}, patch groups: ${patchGroups.length}, total tiles inside patch groups: ${totalTilesInsidePatchGroups}`)
 
 		//make patches from patchGroups
 		this.log('patchGroups', patchGroups)
