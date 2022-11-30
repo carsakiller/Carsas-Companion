@@ -71,13 +71,7 @@ class C2Module_Map extends C2LoggingUtility {
 							let player = livePlayers[playerId]
 							if(player.x && player.y){
 
-								if(this.playerIdToMarkerIdMap[playerId]){
-									// update marker
-									let marker = this.getMap().markers[this.playerIdToMarkerIdMap[playerId]]
-									marker.dispatch('change')
-									marker.gpsX = player.x
-									marker.gpsY = player.y
-								} else {
+								let makeNewMarker = (function (){
 									//create new marker
 									let marker = this.getMap().createMarker(player.x, player.y, 'map_player.png', 30, player.name, '#36BCFF')
 									this.playerIdToMarkerIdMap[playerId] = marker.id
@@ -86,6 +80,21 @@ class C2Module_Map extends C2LoggingUtility {
 										this.log('clicked player marker', player)
 										this.clickPlayer(player, playerId, pos.x, pos.y)
 									})
+								}).bind(this)
+
+								if(this.playerIdToMarkerIdMap[playerId]){
+									// update marker
+									let marker = this.getMap().markers[this.playerIdToMarkerIdMap[playerId]]
+
+									if(marker){ //TODO: investigate why sometimes this marker is undefined (already deleted)
+										marker.dispatch('change')
+										marker.gpsX = player.x
+										marker.gpsY = player.y
+									} else {
+										makeNewMarker()
+									}
+								} else {
+									makeNewMarker()
 								}
 							}
 						}
@@ -111,13 +120,7 @@ class C2Module_Map extends C2LoggingUtility {
 							let vehicle = liveVehicles[vehicleId]
 							if(vehicle.x && vehicle.y){
 
-								if(this.vehicleIdToMarkerIdMap[vehicleId]){
-									// update marker
-									let marker = this.getMap().markers[this.vehicleIdToMarkerIdMap[vehicleId]]
-									marker.dispatch('change')
-									marker.gpsX = vehicle.x
-									marker.gpsY = vehicle.y
-								} else {
+								let makeNewMarker = (function (){
 									let marker = this.getMap().createMarker(vehicle.x, vehicle.y, 'map_vehicle.png', 30, vehicle.name, '#FF7E33')
 									this.vehicleIdToMarkerIdMap[vehicleId] = marker.id
 
@@ -125,6 +128,21 @@ class C2Module_Map extends C2LoggingUtility {
 										this.log('clicked vehicle marker', vehicle)
 										this.clickVehicle(vehicle, vehicleId, pos.x, pos.y)
 									})
+								}).bind(this)
+
+								if(this.vehicleIdToMarkerIdMap[vehicleId]){
+									// update marker
+									let marker = this.getMap().markers[this.vehicleIdToMarkerIdMap[vehicleId]]
+
+									if(marker){ //TODO: investigate why sometimes this marker is undefined (already deleted)
+										marker.dispatch('change')
+										marker.gpsX = vehicle.x
+										marker.gpsY = vehicle.y
+									} else {
+										makeNewMarker()
+									}
+								} else {
+									makeNewMarker()
 								}
 							}
 						}
